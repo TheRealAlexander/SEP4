@@ -25,7 +25,7 @@ When working on a specific part of the project, prefix your branches accordingly
 3. **Push Your Branch:** Once your changes are complete, push your branch to the repository.
 4. **Open a Pull Request (PR):** Create a PR against the `dev` branch. Your PR should include a detailed description of the changes and any other relevant information for reviewers.
 5. **Review Process:** At least two other team members must review and approve your PR before it can be merged. Ensure that any feedback is addressed promptly.
-6. **Merge:** Once your PR has been approved and has passed all necessary checks, it can be merged into `dev`. `dev` will eventually be merged into `main` incrementally as stable releases.
+6. **Merge:** Once your PR has been approved and has passed all necessary checks, it can be merged into `dev`. `dev` will eventually be merged into `prod` incrementally as stable releases.
 
 ## Contribution Guidelines
 - Ensure your code adheres to the project standards and guidelines.
