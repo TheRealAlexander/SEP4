@@ -3,7 +3,7 @@
 
 int main(void) {
     // Initialize pin for output, for example
-    DDRB |= (1 << PB7);
+    DDRB |= (1 << PB7); // Useless comment
 
     while (1) {
         // Toggle pin high and low with delay
