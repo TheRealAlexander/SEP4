@@ -25,7 +25,7 @@ When working on a specific part of the project, prefix your branches accordingly
 3. **Publish Your Branch:** Once you've made initial progress, push your branch to the repository. This visibility allows for early feedback and collaboration. Continue to commit and push regularly as you work towards completing your feature or fix.
 4. **Open a Pull Request (PR):** When your contribution is ready, create a PR against the `dev` branch and follow the PR template.
 5. **Review Process:** Your PR must receive approval from at least two other team members before merging. Ensure that any feedback is addressed promptly.
-6. **Merge:** After receiving the necessary approvals and passing all checks, your PR can be merged into `dev`. The `dev` branch will be merged into prod in increments as part of our stable release process.
+6. **Merge:** After receiving the necessary approvals and passing all checks, your PR can be merged into `dev`. The `dev` branch will be merged into `prod` in increments as part of our stable release process.
 
 ## Contribution Guidelines
 - Ensure your code adheres to the project standards and guidelines.
