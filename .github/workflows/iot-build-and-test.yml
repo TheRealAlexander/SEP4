@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'iot/**'
+  workflow_dispatch:
 
 jobs:
   build-and-test:
