@@ -21,18 +21,18 @@ TEST_EXEC = test_exec
 all: build
 
 build:  $(OBJ_FILES)
-    $(CC) $(LDFLAGS) $^ -o $(BUILD_DIR)/main.elf
-    $(OBJCOPY) -O ihex $(BUILD_DIR)/main.elf $(BUILD_DIR)/main.hex
+	$(CC) $(LDFLAGS) $^ -o $(BUILD_DIR)/main.elf
+	$(OBJCOPY) -O ihex $(BUILD_DIR)/main.elf $(BUILD_DIR)/main.hex
 
 $(BUILD_DIR)/%.o: %.c
-    @mkdir -p $(@D)
-    $(CC) $(CFLAGS) -c $< -o $@
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
 
 test:   $(TEST_OBJ_FILES)
-    $(CC) $(LDFLAGS) $(TEST_OBJ_FILES) -o $(BUILD_DIR)/$(TEST_EXEC)
-    ./$(BUILD_DIR)/$(TEST_EXEC)
+	$(CC) $(LDFLAGS) $(TEST_OBJ_FILES) -o $(BUILD_DIR)/$(TEST_EXEC)
+	./$(BUILD_DIR)/$(TEST_EXEC)
 
 clean:
-    rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)
 
 .PHONY: all build test clean
