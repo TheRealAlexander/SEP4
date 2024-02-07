@@ -3,7 +3,7 @@
 
 int main(void) {
     // Initialize pin for output, for example
-    DDRB |= (1 << PB7);
+    DDRB |= (1 << PB7); // Add this comment to see if github actions run
 
     while (1) {
         // Toggle pin high and low with delay
