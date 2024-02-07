@@ -20,7 +20,7 @@ TEST_EXEC = test_exec
 
 all: build
 
-build: $(OBJ_FILES)
+build:  $(OBJ_FILES)
     $(CC) $(LDFLAGS) $^ -o $(BUILD_DIR)/main.elf
     $(OBJCOPY) -O ihex $(BUILD_DIR)/main.elf $(BUILD_DIR)/main.hex
 
@@ -28,7 +28,7 @@ $(BUILD_DIR)/%.o: %.c
     @mkdir -p $(@D)
     $(CC) $(CFLAGS) -c $< -o $@
 
-test: $(TEST_OBJ_FILES)
+test:   $(TEST_OBJ_FILES)
     $(CC) $(LDFLAGS) $(TEST_OBJ_FILES) -o $(BUILD_DIR)/$(TEST_EXEC)
     ./$(BUILD_DIR)/$(TEST_EXEC)
 
