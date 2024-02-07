@@ -6,13 +6,16 @@ on:
       - 'iot/**'
   workflow_dispatch:
 
+permissions: # Set permissions for the entire workflow
+  issues: write
+  pull-requests: write
+
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
     - uses: actions/checkout@v2
-
     - name: Install AVR Toolchain
       run: sudo apt-get update && sudo apt-get install -y gcc-avr avr-libc make
 
