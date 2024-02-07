@@ -1,0 +1,52 @@
+name: IoT Build and Test Workflow
+
+on:
+  pull_request:
+    paths:
+      - 'iot/**'
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install AVR Toolchain
+      run: sudo apt-get update && sudo apt-get install -y gcc-avr avr-libc make
+
+    - name: Build Project
+      run: |
+        cd iot
+        make build
+
+    - name: Run Tests
+      run: |
+        cd iot
+        make test
+
+    - name: Comment on PR on Success
+      if: success()
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const message = "Build and tests passed successfully! ✅";
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: message
+          });
+
+    - name: Comment on PR on Failure
+      if: failure()
+      uses: actions/github-script@v5
+      with:
+        script: |
+          const message = "Build or tests failed. Please review the logs. ❌";
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: message
+          });
