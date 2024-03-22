@@ -1,4 +1,4 @@
-# Development Container Documentation: C# (.NET) and PostgreSQL
+# Development Container Documentation
 
 ## Overview
 This development container is designed to streamline the development process for projects. It provides a consistent and isolated environment where developers can build, test, and debug their applications without worrying about setting up dependencies or dealing with compatibility issues. The container is configured using a `devcontainer.json` file and a `docker-compose.yml` file, both of which define the environment settings and services required for development.
