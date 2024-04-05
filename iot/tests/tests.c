@@ -19,6 +19,14 @@
 ////////////////////////////////////////////////////////////////
 //- Assertions
 
+
+// NOTE(rune): List of ANSI escape sequences: 
+// https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797
+
+#define ANSI_FOREGROUND_RED   "\x1b[0;31m"
+#define ANSI_FOREGROUND_GREEN "\x1b[0;32m"
+#define ANSI_RESET            "\x1b[0m"
+
 // TODO(rune):
 // This is a very primtive test setup, just so we can get started with CI/CD.
 // Some things that could be better:
@@ -29,7 +37,7 @@ static void assert_string(string actual, string expect) {
     bool failed = !string_equal(expect, actual);
     if (failed) {
         printf("------------------------------------------------\n");
-        printf("Assertion failed :(\n");
+        printf(ANSI_FOREGROUND_RED "Assertion failed :(\n" ANSI_RESET);
         printf("Expected:\n");
         printf("%.*s\n", (int)expect.len, expect.base);
         printf("------------------------------------------------\n");
@@ -44,7 +52,7 @@ static void assert_bool(bool actual, bool expect) {
     bool failed = expect != actual;
     if (failed) {
         printf("------------------------------------------------\n");
-        printf("Assertion failed :(\n");
+        printf(ANSI_FOREGROUND_RED "Assertion failed :(\n" ANSI_RESET);
         printf("Expected:\n");
         printf("%s\n", expect ? "true" : "false");
         printf("------------------------------------------------\n");
@@ -59,7 +67,7 @@ static void assert_char(char actual, char expect) {
     char failed = expect != actual;
     if (failed) {
         printf("------------------------------------------------\n");
-        printf("Assertion failed :(\n");
+        printf(ANSI_FOREGROUND_RED "Assertion failed :(\n" ANSI_RESET);
         printf("Expected:\n");
         printf("'%c'\n", expect);
         printf("------------------------------------------------\n");
@@ -74,7 +82,7 @@ static void assert_int(int actual, int expect) {
     int failed = expect != actual;
     if (failed) {
         printf("------------------------------------------------\n");
-        printf("Assertion failed :(\n");
+        printf(ANSI_FOREGROUND_RED "Assertion failed :(\n" ANSI_RESET);
         printf("Expected:\n");
         printf("%i\n", expect);
         printf("------------------------------------------------\n");
@@ -215,7 +223,7 @@ static void test_http_parse_response() {
 ////////////////////////////////////////////////////////////////
 //- Test runner
 
-#define run_test(func) (func(), printf(#func " (OK)\n"))
+#define run_test(func) (func(), printf(#func ANSI_FOREGROUND_GREEN " (OK)\n" ANSI_RESET))
 
 int main() {
     run_test(test_http_generate_get_request);
