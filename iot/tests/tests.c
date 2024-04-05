@@ -17,6 +17,75 @@
 #include "../src/http.c"
 
 ////////////////////////////////////////////////////////////////
+//- Assertions
+
+// TODO(rune):
+// This is a very primtive test setup, just so we can get started with CI/CD.
+// Some things that could be better:
+//  - Better error reporting: Which test failed? Which assertion failed? Which file and linenumber?
+//  - Don't just exit(1) on a failed assertion, e.g. continue with other tests
+
+static void assert_string(string actual, string expect) {
+    bool failed = !string_equal(expect, actual);
+    if (failed) {
+        printf("------------------------------------------------\n");
+        printf("Assertion failed :(\n");
+        printf("Expected:\n");
+        printf("%.*s\n", (int)expect.len, expect.base);
+        printf("------------------------------------------------\n");
+        printf("Actual:\n");
+        printf("%.*s\n", (int)actual.len, actual.base);
+        printf("------------------------------------------------\n");
+        exit(1);
+    }
+}
+
+static void assert_bool(bool actual, bool expect) {
+    bool failed = expect != actual;
+    if (failed) {
+        printf("------------------------------------------------\n");
+        printf("Assertion failed :(\n");
+        printf("Expected:\n");
+        printf("%s\n", expect ? "true" : "false");
+        printf("------------------------------------------------\n");
+        printf("Actual:\n");
+        printf("%s\n", actual ? "true" : "false");
+        printf("------------------------------------------------\n");
+        exit(1);
+    }
+}
+
+static void assert_char(char actual, char expect) {
+    char failed = expect != actual;
+    if (failed) {
+        printf("------------------------------------------------\n");
+        printf("Assertion failed :(\n");
+        printf("Expected:\n");
+        printf("'%c'\n", expect);
+        printf("------------------------------------------------\n");
+        printf("Actual:\n");
+        printf("'%c'\n", actual);
+        printf("------------------------------------------------\n");
+        exit(1);
+    }
+}
+
+static void assert_int(int actual, int expect) {
+    int failed = expect != actual;
+    if (failed) {
+        printf("------------------------------------------------\n");
+        printf("Assertion failed :(\n");
+        printf("Expected:\n");
+        printf("%i\n", expect);
+        printf("------------------------------------------------\n");
+        printf("Actual:\n");
+        printf("%i\n", actual);
+        printf("------------------------------------------------\n");
+        exit(1);
+    }
+}
+
+////////////////////////////////////////////////////////////////
 //- Generate HTTP request tests
 
 static void test_http_generate_get_request(void) {
@@ -38,9 +107,7 @@ static void test_http_generate_get_request(void) {
         "\r\n"
     );
 
-    if (!string_equal(actual, expect)) {
-        exit(1);
-    }
+    assert_string(actual, expect);
 }
 
 static void test_http_generate_post_request(void) {
@@ -72,9 +139,28 @@ static void test_http_generate_post_request(void) {
         "{ \"a\": 123 }"
     );
 
-    if (!string_equal(actual, expect)) {
-        exit(1);
+    assert_string(actual, expect);
+}
+
+static void test_http_generate_request_no_overflow() {
+    struct {
+        char too_small[64];
+        char dont_overflow_into_here[64];
+    } buffers = { 0 };
+
+    const char magic = 123;
+    buffers.dont_overflow_into_here[0] = magic;
+
+    textbuf buf = { 0 };
+    textbuf_init(&buf, buffers.too_small, sizeof(buffers.too_small));
+
+    http_append_head_begin(&buf, string("GET"), string("/all/the/things"));
+    for (int i = 0; i < 100; i++) {
+        http_append_head_string(&buf, string("A lot"), string("of headers"));
     }
+
+    assert_bool(buf.oom, true);
+    assert_char(buffers.dont_overflow_into_here[0], magic);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -85,6 +171,7 @@ static void test_http_generate_post_request(void) {
 int main() {
     run_test(test_http_generate_get_request);
     run_test(test_http_generate_post_request);
+    run_test(test_http_generate_request_no_overflow);
     printf("All tests suceeded\n");
     return 0;
 }
