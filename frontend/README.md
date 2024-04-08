@@ -1,0 +1,1 @@
+## For at kunne åbne react appen skal du køre "npm install"i din terminal, i følgende directory: "frontend/app"
