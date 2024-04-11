@@ -6,10 +6,11 @@ This document provides detailed information about the interface between IOT &
 Backend.
 
 ## Request frequency is set by backend (CO2, Temperature,Humidity, Etc)
+
 ## Data type sent: JSON strings over HTTP
 
-Example of a request sent from the IoT-device to the backend web service. 
-The request contains one or more measurements:
+Example of a request sent from the IoT-device to the backend web service. The
+request contains one or more measurements:
 
 ```json5
 {
@@ -20,6 +21,7 @@ The request contains one or more measurements:
 ```
 
 The backend response can contain zero or more instructions for the IoT-device:
+
 ```json5
 {
     "wantNextMeasurementDelay": 15, // Controls the number of seconds before the IoT-device sends the next measurements

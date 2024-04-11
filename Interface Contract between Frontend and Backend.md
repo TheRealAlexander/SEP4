@@ -2,25 +2,53 @@
 
 ## Overview
 
-This document provides detailed information about the interface between Frontend
-& Backend.
+This document outlines the interface contract between the Frontend and Backend
+systems for the specific requirement stated below:
 
-## Requests for an object and its details
+## **Requirement:**
 
-### Request: Get User
+As an admin, I would like to be able to see the indoor climate, temperature,
+humidity, and CO2 concentration of the hall over time, to ensure the health of
+the players and make it comfortable for the players.
 
-**Description:** This request is used to retrieve information about a specific
-user.
+## Requests for Environmental Data
+
+### Request: Get Environmental Data
+
+**Description:** This request is utilized to retrieve environmental data such as
+indoor climate, temperature, humidity, and CO2 concentration over a period of
+time.
 
 **Method:** GET
 
 **Parameters:**
 
-- `userId` (required): The unique identifier of the user.
+- None
 
 **Response:**
 
 - Status Code: 200 OK
-- Body: JSON object representing the user details.
+- Body: JSON object containing environmental data.
 
-**Example:** { "name": "John Doe", "age": 25, "email": "johndoe@example.com" }
+**Example Response:**
+
+```json
+{
+  "hall_id": "1234",
+  "data": [
+    {
+      "timestamp": "2024-04-10T12:00:00Z",
+      "temperature": 22.5,
+      "humidity": 50,
+      "co2_concentration": 800
+    },
+    {
+      "timestamp": "2024-04-10T13:00:00Z",
+      "temperature": 23.0,
+      "humidity": 52,
+      "co2_concentration": 820
+    },
+    ...
+  ]
+}
+```
