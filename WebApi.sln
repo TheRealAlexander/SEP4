@@ -1,0 +1,33 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31903.59
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "backend", "backend", "{6DE00295-EBE1-4C7F-8100-72596102B846}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "microservices", "microservices", "{1505F8A1-8676-4348-8C1E-92A14978C59B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "autorisering", "autorisering", "{3D9D4553-B9E3-437D-97B8-35632BFBA0B8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebApi", "backend\microservices\autorisering\WebApi\WebApi.csproj", "{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1505F8A1-8676-4348-8C1E-92A14978C59B} = {6DE00295-EBE1-4C7F-8100-72596102B846}
+		{3D9D4553-B9E3-437D-97B8-35632BFBA0B8} = {1505F8A1-8676-4348-8C1E-92A14978C59B}
+		{45CA7FEE-99AE-4FAF-A07B-A5361599BD8E} = {3D9D4553-B9E3-437D-97B8-35632BFBA0B8}
+	EndGlobalSection
+EndGlobal
