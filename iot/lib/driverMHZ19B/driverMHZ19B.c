@@ -15,7 +15,18 @@ volatile bool new_co2_data_available = false;
 static uint8_t rx_buffer[9];
 static uint8_t rx_count = 0;
 
+void WHZ19B_init(void) {
+    uart_init(USART_3, 9600, usart3_co2_rx_handler);
 
+    uint16_t ubrr_value = (F_CPU / (16UL * 9600)) - 1;
+
+    UBRR3H = (uint8_t)(ubrr_value >> 8);
+    UBRR3L = (uint8_t)ubrr_value;
+
+    UCSR3B = (1 << RXEN3) | (1 << TXEN3);
+
+    UCSR3C = (1 << UCSZ31) | (1 << UCSZ30);
+}
 void usart3_co2_rx_handler(uint8_t received_byte) {
     if (rx_count < sizeof(rx_buffer)) {
         rx_buffer[rx_count] = received_byte;
