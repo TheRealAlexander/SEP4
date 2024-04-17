@@ -1,64 +1,35 @@
-
-
-#include <avr/io.h>
-#include <avr/interrupt.h>
-
-#define F_CPU 16000000
+#include "uart.h"
+#include "dht11.h"
+#include "periodic_task.h"
+#include <stdio.h>
+#define F_CPU 16000000UL  // Adjust this according to your microcontroller's clock
 #include <util/delay.h>
 
-#include "uart.h"
-#include "uart.c"
-#include "dht11.h"
-#include "dht11.c"
-#include "periodic_task.h"
-#include "periodic_task.c"
-
-#include <stdio.h>
-
-static void print_int(char *name, int j) {
-    char msg[128] = {0};
-    int len = sprintf(msg, "%s %d\r\n", name, j);
-    
+// Funktion til at sende data som JSON-format
+static void print_json(int humid_int, int humid_dec, int temp_int, int temp_dec) {
+    char json[128] = {0};
+    int len = sprintf(json, "{\"humidity\": \"%d.%d%%\", \"temperature\": \"%d.%d°C\"}\r\n",
+                      humid_int, humid_dec, temp_int, temp_dec);
     for (int i = 0; i < len; i++) {
-        uart_send_blocking(USART_0, msg[i]);
+        uart_send_blocking(USART_0, json[i]);
     }
 }
-
-static void print_int2(char *name, int heltal, int decimal) {
-    char msg[128] = {0};
-    int len = sprintf(msg, "%s %d,%d\r\n", name, heltal, decimal);
-    
-    for (int i = 0; i < len; i++) {
-        uart_send_blocking(USART_0, msg[i]);
-    }
-}
-
-int counter_ms = 0;
 
 static void call_me_every_ms(void) {
+    static int counter_ms = 0;
     counter_ms++;
 }
 
-int main()
-{
-  uart_init(USART_0, 9600, NULL);
-    
-  periodic_task_init_a(call_me_every_ms, 1);
+int main() {
+    uart_init(USART_0, 9600, NULL);
+    periodic_task_init_a(call_me_every_ms, 1);
 
-  while(1)
-  {
-        print_int("millisekunder", counter_ms);
-      
-        uint8_t a = 0;
-        uint8_t b = 0;
-        uint8_t c = 0;
-        uint8_t d = 0;
-        
-        int result = dht11_get(&a, &b, &c, &d);
-        if (result == DHT11_OK) {
-            print_int2("humid", a, b);
-            print_int2("temp ", c, d);
+    while(1) {
+        uint8_t a = 0, b = 0, c = 0, d = 0;
+        if (dht11_get(&a, &b, &c, &d) == DHT11_OK) {
+            print_json(a, b, c, d);
         }
-  }
-  return 0;
+        _delay_ms(1000); // Just as an example delay
+    }
+    return 0;
 }
