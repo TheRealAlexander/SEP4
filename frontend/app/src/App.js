@@ -1,12 +1,18 @@
 import './App.css';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import ThermostatData from './Thermostat_Component';
 import ClimatePage from './Components/ClimatePage/ClimatePage';
 
 function App() {
   return (
-    <div className="App">
-      <ThermostatData />
-    </div>
+    <Router>
+      <div className='App'>
+        <Routes>
+          <Route path="/" element={<ClimatePage data={data} />} />
+          <Route path="/thermostat" element={ThermostatData} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
