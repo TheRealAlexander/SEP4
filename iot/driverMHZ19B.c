@@ -1,100 +1,86 @@
-#include "driverMHZ19B.h"
 #include "uart.h"
-#include <util/delay.h>
-#include <avr/io.h>
-#include "uart_co2.h"
-#define BAUD_RATE 9600 // Set the baud rate for the specifications of the datasheet which is 9600
-#define F_CPU 16000000UL 
-#define BAUD_PRESCALE (((F_CPU / (BAUD_RATE * 16UL))) - 1)
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include "includes.h"
+#include "driverMHZ19B.h"
+#define Co2SensorRead 0x86
 #define ZERO_POINT_CALIBRATION 0x87
 #define SPAN_POINT_CALIBRATION 0x88
-// This function helps to calculate the amount of co2.
-//It loops through the 8 bit length string and adds it together
-// to find the final integer value. This is found through subtraction 
-// The hex val with the final sum. 
-uint8_t checksum(uint8_t* packet){
+#define BAUD_RATE 9600
+
+volatile int latest_co2_concentration = 0;
+volatile bool new_co2_data_available = false;
+
+static uint8_t rx_buffer[9];
+static uint8_t rx_count = 0;
+
+
+void usart3_co2_rx_handler(uint8_t received_byte) {
+    if (rx_count < sizeof(rx_buffer)) {
+        rx_buffer[rx_count] = received_byte;
+        rx_count++;
+    } else {
+        rx_count = 0;
+    }
+
+    if (rx_count >= sizeof(rx_buffer)) {
+        rx_count = 0;
+        process_co2_data();
+    }
+}
+void process_co2_data() {
+    if (checksum(rx_buffer) == rx_buffer[8]) {
+        latest_co2_concentration = (rx_buffer[2] << 8) + rx_buffer[3];
+        new_co2_data_available = true;
+    } else {
+        latest_co2_concentration = -1;
+    }
+}
+
+uint8_t checksum(uint8_t* packet) {
     uint8_t sum = 0;
-    for(int i = 1; i < response_size - 1; i++){
+    for (int i = 1; i < sizeof(rx_buffer) - 1; i++) {
         sum += packet[i];
     }
     return 0xFF - sum + 1;
 }
-// This function is constructing the command we are sending to the sensor. The first two bytes, are standard, while the third indicates which command is needed for
-// the sensor. Byte 3 - 8 just need to have a default value of 0. This can be found in the datasheet. 
-void command(uint8_t* command_one, uint8_t command_two){
-    command_one[0] = 0xFF;
-    command_one[1] = 0x01;
-    command_one[2] = command_two;
-    for (int i = 3; i < 8; i++){
-        command_one[i] = 0x00;
-    }
-    command_one[8] = checksum(command_one);
 
+void send_co2_command(uint8_t* command, uint8_t size) {
+    uart_send_array_nonBlocking(USART_3, command, size);
 }
-int responseByte(uint8_t* response){
-    if(response[1] != Co2SensorRead){
-        return -1;  // The first byte sent back must match 0x86 otherwise it is not a proper response
-    }
-    if( checksum(response) != response[8]){
-        return -2;   // There is a checksum error
-    }
-    return (response[2] << 8) + response[3]; // This essentially merges the two bytes to make a 16 bit number. Because Co2 has the unit of parts per million, 
-    // We need to have a return value that can store the high number, it outputs. // The response[2] << 8 just shifts the bits so that we get 2⁸ 
 
-} // This function just reads the co2sensor and sends the captured data back. 
-int WHZ19B_readCO2(void){
-    uint8_t com[9];
-    uint8_t respond[response_size];
-
-    command(com, Co2SensorRead);
-    for (int i = 0; i < response_size; i++){
-        uart_send_blocking(USART_0, com[i]); 
-    }
-    _delay_ms(10);
-
-for (int i = 0; i < response_size; i++){
-respond[i] = uart_receive_byte();
+void WHZ19B_init(void) {
+    uart_init(USART_3, BAUD_RATE, usart3_co2_rx_handler);
 }
-return responseByte(respond);
+
+void WHZ19B_readCO2(void) {
+    uint8_t commandVariable[9];
+    command(commandVariable, Co2SensorRead);
+    send_co2_command(commandVariable, sizeof(commandVariable));
 }
-// This function just sends the command to do Zero Point Calibration
+
+void command(uint8_t* commandBuffer, uint8_t commandType) {
+    commandBuffer[0] = 0xFF;
+    commandBuffer[1] = 0x01;
+    commandBuffer[2] = commandType;
+    for (int i = 3; i < 8; i++) {
+        commandBuffer[i] = 0x00;
+    }
+    commandBuffer[8] = checksum(commandBuffer);
+}
+
 void sendZeroPointCalibration(void) {
-    uint8_t zero_point_command[9];
-    command(zero_point_command, ZERO_POINT_CALIBRATION);
-
-    for (int i = 0; i < 9; i++) {
-        uart_send_blocking(USART_0, zero_point_command[i]);
-    }
-    _delay_ms(100);
+    uint8_t commandVariable[9];
+    command(commandVariable, ZERO_POINT_CALIBRATION);
+    send_co2_command(commandVariable, sizeof(commandVariable));
 }
+
 void sendSpanPointCalibration(uint8_t high_byte, uint8_t low_byte) {
-    uint8_t span_point_command[9];
-    command(span_point_command, SPAN_POINT_CALIBRATION);
-    
-    span_point_command[3] = high_byte;
-    span_point_command[4] = low_byte;
-    
-    span_point_command[8] = checksum(span_point_command);
-    
-    for (int i = 0; i < 9; i++) {
-        uart_send_blocking(USART_0, span_point_command[i]);
-    }
-    
-    _delay_ms(100);
-}
-
-void uart_rx_callback(uint8_t data) {
-    // Handle received data
-    }
-
-
-
-void WHZ19B_init(void){
-    uart_init(USART_0, 9600, uart_rx_callback);
-      UBRR0 = (uint8_t)(BAUD_PRESCALE >> 8);
-      UBRR0L = (uint8_t)(BAUD_PRESCALE);
-      // Enable receiver and transmitter
-      UCSR0B = (1 << RXEN0) | (1 << TXEN0);
-      // Set frame format: 8 data bits, no parity, 1 stop bit
-      UCSR0C = (1 << UCSZ01) | (1 << UCSZ00);
+    uint8_t commandVariable[9];
+    command(commandVariable, SPAN_POINT_CALIBRATION);
+    commandVariable[3] = high_byte;
+    commandVariable[4] = low_byte;
+    commandVariable[8] = checksum(commandVariable);
+    send_co2_command(commandVariable, sizeof(commandVariable));
 }
