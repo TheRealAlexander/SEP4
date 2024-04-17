@@ -61,10 +61,6 @@ void send_co2_command(uint8_t* command, uint8_t size) {
     uart_send_array_nonBlocking(USART_3, command, size);
 }
 
-void WHZ19B_init(void) {
-    uart_init(USART_3, BAUD_RATE, usart3_co2_rx_handler);
-}
-
 void WHZ19B_readCO2(void) {
     uint8_t commandVariable[9];
     command(commandVariable, Co2SensorRead);
