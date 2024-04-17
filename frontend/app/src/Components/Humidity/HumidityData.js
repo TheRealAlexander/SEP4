@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-function HumidityComponent() {
+export default function HumidityData() {
     const [humidity, setHumidity] = useState(0.0);
     const [readings, setReadings] = useState([]);
 
@@ -48,5 +48,3 @@ function HumidityComponent() {
         </div>
     );
 }
-
-export default HumidityComponent;
