@@ -1,11 +1,10 @@
 import './App.css';
+import ThermostatData from './Thermostat_Component';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>Welcome to the React App</h1>
-      </header>
+      <ThermostatData />
     </div>
   );
 }
