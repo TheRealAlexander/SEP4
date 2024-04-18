@@ -3,9 +3,9 @@
     public class SensorData
     {
         public int Id { get; set; }
-        public Temperature Temperature { get; set; }
-        public Humidity Humidity { get; set; }
-        public CO2 CO2 { get; set; }
-        public TimeSpan Timestamp { get; set; }
+        public double Temperature { get; set; }
+        public double Humidity { get; set; }
+        public double CO2 { get; set; }
+        public DateTime Timestamp { get; set; }
     }
 }

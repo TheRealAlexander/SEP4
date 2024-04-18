@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using WebApi.DAO;
+using WebApi.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,11 +11,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Setup postgre sql connection
+// Setup postgres sql connection
 builder.Services.AddDbContext<DbContextPostgres>(options =>
 {
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnectionPostgres"));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+builder.Services.AddScoped<ISensorDataService, SensorDataService>();
+builder.Services.AddScoped<SensorDataDao>();
 
 var app = builder.Build();
 
