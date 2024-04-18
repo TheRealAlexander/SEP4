@@ -1,45 +1,54 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using MongoDB.Driver;
 using WebApi.Models;
 
 namespace WebApi.DAO
 {
     public class SensorDataDao
     {
-        private readonly DbContextPostgres _context;
+        private readonly IMongoCollection<SensorData> _sensorDataMongoCollection;
 
-        public SensorDataDao(DbContextPostgres context)
+        public SensorDataDao(MongoDbContext context)
         {
-            _context = context;
+            _sensorDataMongoCollection = context.Database.GetCollection<SensorData>("SensorData");
         }
 
         public async Task<List<SensorData>> GetSensorDataAsync()
         {
             try
             {
-                var sensorDataList = new List<SensorData>();
-
-                // Create a single instance of SensorData with the specified values
-                var sensorData = new SensorData
-                {
-                    Id = 1,
-                    Temperature = 20.0,
-                    Humidity = 50.0,
-                    CO2 = 400.0,
-                    Timestamp = new DateTime(2021, 1, 1, 0, 0, 0)
-                };
-
-                // Add the single instance to the list
-                sensorDataList.Add(sensorData);
-
-                return sensorDataList; 
-
-
-                //TODO: Implement the logic to retrieve the SensorData from the database
-                return await _context.SensorData.ToListAsync();
+                return await _sensorDataMongoCollection.Find(s => true).ToListAsync();
             }
             catch (Exception ex)
             {
                 throw new NullReferenceException(ex.Message);
+            }
+        }
+
+        public async Task AddSensorDataAsync(SensorData sensorData)
+        {
+            try
+            {
+                if (sensorData == null)
+                {
+                    throw new ArgumentNullException(nameof(sensorData));
+                }
+
+                //Check for dubplicate data
+                var duplicateData = await _sensorDataMongoCollection.Find(s => s.Timestamp == sensorData.Timestamp)
+                    .FirstOrDefaultAsync();
+                if (duplicateData != null)
+                {
+                    throw new Exception("Duplicate data");
+                }
+
+                //Add data to the collection
+                await _sensorDataMongoCollection.InsertOneAsync(sensorData);
+                //Return 0 if successful
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
             }
         }
     }

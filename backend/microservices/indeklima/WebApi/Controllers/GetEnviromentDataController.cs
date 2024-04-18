@@ -1,5 +1,6 @@
 
 using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
 using WebApi.Services;
 
 namespace WebApi.Controllers;
@@ -16,9 +17,9 @@ public class EnvironmentDataController : ControllerBase
     }
 
     [HttpGet]
-    public IActionResult GetSensorData()
+    public async Task<List<SensorData>> GetSensorData()
     {
-        return _sensorDataService.GetSensorData();
+        return await _sensorDataService.GetSensorData();
     }
 
 }

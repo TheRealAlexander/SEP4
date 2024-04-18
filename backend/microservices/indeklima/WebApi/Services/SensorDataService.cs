@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using WebApi.DAO;
+using WebApi.Models;
 
 namespace WebApi.Services
 {
@@ -12,9 +13,18 @@ namespace WebApi.Services
         {
             _sensorDataDao = sensorDataDao;
         }
-        public IActionResult GetSensorData()
+        public async Task<List<SensorData>> GetSensorData()
         {
-            return new OkObjectResult(_sensorDataDao.GetSensorDataAsync());
+            return await _sensorDataDao.GetSensorDataAsync();
+        }
+        public void AddSensorData(SensorData sensorData)
+        {
+            if (sensorData == null)
+            {
+                throw new ArgumentNullException(nameof(sensorData));
+            }
+
+            _sensorDataDao.AddSensorDataAsync(sensorData);
         }
     }
 }

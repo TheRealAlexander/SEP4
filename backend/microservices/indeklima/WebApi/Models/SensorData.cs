@@ -1,8 +1,13 @@
-﻿namespace WebApi.Models
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace WebApi.Models
 {
     public class SensorData
     {
-        public int Id { get; set; }
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
         public double Temperature { get; set; }
         public double Humidity { get; set; }
         public double CO2 { get; set; }

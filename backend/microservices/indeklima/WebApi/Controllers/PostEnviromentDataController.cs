@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
+using WebApi.Models.Dto;
 using WebApi.Services;
 
 namespace WebApi.Controllers
 {
-
     [ApiController]
     [Route("[controller]")]
     public class PostEnviromentDataController : ControllerBase
@@ -16,10 +17,25 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        public IActionResult GetSensorData()
+        public IActionResult PostSensorData(IOTSensorDataDto data)
         {
-            //TODO: Implement
-            throw new NotImplementedException();
+            try
+            {
+                SensorData sensorData = new SensorData
+                {
+                    Temperature = data.Temperature,
+                    Humidity = data.Humidity,
+                    Timestamp = DateTime.Now
+                };
+
+                _sensorDataService.AddSensorData(sensorData);
+
+                return Ok(0); // Return zero for IoT device if method is successful
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
         }
     }
 }
