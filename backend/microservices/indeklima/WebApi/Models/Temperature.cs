@@ -1,7 +1,7 @@
-namespace DefaultNamespace;
+namespace WebApi.Models;
 
 public class Temperature
 {
     public double Value { get; set; }
-    public string Unit { get; set; }
+    public Unit Unit { get; set; }
 }
