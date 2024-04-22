@@ -29,10 +29,10 @@ time.
 
 - Status Code: 200 OK
 - Body: JSON object containing environmental data.
-  
-- Double 'temperature' average across 1 minute.
-- Integer 'humidity' average across 1 minute.
-- Integer 'co2_concentration' average across 1 minute.
+-
+- Double 'temperature' - average across 1 minute.
+- Double 'humidity' - average across 1 minute.
+- Double 'co2_concentration' - average across 1 minute.
 
 **Example Response:**
 
