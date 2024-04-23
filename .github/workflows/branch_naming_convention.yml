@@ -1,7 +1,9 @@
 name: Branch Naming Convention
 
-on: push
-
+on:
+  push:
+    branches:
+      - "*"
 jobs:
   branch_naming_convention:
     runs-on: ubuntu-latest
