@@ -1,0 +1,23 @@
+# Please refer https://aka.ms/HTTPSinContainer on how to setup an https developer certificate for your ASP.NET Core service.
+
+version: "3.4"
+
+services:
+  webapi:
+    image: webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
+    ports:
+      - 5200:5200
+
+  mongodb:
+    image: mongo:4.4
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+
+volumes:
+  mongodb-data:
