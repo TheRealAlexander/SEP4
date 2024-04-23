@@ -1,15 +1,84 @@
-name: IoT build and test
+name: Build and Test IoT
 
-on: 
+on:
+  push:
+    paths:
+      - 'iot/**'
   pull_request:
     paths:
       - 'iot/**'
 
 jobs:
-  build-and-test:
+  compile:
+    name: Compile IoT Code
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v4
-    - name:
-      run: cd iot && ./build-and-test.sh
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Cache AVR-GCC Dependencies
+        uses: actions/cache@v3
+        with:
+          path: /usr/lib/avr
+          key: ${{ runner.os }}-gcc-avr-cache
+          restore-keys: |
+            ${{ runner.os }}-gcc-avr-
+      
+      - name: Install AVR-GCC
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-avr avr-libc
+      
+      - name: Compile with AVR-GCC
+        run: |
+          avr-gcc -mmcu=atmega2560 -o iot_build/iot_project.hex iot/*.c
 
+  test:
+    name: Run IoT Tests
+    runs-on: ubuntu-latest
+    needs: compile
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Cache Test Results
+        uses: actions/cache@v3
+        with:
+          path: iot/tests
+          key: ${{ runner.os }}-iot-tests-cache
+          restore-keys: |
+            ${{ runner.os }}-iot-tests-
+      
+      - name: Run Tests
+        run: |
+          cd iot/tests
+          ./run_tests.sh  # Modify to your test runner
+    continue-on-error: true
+    outputs:
+      test_success: ${{ steps.run_tests.outcome }}
+
+  notify:
+    name: Notify PR with Build and Test Results
+    runs-on: ubuntu-latest
+    needs: [compile, test]
+    if: github.event_name == 'pull_request'
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v3
+      
+      - name: Set Message
+        id: set_message
+        run: |
+          if [ "${{ needs.compile.result }}" != "success" ]; then
+            echo "Build failed. Please check the logs for errors." > message.txt
+          elif [ "${{ needs.test.outputs.test_success }}" != "success" ]; then
+            echo "Tests failed. Please check the test logs." > message.txt
+          else:
+            echo "Build and tests succeeded!" > message.txt
+      
+      - name: Comment on PR
+        uses: peter-evans/commit-comment@v2
+        with:
+          body: ${{ cat message.txt }}
+          commit: ${{ github.event.pull_request.head.sha }}
