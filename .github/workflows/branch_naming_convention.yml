@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "*"
+
 jobs:
   branch_naming_convention:
     runs-on: ubuntu-latest
@@ -12,9 +13,13 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Extract target branch name
+        id: extract_branch
+        run: echo "::set-output name=branch::${GITHUB_REF#refs/heads/}"
+
       - name: Check branch name
         run: |
-          branch_name=$(git symbolic-ref --short HEAD)
+          branch_name=${{ steps.extract_branch.outputs.branch }}
 
           # Define regex patterns for branch naming conventions
           backend_pattern="^backend\/(feature|bugfix|documentation)\/[a-zA-Z0-9_-]+$"
@@ -22,15 +27,20 @@ jobs:
           iot_pattern="^iot\/(feature|bugfix|documentation)\/[a-zA-Z0-9_-]+$"
           documentation_pattern="^documentation\/(backend|frontend|iot)\/[a-zA-Z0-9_-]+$"
 
+          if [[ -z $branch_name ]]; then
+            echo "Target branch not found."
+            exit 1
+          fi
+
           if [[ $branch_name =~ $backend_pattern ]]; then
-              echo "Branch '$branch_name' follows backend naming convention."
+              echo "Target branch '$branch_name' follows backend naming convention."
           elif [[ $branch_name =~ $frontend_pattern ]]; then
-              echo "Branch '$branch_name' follows frontend naming convention."
+              echo "Target branch '$branch_name' follows frontend naming convention."
           elif [[ $branch_name =~ $iot_pattern ]]; then
-              echo "Branch '$branch_name' follows IoT naming convention."
+              echo "Target branch '$branch_name' follows IoT naming convention."
           elif [[ $branch_name =~ $documentation_pattern ]]; then
-              echo "Branch '$branch_name' follows documentation naming convention."
+              echo "Target branch '$branch_name' follows documentation naming convention."
           else
-              echo "Branch name '$branch_name' does not follow any recognized naming convention."
+              echo "Target branch name '$branch_name' does not follow any recognized naming convention."
               exit 1
           fi
