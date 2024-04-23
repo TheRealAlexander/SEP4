@@ -30,9 +30,12 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-avr avr-libc
       
+      - name: Create Build Directory
+        run: mkdir -p iot_build
+      
       - name: Compile with AVR-GCC
         run: |
-          avr-gcc -mmcu=atmega2560 -o iot_build/iot_project.hex iot/*.c
+          avr-gcc -mmcu=atmega2560 -o build/out.hex iot/src/*.c
 
   test:
     name: Run IoT Tests
@@ -67,10 +70,6 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
       
-      - name: Read Message Content
-        id: read_message
-        run: cat message.txt
-
       - name: Set Message
         id: set_message
         run: |
@@ -80,6 +79,10 @@ jobs:
             echo "Tests failed. Please check the test logs." > message.txt
           else:
             echo "Build and tests succeeded!" > message.txt
+      
+      - name: Read Message Content
+        id: read_message
+        run: cat message.txt
       
       - name: Comment on PR
         uses: peter-evans/commit-comment@v2
