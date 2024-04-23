@@ -31,11 +31,11 @@ jobs:
           sudo apt-get install -y gcc-avr avr-libc
       
       - name: Create Build Directory
-        run: mkdir -p iot_build
+        run: mkdir -p build
       
       - name: Compile with AVR-GCC
         run: |
-          avr-gcc -mmcu=atmega2560 -o build/out.hex iot/src/*.c
+          avr-gcc -mmcu=atmega2560 -Iiot/src -o build/out.hex iot/src/*.c
 
   test:
     name: Run IoT Tests
@@ -56,7 +56,7 @@ jobs:
       - name: Run Tests
         run: |
           cd iot/tests
-          ./run_tests.sh  # Modify to your test runner
+          ./run_tests.sh  # Adjust as needed
     continue-on-error: true
     outputs:
       test_success: ${{ steps.run_tests.outcome }}
