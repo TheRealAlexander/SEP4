@@ -53,8 +53,8 @@ jobs:
       
       - name: Run Tests
         run: |
-          cd iot/tests
-          ./run_tests.sh  # Adjust as needed
+          cd iot
+          ./build-and-test.sh
     continue-on-error: true
     outputs:
       test_success: ${{ steps.run_tests.outcome }}

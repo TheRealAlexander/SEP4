@@ -12,5 +12,5 @@
 #include "http.c"
 
 int main(void) {
-    return 00
+    return 0;
 }
