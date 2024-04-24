@@ -77,6 +77,7 @@ jobs:
             echo "Tests failed. Please check the test logs." > message.txt
           else
             echo "Build and tests succeeded!" > message.txt
+          fi
       
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
