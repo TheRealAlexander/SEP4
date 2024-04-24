@@ -30,12 +30,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y gcc-avr avr-libc
       
-      - name: Create Build Directory
-        run: mkdir -p build
-      
       - name: Compile with AVR-GCC
         run: |
-          avr-gcc -mmcu=atmega2560 -Iiot/src -o build/out.hex iot/src/*.c
+          cd iot
+          ./build-main.sh
 
   test:
     name: Run IoT Tests
