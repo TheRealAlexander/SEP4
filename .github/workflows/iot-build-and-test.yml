@@ -75,8 +75,9 @@ jobs:
             echo "Build failed. Please check the logs for errors." > message.txt
           elif [ "${{ needs.test.outputs.test_success }}" != "success" ]; then
             echo "Tests failed. Please check the test logs." > message.txt
-          else:
+          else
             echo "Build and tests succeeded!" > message.txt
+          fi
       
       - name: Read Message Content
         id: read_message
