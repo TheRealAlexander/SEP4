@@ -84,3 +84,4 @@ jobs:
         with:
           filePath: message.txt
           reactions: "eyes, rocket"
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
