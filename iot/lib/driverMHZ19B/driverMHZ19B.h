@@ -13,7 +13,7 @@ extern volatile bool new_co2_data_available;
 void usart3_co2_rx_handler(uint8_t received_byte);  
 void process_co2_data(void);
 uint8_t checksum(uint8_t* packet);
-void send_co2_command(uint8_t* command, uint8_t size);
+void send_to_pc(char *s);
 void WHZ19B_init(void);
 void WHZ19B_readCO2(void);
 void command(uint8_t* commandBuffer, uint8_t commandType);
