@@ -82,5 +82,5 @@ jobs:
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
         with:
-          message: ${{ steps.set_message.outputs.result }}
+          filePath: message.txt
           reactions: "eyes, rocket"
