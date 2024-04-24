@@ -17,6 +17,7 @@ static uint8_t rx_count = 0;
 
 void WHZ19B_init(void) {
     uart_init(USART_3, 9600, usart3_co2_rx_handler);
+    uart_in(USART_0, 9600, NULL);
 
     uint16_t ubrr_value = (F_CPU / (16UL * 9600)) - 1;
 
@@ -30,6 +31,9 @@ void WHZ19B_init(void) {
 void usart3_co2_rx_handler(uint8_t received_byte) {
     if (rx_count < sizeof(rx_buffer)) {
         rx_buffer[rx_count] = received_byte;
+        char temp[8];
+        snprintf(temp, sizeof(temp), "%02x ", received_byte);
+        send_to_pc(temp);
         rx_count++;
     } else {
         rx_count = 0;
@@ -40,6 +44,10 @@ void usart3_co2_rx_handler(uint8_t received_byte) {
         process_co2_data();
     }
 }
+void send_to_pc(char *s) {
+    uart_send_array_blocking(USART_0, s, strlen(s)); // Utilize USART_0 to send data to PC
+}
+
 void process_co2_data() {
     if (checksum(rx_buffer) == rx_buffer[8]) {
         latest_co2_concentration = (rx_buffer[2] << 8) + rx_buffer[3];
@@ -57,15 +65,13 @@ uint8_t checksum(uint8_t* packet) {
     return 0xFF - sum + 1;
 }
 
-void send_co2_command(uint8_t* command, uint8_t size) {
-    uart_send_array_nonBlocking(USART_3, command, size);
-}
 
 void WHZ19B_readCO2(void) {
     uint8_t commandVariable[9];
     command(commandVariable, Co2SensorRead);
-    send_co2_command(commandVariable, sizeof(commandVariable));
-}
+    uart_send_array_blocking(USART_3, command, sizeof(command)); // Send CO2 read command
+    _delay_ms(10000);}
+
 
 void command(uint8_t* commandBuffer, uint8_t commandType) {
     commandBuffer[0] = 0xFF;
