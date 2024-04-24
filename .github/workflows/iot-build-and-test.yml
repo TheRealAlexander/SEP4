@@ -77,14 +77,9 @@ jobs:
             echo "Tests failed. Please check the test logs." > message.txt
           else
             echo "Build and tests succeeded!" > message.txt
-          fi
-      
-      - name: Read Message Content
-        id: read_message
-        run: cat message.txt
       
       - name: Comment on PR
-        uses: peter-evans/commit-comment@v2
+        uses: thollander/actions-comment-pull-request@v2
         with:
-          body: ${{ steps.read_message.outputs.content }}
-          commit: ${{ github.event.pull_request.head.sha }}
+          message: ${{ steps.set_message.outputs.result }}
+          reactions: "eyes, rocket"
