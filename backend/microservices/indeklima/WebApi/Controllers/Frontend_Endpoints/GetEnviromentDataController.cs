@@ -7,7 +7,7 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("[controller]")]
-public class EnvironmentDataController : ControllerBase
+public class GetEnvironmentDataController : ControllerBase
 {
     private ISensorDataService _sensorDataService;
 
