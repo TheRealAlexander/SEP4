@@ -17,7 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MongoDbContext>(sp =>
     new MongoDbContext(
         builder.Configuration.GetConnectionString("MongoDb"),
-        "test_db"
+        "indeklima_db"
     )
 );
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();

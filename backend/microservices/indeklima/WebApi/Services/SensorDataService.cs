@@ -7,7 +7,7 @@ namespace WebApi.Services
     public class SensorDataService : ISensorDataService
 
     {
-        private readonly SensorDataDao _sensorDataDao;
+        private readonly ISensorDataDAO _sensorDataDao;
 
         public SensorDataService(SensorDataDao sensorDataDao)
         {
