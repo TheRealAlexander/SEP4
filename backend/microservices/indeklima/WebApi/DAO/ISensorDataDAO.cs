@@ -1,3 +1,5 @@
+using WebApi.Models;
+
 namespace WebApi.DAO
 {
     public interface ISensorDataDAO

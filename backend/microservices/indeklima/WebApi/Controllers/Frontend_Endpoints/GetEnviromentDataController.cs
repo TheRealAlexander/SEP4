@@ -11,7 +11,7 @@ public class GetEnvironmentDataController : ControllerBase
 {
     private ISensorDataService _sensorDataService;
 
-    public EnvironmentDataController(ISensorDataService sensorDataService)
+    public GetEnvironmentDataController(ISensorDataService sensorDataService)
     {
         _sensorDataService = sensorDataService;
     }

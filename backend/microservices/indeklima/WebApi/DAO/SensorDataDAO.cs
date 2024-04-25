@@ -3,7 +3,7 @@ using WebApi.Models;
 
 namespace WebApi.DAO
 {
-    public class SensorDataDao : ISensorDataDao
+    public class SensorDataDao : ISensorDataDAO
     {
         private readonly IMongoCollection<SensorData> _sensorDataMongoCollection;
 
