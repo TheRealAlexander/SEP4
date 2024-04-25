@@ -1,7 +1,9 @@
 using System.ComponentModel.DataAnnotations;
+using WebApi.Dao;
 
 public class AuthService : IAuthService
 {
+    private readonly IAuthDao _authDao;
 
     private readonly IList<User> users = new List<User>
     {
