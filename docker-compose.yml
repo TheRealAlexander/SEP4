@@ -34,11 +34,11 @@ services:
     depends_on:
       - mongodb
 
-  atuh_webapi:
+  auth_webapi:
     image: auth_webapi
     build:
       context: .
-      dockerfile: backend\microservices\autorisering\WebApi\Dockerfile
+      dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
     ports:
       - 5201:5201 #Http
       - 7293:7293 #Https
