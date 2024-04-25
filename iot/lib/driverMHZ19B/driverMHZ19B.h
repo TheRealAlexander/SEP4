@@ -19,5 +19,6 @@ void WHZ19B_readCO2(void);
 void command(uint8_t* commandBuffer, uint8_t commandType);
 void sendZeroPointCalibration(void);
 void sendSpanPointCalibration(uint8_t high_byte, uint8_t low_byte);
-
+void process_packet(uint8_t *packet);
+uint16_t calculatePartsPerMil(uint8_t *packet);
 #endif // DRIVERMHZ19B_H
