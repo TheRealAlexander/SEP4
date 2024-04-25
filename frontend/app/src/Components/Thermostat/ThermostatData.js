@@ -44,11 +44,18 @@ export default function ThermostatData() {
      } */
 
      useEffect(() => {
-          fetchThermostatData().then(data => {
-               setThermostatInfo(data);
-               setIsLoading(false);
-          });
-     }, []);
+          const interval = setInterval(() => {
+              fetch('http://localhost:5200/getenvironmentData')
+                  .then(response => response.json())
+                  .then(data => {
+                      const temperatureValue = data.temperature; // Access the temperature property
+                      setThermostatInfo(temperatureValue.toFixed(2));
+                  })
+                  .catch(error => console.error('Error:', error));
+          }, 5000);
+      
+          return () => clearInterval(interval);
+      }, []);
 
      if (isLoading) {
           return <div>Loading...</div>;
