@@ -21,31 +21,31 @@ services:
     networks:
       - backend
 
-  indeklima_webapi:
-    image: indeklima_webapi
-    build:
-      context: .
-      dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
-    ports:
-      - 5200:5200 #Http
-      - 7292:7292 #Https
-    networks:
-      - backend
-    depends_on:
-      - mongodb
+  # indeklima_webapi:
+  #   image: indeklima_webapi
+  #   build:
+  #     context: .
+  #     dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
+  #   ports:
+  #     - 5200:5200 #Http
+  #     - 7292:7292 #Https
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - mongodb
 
-  auth_webapi:
-    image: auth_webapi
-    build:
-      context: .
-      dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
-    ports:
-      - 5201:5201 #Http
-      - 7293:7293 #Https
-    networks:
-      - backend
-    depends_on:
-      - auth_mongodb
+  # auth_webapi:
+  #   image: auth_webapi
+  #   build:
+  #     context: .
+  #     dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
+  #   ports:
+  #     - 5201:5201 #Http
+  #     - 7293:7293 #Https
+  #   networks:
+  #     - backend
+  #   depends_on:
+  #     - auth_mongodb
 
 volumes:
   mongodbdata:
