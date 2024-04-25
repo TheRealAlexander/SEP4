@@ -1,93 +1,49 @@
-#include "wifi.h"
+#include "uart.h"
+#include <stdint.h>
+#include <stdbool.h>
+#include <string.h>
+#include "includes.h"
 #include "driverMHZ19B.h"
-#include <util/delay.h>
-#include <stdio.h>
-#include <string.h> 
-#include <Arduino.h>
-int main() {
-    WIFI_ERROR_MESSAGE_t wifi_status;
-    int co2_concentration;
+#define Co2SensorRead 0x86
+#define ZERO_POINT_CALIBRATION 0x87
+#define SPAN_POINT_CALIBRATION 0x88
+#define BAUD_RATE 9600
 
-    
+extern volatile int latest_co2_concentration;
+extern volatile bool new_co2_data_available;
+
+static uint8_t rx_buffer[9];
+static uint8_t rx_count = 0;
+
+void WHZ19B_init(void);
+void usart3_co2_rx_handler(uint8_t received_byte);
+void send_to_pc(char *s);
+void process_co2_data(void);
+uint8_t checksum(uint8_t* packet);
+void send_co2_command(uint8_t command_type);
+
+int main() {
+  
+    send_to_pc("Initializing WHZ19B...\n");
+    uart_init(USART_3, 9600, usart3_co2_rx_handler);
+    uart_init(USART_0, 9600, NULL);
+    // Initialize the CO2 sensor
     WHZ19B_init();
 
-    wifi_init();
-    // Connect to the WiFi network
-    wifi_status = wifi_command_join_AP("WiFimodem-CA34", "8ba9e66h42");
-    if (wifi_status != WIFI_OK) {
-        printf("Failed to connect to WiFi AP, error code: %d\n", wifi_status);
-        return -1;
-    }
-    printf("Connected to WiFi AP successfully.\n");
-    // TCP connection
-    wifi_status = wifi_command_create_TCP_connection("192.168.1.19", 1234, NULL, NULL);
-    if (wifi_status != WIFI_OK) {
-        printf("Failed to establish TCP connection, error code: %d\n", wifi_status);
-        return -1;
-    }
-    printf("TCP connection established successfully.\n");
-   
-    while (1) {
-        WHZ19B_readCO2(); // read operation
+ while (1) {
+        // Send a command to the sensor to read CO2 concentration
+        send_co2_command(Co2SensorRead);
+         send_to_pc("+++++++++++++++++++++++++++++\n");
+        _delay_ms(200);  // Delay for sensor
 
-        _delay_ms(2000); 
-
-        
+        // Process received data if available
         if (new_co2_data_available) {
-            co2_concentration = latest_co2_concentration; // Get the latest reading
-            new_co2_data_available = false; 
-
-            char message[128];
-            sprintf(message, "CO2 Concentration: %d ppm", co2_concentration);
-            wifi_command_TCP_transmit((uint8_t *)message, strlen(message));
+            process_packet(rx_buffer);
+            new_co2_data_available = false;  // Reset the flag after processing
+        } else {
+            send_to_pc("Waiting for new CO2 data...\n");
         }
     }
 
-    return 0;
-}#include "wifi.h"
-#include "driverMHZ19B.h"
-#include <util/delay.h>
-#include <stdio.h>
-#include <string.h> 
-#include <Arduino.h>
-int main() {
-    WIFI_ERROR_MESSAGE_t wifi_status;
-    int co2_concentration;
-
-    
-    WHZ19B_init();
-
-    wifi_init();
-    // Connect to the WiFi network
-    wifi_status = wifi_command_join_AP("WiFimodem-CA34", "8ba9e66h42");
-    if (wifi_status != WIFI_OK) {
-        printf("Failed to connect to WiFi AP, error code: %d\n", wifi_status);
-        return -1;
-    }
-    printf("Connected to WiFi AP successfully.\n");
-    // TCP connection
-    wifi_status = wifi_command_create_TCP_connection("192.168.1.19", 1234, NULL, NULL);
-    if (wifi_status != WIFI_OK) {
-        printf("Failed to establish TCP connection, error code: %d\n", wifi_status);
-        return -1;
-    }
-    printf("TCP connection established successfully.\n");
-   
-    while (1) {
-        WHZ19B_readCO2(); // read operation
-
-        _delay_ms(2000); 
-
-        
-        if (new_co2_data_available) {
-            co2_concentration = latest_co2_concentration; // Get the latest reading
-            new_co2_data_available = false; 
-
-            char message[128];
-            sprintf(message, "CO2 Concentration: %d ppm", co2_concentration);
-            wifi_command_TCP_transmit((uint8_t *)message, strlen(message));
-        }
-    }
-
-    return 0;
+    return 0; 
 }
