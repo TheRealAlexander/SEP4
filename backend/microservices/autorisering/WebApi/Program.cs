@@ -1,7 +1,6 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using WebApi.DAO;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +17,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
         "test_db"
     )
 );
-
+builder.Services.AddScoped<UserDAO>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 
@@ -37,14 +36,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
     };
 });
-
-//Add MongoDB Connection
-builder.Services.AddSingleton<MongoDbContext>(sp =>
-    new MongoDbContext(
-        builder.Configuration.GetConnectionString("MongoDB"),
-        "auth_db"
-    )
-);
 
 var app = builder.Build();
 
