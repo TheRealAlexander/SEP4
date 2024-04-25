@@ -9,6 +9,16 @@ RUN apt-get update && apt-get install -y maven
 # Install java 17 
 RUN apt-get update && apt-get install -y openjdk-17-jdk
 
+# Install MongoDB tools directly
+RUN apt-get update && apt-get install -y wget \
+    && wget https://fastdl.mongodb.org/tools/db/mongodb-database-tools-debian10-x86_64-100.5.1.tgz \
+    && tar -xvzf mongodb-database-tools-debian10-x86_64-100.5.1.tgz -C /usr/local/bin --strip-components=1 \
+    && rm -f mongodb-database-tools-debian10-x86_64-100.5.1.tgz
+
+
+
+
+
 
 
 # [Optional] Uncomment this section to install additional OS packages.

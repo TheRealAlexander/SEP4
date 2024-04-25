@@ -7,10 +7,13 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ../..:/workspaces:cached
-    command: sleep infinity
     depends_on:
       - db
       - rabbitmq
+      - auth-db
+    networks:
+      - app-network
+    command: tail -f /dev/null
 
   db:
     image: postgres:14.3
@@ -23,6 +26,20 @@ services:
       POSTGRES_DB: postgres
     ports:
       - "5432:5432"
+    networks:
+      - app-network
+
+  auth-db:
+    image: mongo:latest
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongoadmin
+      MONGO_INITDB_ROOT_PASSWORD: secret
+    ports:
+      - "27018:27018"
+    volumes:
+      - auth-data:/data/db
+    networks:
+      - app-network
 
   rabbitmq:
     image: "rabbitmq:3-management"
@@ -32,11 +49,13 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: "rabbitmq"
       RABBITMQ_DEFAULT_PASS: "rabbitmq"
+    networks:
+      - app-network
 
 volumes:
   postgres-data:
+  auth-data:
 
 networks:
-  default:
-    external:
-      name: bridge
+  app-network:
+    driver: bridge

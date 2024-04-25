@@ -10,6 +10,14 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Register the MongoDbContext
+builder.Services.AddSingleton<MongoDbContext>(sp =>
+    new MongoDbContext(
+        builder.Configuration.GetConnectionString("MongoDb"),
+        "test_db"
+    )
+);
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 

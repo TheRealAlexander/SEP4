@@ -3,70 +3,75 @@ using System.ComponentModel.DataAnnotations;
 public class AuthService : IAuthService
 {
 
-    private readonly IList<User> users = new List<User>
+    private readonly UserDAO _userDAO;
+
+    public AuthService(UserDAO userDAO)
     {
-        new User
-        {
-            Age = 36,
-            Email = "trmo@via.dk",
-            Password = "onetwo3FOUR",
-            Role = "Teacher",
-            Username = "trmo",
-        },
-        new User
-        {
-            Age = 34,
-            Email = "jakob@gmail.com",
-            Password = "password",
-            Role = "Student",
-            Username = "jknr",
-        },
-        new User 
-        {
-            Age = 23,
-            Email = "331458@viauc.dk",
-            Password = "private",
-            Role = "Admin",
-            Username = "Brugge"
-        }
-    };
-
-    public Task<User> ValidateUser(string username, string password)
-    {
-        User? existingUser = users.FirstOrDefault(u => 
-            u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-        
-        if (existingUser == null)
-        {
-            throw new Exception("User not found");
-        }
-
-        if (!existingUser.Password.Equals(password))
-        {
-            throw new Exception("Password mismatch");
-        }
-
-        return Task.FromResult(existingUser);
+        _userDAO = userDAO;
     }
 
-    // public Task RegisterUser(User user)
-    // {
+    public async Task<User> ValidateUser(string username, string password)
+    {
+        try
+        {
+            // Use UserDAO to validate the user asynchronously
+            User existingUser = await _userDAO.ValidateUserAsync(username, password);
 
-    //     if (string.IsNullOrEmpty(user.Username))
-    //     {
-    //         throw new ValidationException("Username cannot be null");
-    //     }
+            if (existingUser == null)
+            {
+                // If no user is returned, it means the user was not found or the password didn't match
+                throw new Exception("Username or password is incorrect.");
+            }
 
-    //     if (string.IsNullOrEmpty(user.Password))
-    //     {
-    //         throw new ValidationException("Password cannot be null");
-    //     }
-    //     // Do more user info validation here
-        
-    //     // save to persistence instead of list
-        
-    //     users.Add(user);
-        
-    //     return Task.CompletedTask;
-    // }
+            // If a user is found and the password matches, return the user object
+            return existingUser;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("An error occurred during user validation.", ex);
+        }
+    }
+
+
+    public async Task<User> GetUser(string username)
+    {
+        return await _userDAO.GetUserAsync(username);
+    }
+
+    public async Task RegisterUser(UserCreationDTO userCreationDTO)
+    {
+        if (string.IsNullOrEmpty(userCreationDTO.Username))
+        {
+            throw new ValidationException("Username cannot be null or empty.");
+        }
+
+        if (string.IsNullOrEmpty(userCreationDTO.Password))
+        {
+            throw new ValidationException("Password cannot be null or empty.");
+        }
+
+        if (string.IsNullOrEmpty(userCreationDTO.Email))
+        {
+            throw new ValidationException("Email cannot be null or empty.");
+        }
+
+        // Check for the uniqueness of the username and register the user
+        try
+        {
+            var user = new User
+            {
+                Username = userCreationDTO.Username,
+                Password = userCreationDTO.Password,
+                Email = userCreationDTO.Email,
+                Role = userCreationDTO.Role,
+                Age = userCreationDTO.Age
+            };
+            
+            await _userDAO.RegisterUserAsync(user);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Failed to register user: " + ex.Message, ex);
+        }
+    }
 }
