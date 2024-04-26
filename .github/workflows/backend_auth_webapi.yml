@@ -1,3 +1,19 @@
+## Backend build Auth WebApi
+
+# This GitHub Actions workflow is triggered on push events to the repository when changes are made to files in the `backend` directory or when changes are made to the workflow file itself (`backend_build_auth_webapi.yml`).
+
+### Jobs
+
+#### build
+
+# This job runs on the latest version of Ubuntu and uses a strategy matrix to specify two versions of the .NET runtime: `3.1.x` and `8.0.x`.
+
+##### Steps
+
+# 1. `actions/checkout@v4`: Checks out the repository's code.
+# 2. Setup dotnet `${{ matrix.dotnet-version }}`: Sets up the specified version of the .NET runtime.
+# 3. Display dotnet version: Prints the version of the .NET runtime.
+# 4. Build with dotnet: Builds the `AuthWebApi.csproj` project in the `backend/microservices/autorisering/WebApi` directory using the `release` configuration.
 name: Backend build Auth WebApi
 
 on:
