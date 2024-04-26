@@ -1,0 +1,20 @@
+name: Backend build Indeklima WebApi
+
+on:
+  push:
+    paths:
+      - "backend/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up .NET Core
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: 3.1.301
+      - name: Build with dotnet
+        run:
+          dotnet build
+          backend/microservices/indeklima/WebApi/IndeklimaWebApi.csproj
