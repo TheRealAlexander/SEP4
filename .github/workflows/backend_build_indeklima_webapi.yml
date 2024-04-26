@@ -4,6 +4,7 @@ on:
   push:
     paths:
       - "backend/**"
+      - ".github/workflows/backend_build_indeklima_webapi.yml"
 
 jobs:
   build:
@@ -15,6 +16,5 @@ jobs:
         with:
           dotnet-version: 3.1.301
       - name: Build with dotnet
-        run:
-          dotnet build
-          backend/microservices/indeklima/WebApi/IndeklimaWebApi.csproj
+        working-directory: backend/microservices/indeklima/WebApi
+        run: dotnet build IndeklimaWebApi.csproj -c release
