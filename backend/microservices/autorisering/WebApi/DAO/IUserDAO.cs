@@ -1,4 +1,4 @@
-namespace WebApi.DAO
+namespace WebApi.DAO;
 
 public interface IUserDAO {
     Task<User> GetUserAsync(string username);

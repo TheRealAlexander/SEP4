@@ -1,6 +1,8 @@
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.DAO;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,7 +15,7 @@ builder.Services.AddSwaggerGen();
 // Register the MongoDbContext
 builder.Services.AddSingleton<MongoDbContext>(sp =>
     new MongoDbContext(
-        builder.Configuration.GetConnectionString("MongoDb"),
+        builder.Configuration.GetConnectionString("MongoDB"),
         "test_db"
     )
 );

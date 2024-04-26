@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
-using WebApi.DAO
+using WebApi.DAO;
 
 
 public class UserDAO : IUserDAO
@@ -44,14 +44,15 @@ public class UserDAO : IUserDAO
                 throw new ArgumentNullException(nameof(user));
             }
 
-            //Check for dubplicate data
-            var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression($"^{Regex.Escape(user.Username)}$", "i"));
-            var duplicateData = await _userMongoCollection.Find(filter).FirstOrDefaultAsync();
-            if (duplicateData != null)
-            {
-                throw new Exception("Duplicate data");
-            }
-            return;
+            
+            // //Check for dubplicate data
+            // var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression($"^{Regex.Escape(user.Username)}$", "i"));
+            // var duplicateData = await _userMongoCollection.Find(filter).FirstOrDefaultAsync();
+            // if (duplicateData != null)
+            // {
+            //     throw new Exception("Duplicate data");
+            // }
+            
             //Add data to the collection
             await _userMongoCollection.InsertOneAsync(user);
             //Return 0 if successful

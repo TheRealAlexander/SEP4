@@ -59,7 +59,6 @@ public class UserController : ControllerBase
         catch (Exception ex)
         {
             return StatusCode(StatusCodes.Status500InternalServerError, "Error while creating new user.");
-            throw new Exception(ex.Message);
         }
     }
 
