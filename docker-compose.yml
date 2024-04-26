@@ -1,23 +1,13 @@
 version: "3.4"
 
 services:
-  mongodb:
-    image: mongo
-    container_name: mongodb
+  mongo:
+    image: mongo:7.0
     ports:
       - 27017:27017
     volumes:
       - mongodbdata:/data/db
-    networks:
-      - backend
-
-  auth_mongodb:
-    image: mongo
-    container_name: auth_mongodb
-    ports:
-      - 27018:27017
-    volumes:
-      - auth_mongodbdata:/data/db
+      - authmongodbdata:/data/db
     networks:
       - backend
 
@@ -32,7 +22,7 @@ services:
     networks:
       - backend
     depends_on:
-      - mongodb
+      - mongo
 
   auth_webapi:
     image: auth_webapi
@@ -45,11 +35,11 @@ services:
     networks:
       - backend
     depends_on:
-      - auth_mongodb
+      - mongo
 
 volumes:
   mongodbdata:
-  auth_mongodbdata:
+  authmongodbdata:
 
 networks:
   backend:
