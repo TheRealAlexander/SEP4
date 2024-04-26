@@ -11,3 +11,7 @@ where docker-compose.yml is placed
 ## Usage
 
 To start the backend server, run the following command: docker-compose up
+
+## Workflows
+
+Microservices have each of their workflows in order to see they can build.
