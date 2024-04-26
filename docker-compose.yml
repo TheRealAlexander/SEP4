@@ -40,7 +40,7 @@ services:
       context: .
       dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
     ports:
-      - 5201:5201 #Http
+      - 5001:5001 #Http
       - 7293:7293 #Https
     networks:
       - backend

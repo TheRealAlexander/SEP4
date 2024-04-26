@@ -17,7 +17,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
         "test_db"
     )
 );
-builder.Services.AddScoped<UserDAO>();
+builder.Services.AddScoped<IUserDAO, UserDAO>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
 

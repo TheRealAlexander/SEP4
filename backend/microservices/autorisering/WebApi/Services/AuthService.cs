@@ -3,9 +3,9 @@ using System.ComponentModel.DataAnnotations;
 public class AuthService : IAuthService
 {
 
-    private readonly UserDAO _userDAO;
+    private readonly IUserDAO _userDAO;
 
-    public AuthService(UserDAO userDAO)
+    public AuthService(IUserDAO userDAO)
     {
         _userDAO = userDAO;
     }

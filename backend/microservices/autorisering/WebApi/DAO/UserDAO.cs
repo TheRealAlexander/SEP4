@@ -1,10 +1,10 @@
-
-
 using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
+using WebApi.DAO
 
-public class UserDAO
+
+public class UserDAO : IUserDAO
 {
     private readonly IMongoCollection<User> _userMongoCollection;
 
@@ -51,7 +51,7 @@ public class UserDAO
             {
                 throw new Exception("Duplicate data");
             }
-
+            return;
             //Add data to the collection
             await _userMongoCollection.InsertOneAsync(user);
             //Return 0 if successful
