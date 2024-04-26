@@ -20,7 +20,7 @@ on:
   push:
     paths:
       - "backend/**"
-      - ".github/workflows/backend_build_auth_webapi.yml"
+      - ".github/workflows/backend_auth_webapi.yml"
 
 jobs:
   build:
