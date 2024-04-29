@@ -190,5 +190,4 @@ let data = {
   co2_concentration: 800,
 }
 
-
 export default App;
