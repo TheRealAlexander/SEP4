@@ -8,52 +8,18 @@ export default function ThermostatData() {
 
      const [isLoading, setIsLoading] = useState(true);
 
-     const fetchThermostatData = async () => {
-          // THIS IS A SIMULATED API CALL!!!
-          // CHANGE FOR REAL CALL UPON BACKEND IMPLEMENTATION
-          return new Promise(resolve => {
-               setTimeout(() => {
-                    resolve({
-                         temperature: 72
-                    });
-               }, 500);
-          })
-     }
-
-     // UNCOMMENT THIS CODE WHEN BACKEND IS IMPLEMENTED
-/*      const fetchThermostatData = async () => {
-          try {
-               const response = await fetch('',
-                    {
-                         method: 'GET',
-                         headers: {
-                              'Content-Type': 'application/json'
-                         }
-                    });
-               
-               if (!response.ok) {
-                    throw new Error('HTTP error! status:&{response.status}');
-               }
-
-               const data = await response.json();
-               return data;
-          } catch (error) {
-               console.error('Error:', error);
-               return null;
-          }
-     } */
-
      useEffect(() => {
           const interval = setInterval(() => {
               fetch('http://localhost:5200/getenvironmentData')
                   .then(response => response.json())
                   .then(data => {
-                      const temperatureValue = data.temperature; // Access the temperature property
-                      setThermostatInfo(temperatureValue.toFixed(2));
+                      let temperatureValue = data[0].temperature;
+                      setThermostatInfo({ temperature: temperatureValue });
                   })
                   .catch(error => console.error('Error:', error));
+                  setIsLoading(false);
           }, 5000);
-      
+
           return () => clearInterval(interval);
       }, []);
 

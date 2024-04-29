@@ -6,12 +6,12 @@ export default function HumidityData() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            fetch('http://localhost:5200/getenvironmentData')
+            fetch('http://localhost:5200/GetEnvironmentData')
                 .then(response => response.json())
                 .then(data => {
-                    const humidityValue = data.humidity; // Access the humidity property
-                    setHumidity(humidityValue.toFixed(2));
-    
+                    let humidityValue = data[0].humidity; // Access the humidity property
+                    setHumidity(humidityValue);
+
                     // Add the new reading to the array and keep only the last 10 readings
                     setReadings((prevReadings) => {
                         const newReadings = [...prevReadings, humidityValue];
@@ -20,7 +20,7 @@ export default function HumidityData() {
                 })
                 .catch(error => console.error('Error:', error));
         }, 5000);
-    
+
         return () => clearInterval(interval);
     }, []);
 
