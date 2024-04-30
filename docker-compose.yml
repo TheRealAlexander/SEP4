@@ -37,6 +37,18 @@ services:
     depends_on:
       - mongo
 
+  broker:
+    image: broker
+    build:
+      context: .
+      dockerfile: backend/broker/Dockerfile 
+    ports:
+      - 5201:5201
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
 volumes:
   mongodbdata:
   authmongodbdata:
