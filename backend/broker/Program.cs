@@ -8,19 +8,19 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
+// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
 
+// Register the MongoDbContext
 builder.Services.AddSingleton<MongoDbContext>(sp =>
     new MongoDbContext(
         builder.Configuration.GetConnectionString("MongoDb"),
         "indeklima_db"
     )
 );
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDao>();
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-builder.Services.AddScoped<SensorDataDao>();
 
 var app = builder.Build();
 
