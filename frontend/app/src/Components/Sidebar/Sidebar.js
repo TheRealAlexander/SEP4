@@ -13,7 +13,7 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import ResponsiveAppBar from './App';
+import {ResponsiveAppBar} from '../../App.js';
 
 const drawerWidth = 240;
 
