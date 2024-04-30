@@ -21,11 +21,6 @@ export default function Layout() {
   return (
     <Box sx={{ display: 'flex' }}>
       <CssBaseline />
-      <AppBar position="fixed" sx={{ zIndex: (theme) => theme.zIndex.drawer + 1 }}>
-      <Toolbar>
-        <ResponsiveAppBar />
-      </Toolbar>
-      </AppBar>
       <Drawer
         sx={{
           width: drawerWidth,
@@ -33,12 +28,13 @@ export default function Layout() {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
+            marginTop: '64px' 
           },
         }}
         variant="permanent"
         anchor="left"
       >
-        <Toolbar /> 
+        
         <Box sx={{ overflow: 'auto' }}>
           <List>
             {['Hal 1', 'Hal 2', 'Hal 3'].map((text, index) => (
@@ -53,12 +49,15 @@ export default function Layout() {
       </Drawer>
       <Box
         component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          width: { sm: `calc(100% - ${drawerWidth}px)` },
+          marginTop: '64px'  // Adjust this value based on the actual height of your AppBar
+        }}
       >
-        <Toolbar /> 
         <Typography paragraph>
           Content
-          
         </Typography>
       </Box>
     </Box>
