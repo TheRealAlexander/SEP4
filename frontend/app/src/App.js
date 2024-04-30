@@ -5,6 +5,9 @@ import ClimatePage from './Components/ClimatePage/ClimatePage';
 import HumidityComponent from './Components/Humidity/HumidityData';
 import Controls from "./Components/Controls/Controls";
 import { useNavigate } from "react-router-dom";
+import Login from './Components/Login/Login';
+import { useLocation } from 'react-router-dom';
+import Registration from './Components/Registration/Registration';
 
 
 import * as React from 'react';
@@ -29,22 +32,43 @@ function App() {
   return (
     <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Router>
-        <ResponsiveAppBar />
-
-        <Box component="main" sx={{ flexGrow: 1, p: 3, display: "flex" }}>
-          <Toolbar />
-
-          <div className="App">
-            <Routes>
-              <Route path="/" element={<ClimatePage data={data} />} />
-              <Route path="/thermostat" element={<ThermostatData />} />
-              <Route path="/humidity" element={<HumidityComponent />} />
-              <Route path="/Controls/1" element={<Controls />} />
-            </Routes>
-          </div>
-        </Box>
+        <AppContent />
       </Router>
     </Box>
+  );
+}
+
+function AppContent() {
+  const location = useLocation();
+
+  return (
+    <>
+         {(location.pathname !== '/login' && location.pathname !== '/registration') && <ResponsiveAppBar />}
+
+      <Box component="main" sx={{
+        flexGrow: 1,
+        p: 3,
+        display: "flex",
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        height: '100vh',
+        mt: '-5vh',
+        width: (location.pathname === '/login' || location.pathname === '/registration') ? '100%' : `calc(100% - 240px)` }}>
+        <Toolbar />
+
+        <div className="App">
+          <Routes>
+            <Route path="/" element={<ClimatePage data={data} />} />
+            <Route path="/thermostat" element={<ThermostatData />} />
+            <Route path="/humidity" element={<HumidityComponent />} />
+            <Route path="/Controls/1" element={<Controls />} />
+            <Route path="/login" element={<Login />} /> 
+            <Route path="/registration" element={<Registration />} /> 
+          </Routes>
+        </div>
+      </Box>
+    </>
   );
 }
 
