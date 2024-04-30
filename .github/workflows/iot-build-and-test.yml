@@ -21,8 +21,7 @@ jobs:
         with:
           path: /usr/lib/avr
           key: ${{ runner.os }}-gcc-avr-cache
-          restore-keys: |
-            ${{ runner.os }}-gcc-avr-
+          restore-keys: ${{ runner.os }}-gcc-avr-
       
       - name: Install AVR-GCC
         if: steps.cache.outputs.cache-hit != 'true'
@@ -48,10 +47,10 @@ jobs:
         with:
           path: iot/tests
           key: ${{ runner.os }}-iot-tests-cache
-          restore-keys: |
-            ${{ runner.os }}-iot-tests-
+          restore-keys: ${{ runner.os }}-iot-tests-
       
       - name: Run Tests
+        id: run_tests
         run: |
           cd iot
           ./build-and-test.sh
@@ -71,17 +70,19 @@ jobs:
       - name: Set Message
         id: set_message
         run: |
+          message="Workflow Run: [Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})\n\n"
           if [ "${{ needs.compile.result }}" != "success" ]; then
-            echo "Build failed. Please check the logs for errors." > message.txt
+            message+="Build failed. Please check the logs for errors."
           elif [ "${{ needs.test.outputs.test_success }}" != "success" ]; then
-            echo "Tests failed. Please check the test logs." > message.txt
+            message+="Tests failed. Please check the test logs."
           else
-            echo "Build and tests succeeded!" > message.txt
+            message+="Build and tests succeeded!"
           fi
+          echo "result_message=$message" >> $GITHUB_ENV
       
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
         with:
-          filePath: message.txt
+          message: ${{ env.result_message }}
           reactions: "eyes, rocket"
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
