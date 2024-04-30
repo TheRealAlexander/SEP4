@@ -8,6 +8,6 @@ namespace WebApi.Services
     public interface ISensorDataService
     {
         public Task<List<SensorData>> GetSensorData();
-        public void AddSensorData(SensorData sensorData);
+        public Task AddSensorData(SensorData sensorData);
     }
 }

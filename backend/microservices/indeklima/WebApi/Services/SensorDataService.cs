@@ -9,7 +9,7 @@ namespace WebApi.Services
     {
         private readonly ISensorDataDAO _sensorDataDao;
 
-        public SensorDataService(SensorDataDao sensorDataDao)
+        public SensorDataService(ISensorDataDAO sensorDataDao)
         {
             _sensorDataDao = sensorDataDao;
         }
@@ -17,14 +17,14 @@ namespace WebApi.Services
         {
             return await _sensorDataDao.GetSensorDataAsync();
         }
-        public void AddSensorData(SensorData sensorData)
+        public Task AddSensorData(SensorData sensorData)
         {
             if (sensorData == null)
             {
                 throw new ArgumentNullException(nameof(sensorData));
             }
 
-            _sensorDataDao.AddSensorDataAsync(sensorData);
+            return _sensorDataDao.AddSensorDataAsync(sensorData);
         }
     }
 }
