@@ -1,8 +1,12 @@
 import './App.css';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, Navigate, } from 'react-router-dom';
 import ThermostatData from './Components/Thermostat/ThermostatData';
 import ClimatePage from './Components/ClimatePage/ClimatePage';
 import HumidityComponent from './Components/Humidity/HumidityData';
+import Controls from "./Components/Controls/Controls";
+import { useNavigate } from "react-router-dom";
+
+
 import * as React from 'react';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -16,31 +20,43 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import AdbIcon from '@mui/icons-material/Adb';
 
-
-const pages = ['Home', 'Controls', 'Data'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+const pages = ["Home", "Controls", "Data"];
+const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function App() {
   return (
-    <div>
-    <ResponsiveAppBar />
+    <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
       <Router>
-      <div className='App'>
-        <Routes>
-          <Route path="/" element={<ClimatePage data={data} />} />
-          <Route path="/thermostat" element={<ThermostatData />} />
-          <Route path="/humidity" element={<HumidityComponent />} />
-        </Routes>
-      </div>
-    </Router>
-    </div>
+        <ResponsiveAppBar />
+
+        <Box component="main" sx={{ flexGrow: 1, p: 3, display: "flex" }}>
+          <Toolbar />
+
+          <div className="App">
+            <Routes>
+              <Route path="/" element={<ClimatePage data={data} />} />
+              <Route path="/thermostat" element={<ThermostatData />} />
+              <Route path="/humidity" element={<HumidityComponent />} />
+              <Route path="/Controls/1" element={<Controls />} />
+            </Routes>
+          </div>
+        </Box>
+      </Router>
+    </Box>
   );
 }
 
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const navigate = useNavigate();
+
+  const pathMapping = {
+    Home: "/",
+    Controls: "/Controls/1",
+  };
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -57,11 +73,20 @@ function ResponsiveAppBar() {
     setAnchorElUser(null);
   };
 
+  const handleNavigate = (buttonText) => {
+    const path = pathMapping[buttonText];
+    if (path) {
+      navigate(path);
+    } else {
+      console.error("No path found for button text: ", buttonText);
+    }
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="static" style={{ zIndex: 1100 }}>
+      {" "}
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          
           <Typography
             variant="h6"
             noWrap
@@ -69,18 +94,18 @@ function ResponsiveAppBar() {
             href="#app-bar-with-responsive-menu"
             sx={{
               mr: 2,
-              display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace',
+              display: { xs: "none", md: "flex" },
+              fontFamily: "monospace",
               fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              letterSpacing: ".3rem",
+              color: "inherit",
+              textDecoration: "none",
             }}
           >
-            LOGO 
+            LOGO
           </Typography>
 
-          <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
               aria-label="account of current user"
@@ -95,52 +120,38 @@ function ResponsiveAppBar() {
               id="menu-appbar"
               anchorEl={anchorElNav}
               anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
+                vertical: "bottom",
+                horizontal: "left",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
+                vertical: "top",
+                horizontal: "left",
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{
-                display: { xs: 'block', md: 'none' },
+                display: { xs: "block", md: "none" },
               }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem key={page} onClick={() => handleNavigate(page)}>
                   <Typography textAlign="center">{page}</Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
-            }}
-          >
-            LOGO
-          </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+
+          <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
+                onClick={() => {
+                  // Here we change to also handle navigation
+                  handleCloseNavMenu();
+                  handleNavigate(page);
+                }}
+                sx={{ my: 2, color: "white", display: "block" }}
               >
                 {page}
               </Button>
@@ -154,17 +165,17 @@ function ResponsiveAppBar() {
               </IconButton>
             </Tooltip>
             <Menu
-              sx={{ mt: '45px' }}
+              sx={{ mt: "45px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               keepMounted
               transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
+                vertical: "top",
+                horizontal: "right",
               }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
@@ -188,6 +199,7 @@ let data = {
   temperature: 19,
   humidity: 50,
   co2_concentration: 800,
-}
+};
 
 export default App;
+export { ResponsiveAppBar };
