@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  mongo:
+    image: mongo:7.0
+    ports:
+      - 27017:27017
+    volumes:
+      - mongodbdata:/data/db
+      - authmongodbdata:/data/db
+    networks:
+      - backend
+
+  indeklima_webapi:
+    image: indeklima_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
+    ports:
+      - 5200:5200 #Http
+      - 7292:7292 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
+  auth_webapi:
+    image: auth_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
+    ports:
+      - 5001:5001 #Http
+      - 7293:7293 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
+volumes:
+  mongodbdata:
+  authmongodbdata:
+
+networks:
+  backend:
+    driver: bridge
