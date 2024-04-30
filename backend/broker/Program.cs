@@ -9,6 +9,13 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
 });
 
+builder.Services.AddSingleton<MongoDbContext>(sp =>
+    new MongoDbContext(
+        builder.Configuration.GetConnectionString("MongoDb"),
+        "indeklima_db"
+    )
+);
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
