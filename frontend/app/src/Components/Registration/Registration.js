@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { Grid, Avatar, Typography, Paper, TextField, Button, Container } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthService from '../../Services/AuthService';
 
 const RegistrationPage = () => {
     const paperStyle = { padding: 20, height: '70vh', width: 280, margin: '20px auto' }
@@ -11,6 +12,8 @@ const RegistrationPage = () => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState({ username: false, password: false });
+
+    const navigate = useNavigate();
 
     const handleRegistration = (e) => {
         e.preventDefault();
@@ -22,6 +25,16 @@ const RegistrationPage = () => {
             });
             return;
         }
+
+        AuthService.register(username, password)
+        .then(data => {
+            console.log(data);
+            navigate('/login');
+        })
+        .catch(err => {
+            console.error('Registration failed', err);
+            // Here you can handle errors, for example show a notification to the user
+        });
 
         console.log('Username:', username, 'Password:', password);
         
