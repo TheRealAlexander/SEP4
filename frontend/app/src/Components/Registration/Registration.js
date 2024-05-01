@@ -35,9 +35,6 @@ const RegistrationPage = () => {
             console.error('Registration failed', err);
             // Here you can handle errors, for example show a notification to the user
         });
-
-        console.log('Username:', username, 'Password:', password);
-        
     };
 
     return (
