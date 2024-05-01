@@ -1,29 +1,35 @@
+// app.js
+// CSS Imports
 import './App.css';
-import { BrowserRouter as Router, Route, Routes, Navigate, } from 'react-router-dom';
+
+// React Imports
+import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
+import React from 'react';
+
+// Component Imports
 import ThermostatData from './Components/Thermostat/ThermostatData';
 import ClimatePage from './Components/ClimatePage/ClimatePage';
 import HumidityComponent from './Components/Humidity/HumidityData';
 import Controls from "./Components/Controls/Controls";
-import { useNavigate } from "react-router-dom";
 import Login from './Components/Login/Login';
-import { useLocation } from 'react-router-dom';
 import Registration from './Components/Registration/Registration';
 
 
-import * as React from 'react';
-import AppBar from '@mui/material/AppBar';
-import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import Container from '@mui/material/Container';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
+// MUI Imports
+import {
+  AppBar,
+  Box,
+  Toolbar,
+  IconButton,
+  Typography,
+  Menu,
+  MenuIcon,
+  Container,
+  Avatar,
+  Button,
+  Tooltip,
+  MenuItem
+} from './MUI_imports';
 
 const pages = ["Home", "Controls", "Data"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
