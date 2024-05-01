@@ -1,6 +1,6 @@
 const API_URL = "http://localhost:8000/api/auth/" //Placeholder for the API URL
 
-const register = (username, email, password) => {
+const register = (username, password) => {
     return fetch(API_URL + "register", {
       method: 'POST',
       headers: {
@@ -8,7 +8,6 @@ const register = (username, email, password) => {
       },
       body: JSON.stringify({
         username,
-        email,
         password,
       }),
     }).then(response => response.json());
