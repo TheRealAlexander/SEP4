@@ -2,7 +2,7 @@ import React from 'react';
 import { Grid, Avatar, Typography } from '@mui/material';
 import { Button, Paper, TextField } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
-import { Link, Navigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 import AuthService from '../../Services/AuthService';
 
@@ -15,6 +15,8 @@ const LoginPage = () => {
     const avatarStyle = { backgroundColor: 'Lightblue' }
     const buttonStyle = { margin: '8px 0' }
 
+    const navigate = useNavigate();
+
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
@@ -22,7 +24,7 @@ const LoginPage = () => {
             if (data.error) {
                 setError(data.error);
             } else {
-                Navigate('/');
+                navigate('/');
             }
         } catch (error) {
             setError(error.message);
