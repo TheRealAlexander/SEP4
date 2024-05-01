@@ -2,6 +2,8 @@ using System.Text.RegularExpressions;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using WebApi.DAO;
+using WebApi.Models;
+using System.Data;
 
 
 public class UserDAO : IUserDAO
@@ -44,25 +46,28 @@ public class UserDAO : IUserDAO
                 throw new ArgumentNullException(nameof(user));
             }
 
-            
-            // //Check for dubplicate data
-            // var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression($"^{Regex.Escape(user.Username)}$", "i"));
-            // var duplicateData = await _userMongoCollection.Find(filter).FirstOrDefaultAsync();
-            // if (duplicateData != null)
-            // {
-            //     throw new Exception("Duplicate data");
-            // }
-            
-            //Add data to the collection
+            // Check for duplicate data
+            var filter = Builders<User>.Filter.Regex(u => u.Username, new BsonRegularExpression($"^{Regex.Escape(user.Username)}$", "i"));
+            var duplicateData = await _userMongoCollection.Find(filter).FirstOrDefaultAsync();
+            if (duplicateData != null)
+            {
+                throw new DuplicateNameException("Username already taken");
+            }
+
+            // Add data to the collection
             await _userMongoCollection.InsertOneAsync(user);
-            //Return 0 if successful
-            return;
+        }
+        catch (DuplicateNameException)
+        {
+            // Rethrow this exception directly without additional wrapping
+            throw;
         }
         catch (Exception ex)
         {
-            throw new Exception(ex.Message);
+            throw new Exception("Failed to register user: " + ex.Message, ex);
         }
     }
+
 
     public async Task<User> ValidateUserAsync(string username, string password)
     {
@@ -85,12 +90,18 @@ public class UserDAO : IUserDAO
             // If user is found and password matches, return the user object
             return user;
         }
+        catch (UnauthorizedAccessException)
+        {
+            // Re-throw specific exceptions to be handled or tested appropriately
+            throw;
+        }
         catch (Exception ex)
         {
-            // Handle any other exceptions that might occur (e.g., database connection issues)
-            throw new Exception($"An error occurred when validating user: {ex.Message}", ex);
+            // Optionally, log and handle unexpected exceptions here, or wrap them if there's a good reason
+            throw new Exception($"An unexpected error occurred when validating user: {ex.Message}", ex);
         }
     }
+
 
 
 }
