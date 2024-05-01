@@ -58,10 +58,11 @@ void reset_rx_buffer(){
                 // Always reset the buffer after processing or discarding
                 reset_rx_buffer();
             }
-        } else {
+        } 
+        else {
             send_to_pc("Buffer overflow detected. Buffer reset.\n");
             reset_rx_buffer(); // Reset on overflow to avoid processing garbage data
-        }
+         }             
     }
 }
 void usart3_co2_rx_handler(uint8_t received_byte) {
@@ -70,8 +71,6 @@ void usart3_co2_rx_handler(uint8_t received_byte) {
 
 void process_co2_data() {
    send_to_pc("\nProcessing CO2 data...\n");
-    uint8_t saved_rx_buffer[sizeof(rx_buffer)];
-    memcpy(saved_rx_buffer, rx_buffer, sizeof(rx_buffer));
     uint16_t co2_concentration = calculatePartsPerMil(rx_buffer);
     latest_co2_concentration = co2_concentration;  // Update global variable
     new_co2_data_available = true;
