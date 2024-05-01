@@ -5,7 +5,7 @@ import ClimatePage from './Components/ClimatePage/ClimatePage';
 import HumidityComponent from './Components/Humidity/HumidityData';
 import Controls from "./Components/Controls/Controls";
 import { useNavigate } from "react-router-dom";
-import Login from './Components/Login/Login';
+import LoginPage from './Components/Login/LoginPage';
 import { useLocation } from 'react-router-dom';
 import Registration from './Components/Registration/Registration';
 
@@ -63,7 +63,7 @@ function AppContent() {
             <Route path="/thermostat" element={<ThermostatData />} />
             <Route path="/humidity" element={<HumidityComponent />} />
             <Route path="/Controls/1" element={<Controls />} />
-            <Route path="/login" element={<Login />} /> 
+            <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
           </Routes>
         </div>
