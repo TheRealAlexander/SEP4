@@ -21,7 +21,6 @@ void periodic_count_seconds() {
     // Check if 20 seconds have passed
     if (seconds_count >= 10) {
         time_to_send_command = true; // Set the flag to send the command
-        seconds_count = 0; // Reset the counter
     }
 }
 static void send_co2_concentration_as_json(int co2_concentration) {
@@ -51,6 +50,7 @@ int main() {
             new_co2_data_available = false;  // Reset flag after reading
             send_co2_concentration_as_json(current_co2_concentration);
 
+            seconds_count = 0; // Reset the counter
             char msg[50];
             snprintf(msg, sizeof(msg), "\nCurrent CO2 Concentration: %d ppm\n", current_co2_concentration);
             send_to_pc(msg);
