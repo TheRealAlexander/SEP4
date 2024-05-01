@@ -1,0 +1,5 @@
+
+/iot/.pio/build/megaatmega2560
+/iot/.pio
+*.json
+*.ini
