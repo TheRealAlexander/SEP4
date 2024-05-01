@@ -20,6 +20,7 @@
     "start": "npm install && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "testjest": "jest",
     "eject": "react-scripts eject",
     "update": "npm update"
   },
