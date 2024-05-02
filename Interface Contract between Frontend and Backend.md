@@ -23,12 +23,16 @@ time.
 
 **Parameters:**
 
-- None
+- Integer 'hall_id'
 
 **Response:**
 
 - Status Code: 200 OK
 - Body: JSON object containing environmental data.
+-
+- Double 'temperature' - average across 1 minute.
+- Double 'humidity' - average across 1 minute.
+- Double 'co2_concentration' - average across 1 minute.
 
 **Example Response:**
 
@@ -41,14 +45,7 @@ time.
       "temperature": 22.5,
       "humidity": 50,
       "co2_concentration": 800
-    },
-    {
-      "timestamp": "2024-04-10T13:00:00Z",
-      "temperature": 23.0,
-      "humidity": 52,
-      "co2_concentration": 820
-    },
-    ...
+    }
   ]
 }
 ```
