@@ -11,8 +11,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.18" />
   </ItemGroup>
 
-  <ItemGroup>
-    <ProjectReference Include="../microservices/indeklima/WebApi/IndeklimaWebApi.csproj" />
-  </ItemGroup>
-
 </Project>

@@ -1,6 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using WebApi.Services;
-using WebApi.Models; // Replace with your actual namespace
 
 namespace Broker.Controllers
 {
@@ -8,17 +6,17 @@ namespace Broker.Controllers
     [Route("[controller]")]
     public class BrokerController : ControllerBase
     {
-        private readonly ISensorDataService _sensorDataService;
+        private readonly IBrokerService _brokerService;
 
-        public BrokerController(ISensorDataService sensorDataService)
+        public BrokerController(IBrokerService brokerService)
         {
-            _sensorDataService = sensorDataService;
+            _brokerService = brokerService;
         }
 
         [HttpGet]
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<List<SensorData>> GetData()
         {
-            return await _sensorDataService.GetSensorData();
+            return await _brokerService.GetAllEnvironmentalDataAsync();
         }
     }
 }

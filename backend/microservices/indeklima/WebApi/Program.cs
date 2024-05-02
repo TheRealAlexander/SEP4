@@ -20,8 +20,9 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
         "indeklima_db"
     )
 );
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-builder.Services.AddScoped<SensorDataDao>();
+
 
 var app = builder.Build();
 
