@@ -76,11 +76,6 @@ namespace AuthTest
             var securityToken = (JwtSecurityToken)tokenHandler.ReadToken(jwt);
             claims = securityToken.Claims.ToList();
 
-            foreach (var claim in claims)
-            {
-                Console.WriteLine($"Claim Type: {claim.Type}, Claim Value: {claim.Value}");
-            }
-
             // Assert
             Assert.Equal(10, claims.Count);  // Validate the expected number of claims
             Assert.Contains(claims, c => c.Type == "Email" && c.Value == "test@example.com");
