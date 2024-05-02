@@ -1,28 +1,30 @@
-using System.IdentityModel.Tokens.Jwt;
-using Castle.Core.Configuration;
+﻿using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.Mvc;
 using Moq;
+using Microsoft.Extensions.Configuration;
+using WebApi.Models;
+using WebApi.Services;
 
 namespace AuthTest
 {
-    public class Tests
+    public class AuthControllerTests
     {
         private readonly Mock<IConfiguration> _mockConfig;
         private readonly Mock<IAuthService> _mockAuthService;
         private readonly AuthController _controller;
 
-        public Tests()
+        public AuthControllerTests()
         {
             _mockConfig = new Mock<IConfiguration>();
             // Mocking configuration settings as expected by your AuthController
-            //_mockConfig.Setup(c => c["Jwt:Key"]).Returns("your_secret_key_here");
-            //_mockConfig.Setup(c => c["Jwt:Issuer"]).Returns("your_issuer");
-            //_mockConfig.Setup(c => c["Jwt:Audience"]).Returns("your_audience");
-            //_mockConfig.Setup(c => c["Jwt:Subject"]).Returns("your_subject");
+            _mockConfig.Setup(c => c["Jwt:Key"]).Returns("your_secret_key_here");
+            _mockConfig.Setup(c => c["Jwt:Issuer"]).Returns("your_issuer");
+            _mockConfig.Setup(c => c["Jwt:Audience"]).Returns("your_audience");
+            _mockConfig.Setup(c => c["Jwt:Subject"]).Returns("your_subject");
 
             _mockAuthService = new Mock<IAuthService>();
-            // Initialize the AuthController with mocked dependencies
-            //_controller = new AuthController(_mockConfig.Object, _mockAuthService.Object);
+             // Initialize the AuthController with mocked dependencies
+            _controller = new AuthController(_mockConfig.Object, _mockAuthService.Object);
         }
 
         [Fact]

@@ -2,6 +2,7 @@ using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.DAO;
+using WebApi.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -16,7 +17,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton<MongoDbContext>(sp =>
     new MongoDbContext(
         builder.Configuration.GetConnectionString("MongoDB"),
-        "test_db"
+        "auth_db"
     )
 );
 builder.Services.AddScoped<IUserDAO, UserDAO>();

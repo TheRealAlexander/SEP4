@@ -4,6 +4,9 @@ using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Models;
+using WebApi.Services;
+using System.Data;
 
 [ApiController]
 [Route("[controller]")]
@@ -17,26 +20,27 @@ public class UserController : ControllerBase
         this.config = config;
         this.authService = authService;
     }
-
-
+    
     [HttpGet("{username}")]
     public async Task<ActionResult<User>> GetUser(string username)
     {
         try
         {
             var user = await authService.GetUser(username);
-            if (user == null)
-            {
-                return NotFound("User not found.");
-            }
             return Ok(user);
         }
         catch (Exception ex)
         {
-            // Log the exception details here to troubleshoot in case of failures
+            if (ex.InnerException is KeyNotFoundException)
+            {
+                // Console.WriteLine($"KeyNotFoundException caught: {ex.InnerException.ToString()}");
+                return NotFound(ex.InnerException.Message);
+            }
+            // Console.WriteLine($"An error occurred: {ex.ToString()}");  // Log full exception stack trace
             return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
         }
     }
+
 
     [HttpPost("register")]
     public async Task<ActionResult<User>> RegisterUser([FromBody] UserCreationDTO userCreationDTO)
@@ -51,6 +55,10 @@ public class UserController : ControllerBase
             await authService.RegisterUser(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
             return CreatedAtAction(nameof(GetUser), new { username = userCreationDTO.Username }, userCreationDTO);
+        }
+        catch (DuplicateNameException ex)
+        {
+            return BadRequest(ex.Message);
         }
         catch (ValidationException ex)
         {

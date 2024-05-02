@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
+using WebApi.Models;
+using WebApi.Services;
 
 [ApiController]
 [Route("[controller]")]
