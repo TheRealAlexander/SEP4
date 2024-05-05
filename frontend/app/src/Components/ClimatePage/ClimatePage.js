@@ -1,8 +1,8 @@
 import styles from './ClimatePage.module.css';
 import '../Humidity/HumidityData.js';
 import '../Thermostat/ThermostatData.js';
-import ThermostatData from '../Thermostat/ThermostatData.js';
 import HumidityData from '../Humidity/HumidityData.js';
+import ThermostatDataWrapper from '../Thermostat/ThermostatDataWrapper.js';
 
 
 export default function ClimatePage( {data} ) {
@@ -14,7 +14,7 @@ export default function ClimatePage( {data} ) {
             </div>
             
             <div className={styles.gridItem}>
-                <ThermostatData/>
+                <ThermostatDataWrapper/>
             </div>
             <div className={styles.gridItem}>
                 <CO2Component co2_concentration={data.co2_concentration}/>
