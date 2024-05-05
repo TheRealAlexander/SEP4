@@ -42,6 +42,16 @@ export function useThermostatData() {
   return { thermData, isLoading };
 };
 
+export async function setPreferredTemperature(prefTemp) {
+  try {
+      const response = await axios.post(`${API_BASE_URL}/setPreferredTemperature`, { temperature: prefTemp });
+      return response.data;
+  } catch (error) {
+      console.error('Error setting preferred temperature:', error);
+      throw error; // Re-throwing error to handle it in the component
+  }
+}
+
 
 export function useHumidityData() {
   const [humidityData, setHumidityData] = useState({
@@ -92,3 +102,13 @@ export function useHumidityData() {
 
   return { humidityData, isLoading };
 };
+
+export async function setPreferredHumidity(prefHumi) {
+  try {
+      const response = await axios.post(`${API_BASE_URL}/setPreferredHumidity`, { humidity: prefHumi });
+      return response.data;
+  } catch (error) {
+      console.error('Error setting preferred humidity:', error);
+      throw error; // Re-throwing error to handle it in the component
+  }
+}
