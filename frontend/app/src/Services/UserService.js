@@ -2,35 +2,33 @@ import axios from 'axios';
 
 class UserService {
   // Fetch all users
-  static async fetchUsers() {
+  static async fetchSuperUsers() {
     try {
-      const response = await axios.get('http://localhost:8000/users');
+      const response = await axios.get('http://localhost:8000/superUsers');
       return response.data;
     } catch (error) {
       console.error(error);
     }
   }
 
-  // Update user
-  static async makeUserAdmin(userToMakeAdmin) {
+  static async fetchNonAdminUsers() {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const response = await axios.put(`http://localhost:8000/users/admins/${user.id}`, {
-        ...user,
-        ...userToMakeAdmin
-      });
+      const response = await axios.get('http://localhost:8000/nonSuperUsers');
       return response.data;
     } catch (error) {
       console.error(error);
     }
   }
 
-  static async enableUserToCreateTournaments(userToChange) {
+  static async adjustUserPermissions(usersToChange) {
     try {
-      const user = JSON.parse(localStorage.getItem('user'));
-      const response = await axios.put(`http://localhost:8000/users/tournamentUsers/${user.id}`, {
-        ...user,
-        ...userToChange
+      const token = localStorage.getItem('token');
+      const response = await axios.put(`http://localhost:8000/users/${user.id}`, {
+        ...usersToChange
+      }, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       return response.data;
     } catch (error) {
