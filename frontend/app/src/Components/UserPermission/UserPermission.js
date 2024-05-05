@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Table,
   TableBody,
@@ -10,7 +11,14 @@ import {
   Checkbox,
   Typography,
   Button,
-  Box
+  Box,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogTitle,
+  List,
+  ListItem,
+  ListItemText
 } from '@mui/material';
 
 const AdminUsers = ({ users }) => (
@@ -50,8 +58,8 @@ const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
           </TableRow>
         </TableHead>
         <TableBody>
-          {users.map((user, index) => (
-            <TableRow key={user.id} style={{ backgroundColor: index % 2 === 0 ? '#f5f5f5' : 'inherit' }}>
+          {users.map((user) => (
+            <TableRow key={user.id} style={{ backgroundColor: user.id % 2 === 0 ? '#f5f5f5' : 'inherit' }}>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell>
@@ -71,6 +79,8 @@ const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
 const UserList = ({ adminUsers, superUsers, standardUsers }) => {
   const [superUserIds, setSuperUserIds] = useState(superUsers.map(user => user.id));
   const [updatedSuperUserIds, setUpdatedSuperUserIds] = useState([]);
+  const [isDialogOpen, setDialogOpen] = useState(false);
+  const navigate = useNavigate();
 
   const handleSuperUserToggle = (userId) => {
     if (superUserIds.includes(userId)) {
@@ -78,21 +88,39 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
     } else {
       setSuperUserIds([...superUserIds, userId]);
     }
-
-    // Store the updated userIds
-    if (!updatedSuperUserIds.includes(userId)) {
-      setUpdatedSuperUserIds([...updatedSuperUserIds, userId]);
-    } else {
-      setUpdatedSuperUserIds(updatedSuperUserIds.filter(id => id !== userId));
-    }
+    setUpdatedSuperUserIds(current => 
+      current.includes(userId) ? current.filter(id => id !== userId) : [...current, userId]
+    );
   };
 
-  const handleSaveChanges = () => {
-    // Here you can send the updatedSuperUserIds list to the backend
+  const handleOpenDialog = () => {
+    setDialogOpen(true);
+  };
+
+  const handleCloseDialog = () => {
+    setDialogOpen(false);
+    navigate('/rerender', { replace: true }); // Navigate to a base or another route temporarily
+    setTimeout(() => {
+      navigate('/users', { replace: true }); // Navigate back to /users
+    }, 1); // Short delay to allow the first navigation to complete
+  };
+
+  const handleConfirmChanges = () => {
+    // Perform saving logic here
     console.log("Updated User IDs:", updatedSuperUserIds);
-    // Reset the updatedSuperUserIds list after saving changes
     setUpdatedSuperUserIds([]);
+    setDialogOpen(false);
   };
+
+  const upgradedUsers = updatedSuperUserIds.filter(id => superUserIds.includes(id)).map(id => ({
+    id,
+    name: superUsers.concat(standardUsers).find(user => user.id === id)?.name
+  }));
+
+  const downgradedUsers = updatedSuperUserIds.filter(id => !superUserIds.includes(id)).map(id => ({
+    id,
+    name: superUsers.concat(standardUsers).find(user => user.id === id)?.name
+  }));
 
   return (
     <div>
@@ -105,10 +133,36 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
       />
 
       <Box display="flex" justifyContent="flex-end" mt={2}>
-        <Button variant="contained" onClick={handleSaveChanges} disabled={updatedSuperUserIds.length === 0}>
+        <Button variant="contained" onClick={handleOpenDialog} disabled={updatedSuperUserIds.length === 0}>
           Save Changes
         </Button>
       </Box>
+
+      <Dialog open={isDialogOpen} onClose={handleCloseDialog}>
+        <DialogTitle>Confirm Changes</DialogTitle>
+        <DialogContent>
+          <Typography variant="h6">Upgraded to Super User</Typography>
+          <List>
+            {upgradedUsers.map(user => (
+              <ListItem key={user.id}>
+                <ListItemText primary={user.name} />
+              </ListItem>
+            ))}
+          </List>
+          <Typography variant="h6">Downgraded from Super User</Typography>
+          <List>
+            {downgradedUsers.map(user => (
+              <ListItem key={user.id}>
+                <ListItemText primary={user.name} />
+              </ListItem>
+            ))}
+          </List>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleCloseDialog}>Cancel</Button>
+          <Button onClick={handleConfirmChanges} color="primary">Confirm</Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 };
