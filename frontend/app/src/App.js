@@ -11,7 +11,7 @@ import ThermostatData from './Components/Thermostat/ThermostatData';
 import ClimatePage from './Components/ClimatePage/ClimatePage';
 import HumidityComponent from './Components/Humidity/HumidityData';
 import Controls from "./Components/Controls/Controls";
-import Login from './Components/Login/Login';
+import LoginPage from './Components/Login/LoginPage';
 import Registration from './Components/Registration/Registration';
 
 
@@ -69,7 +69,7 @@ function AppContent() {
             <Route path="/thermostat" element={<ThermostatData />} />
             <Route path="/humidity" element={<HumidityComponent />} />
             <Route path="/Controls/1" element={<Controls />} />
-            <Route path="/login" element={<Login />} /> 
+            <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
           </Routes>
         </div>
