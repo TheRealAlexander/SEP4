@@ -1,6 +1,6 @@
 import React from 'react';
 import ThermostatData from './ThermostatData';
-import useThermostatData from '../../Services/ClimateService';
+import { useThermostatData } from '../../Services/ClimateService';
 
 export default function ThermostatDataWrapper() {
   const { thermData, isLoading } = useThermostatData();

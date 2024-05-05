@@ -8,12 +8,12 @@ import React from 'react';
 
 // Component Imports
 import ClimatePage from './Components/ClimatePage/ClimatePage';
-import HumidityComponent from './Components/Humidity/HumidityData';
 import Controls from "./Components/Controls/Controls";
 import LoginPage from './Components/Login/LoginPage';
 import Registration from './Components/Registration/Registration';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
+import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
 
 // MUI Imports
 import {
@@ -63,11 +63,11 @@ function AppContent() {
         width: (location.pathname === '/login' || location.pathname === '/registration') ? '100%' : `calc(100% - 240px)` }}>
         <Toolbar />
 
-        <div className="App">y
+        <div className="App">
           <Routes>
             <Route path="/" element={<ClimatePage data={data} />} />
             <Route path="/thermostat" element={<ThermostatDataWrapper />} />
-            <Route path="/humidity" element={<HumidityComponent />} />
+            <Route path="/humidity" element={<HumidityDataWrapper />} />
             <Route path="/Controls/1" element={<Controls />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
