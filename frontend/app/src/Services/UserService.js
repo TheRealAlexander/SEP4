@@ -23,7 +23,7 @@ class UserService {
   static async adjustUserPermissions(usersToChange) {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.put(`http://localhost:8000/users/${user.id}`, {
+      const response = await axios.put(`http://localhost:8000/users/adjustUserPermissions/${usersToChange}`, {
         ...usersToChange
       }, {
         headers: {
