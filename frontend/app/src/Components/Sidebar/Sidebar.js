@@ -1,65 +1,87 @@
-import * as React from 'react';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import AppBar from '@mui/material/AppBar';
-import CssBaseline from '@mui/material/CssBaseline';
-import Toolbar from '@mui/material/Toolbar';
-import List from '@mui/material/List';
-import Typography from '@mui/material/Typography';
-import Divider from '@mui/material/Divider';
-import ListItem from '@mui/material/ListItem';
-import ListItemButton from '@mui/material/ListItemButton';
-import ListItemIcon from '@mui/material/ListItemIcon';
-import ListItemText from '@mui/material/ListItemText';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
-import {ResponsiveAppBar} from '../../App.js';
+import React, { useState } from 'react';
+import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
+import TemperatureHumidityControl from '../TemperatureHumidity/TemperatureHumidity';
 
-const drawerWidth = 240;
+function HomePage() {
+    const [selectedHal, setSelectedHal] = useState(null);
+    const [controlStates, setControlStates] = useState({
+        'Hal 1': { temperature: 22, humidity: 50 },
+        'Hal 2': { temperature: 22, humidity: 50 },
+        'Hal 3': { temperature: 22, humidity: 50 }
+    });
 
-export default function Layout() {
-  return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            marginTop: '64px' 
-          },
-        }}
-        variant="permanent"
-        anchor="left"
-      >
-        
-        <Box sx={{ overflow: 'auto' }}>
-          <List>
-            {['Hal 1', 'Hal 2', 'Hal 3'].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+    const cardStyles = (isActive) => ({
+        width: 300,
+        height: 150,
+        margin: 6,
+        backgroundColor: isActive ? 'lightblue' : 'white',
+        transition: '0.3s',
+        '&:hover': {
+            backgroundColor: 'lightblue',
+            boxShadow: '0 8px 16px 0 rgba(0,0,0,0.2)'
+        }
+    });
+
+    const updateTemperature = (hal, newValue) => {
+        setControlStates(prev => ({
+            ...prev,
+            [hal]: { ...prev[hal], temperature: newValue }
+        }));
+    };
+
+    const updateHumidity = (hal, newValue) => {
+        setControlStates(prev => ({
+            ...prev,
+            [hal]: { ...prev[hal], humidity: newValue }
+        }));
+    };
+
+    return (
+        <Box sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'flex-start',
+            minHeight: '100vh',
+            width: '100%'
+        }}>
+            <Box sx={{ display: 'flex', flexDirection: 'row' }}>
+                {['Hal 1', 'Hal 2', 'Hal 3'].map((hal, index) => (
+                    <Card sx={cardStyles(selectedHal === hal)} key={index}>
+                        <CardActionArea 
+                            onClick={() => setSelectedHal(hal)}
+                            sx={{
+                                height: '100%',
+                                width: '100%',
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'flex-start'
+                            }}
+                        >
+                            <CardContent sx={{ flexGrow: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Typography variant="h5" component="div" sx={{ textAlign: 'center' }}>
+                                    {hal}
+                                </Typography>
+                            </CardContent>
+                        </CardActionArea>
+                    </Card>
+                ))}
+            </Box>
+            {selectedHal && (
+                <Box sx={{ marginTop: 4 }}>
+                    <Typography variant="h4" sx={{ textAlign: 'center' }}>
+                        Controls of {selectedHal}
+                    </Typography>
+                    <TemperatureHumidityControl 
+                        initialTemperature={controlStates[selectedHal].temperature}
+                        initialHumidity={controlStates[selectedHal].humidity}
+                        onTemperatureChange={(newValue) => updateTemperature(selectedHal, newValue)}
+                        onHumidityChange={(newValue) => updateHumidity(selectedHal, newValue)}
+                    />
+                </Box>
+            )}
         </Box>
-      </Drawer>
-      <Box
-        component="main"
-        sx={{
-          flexGrow: 1,
-          p: 3,
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          marginTop: '64px'  // Adjust this value based on the actual height of your AppBar
-        }}
-      >
-        <Typography paragraph>
-          Content
-        </Typography>
-      </Box>
-    </Box>
-  );
+    );
 }
+
+export default HomePage;
