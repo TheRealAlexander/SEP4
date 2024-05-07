@@ -26,5 +26,9 @@ namespace WebApi.Services
 
             return _sensorDataDao.AddSensorDataAsync(sensorData);
         }
+        public Task GetLatestSensorData()
+        {
+            return _sensorDataDao.GetLatestSensorDataAsync();
+        }
     }
 }

@@ -30,12 +30,22 @@ namespace WebApi.Controllers
                 };
 
                 _sensorDataService.AddSensorData(sensorData);
+                sensorData newSensorData = GetNewSensorData();
+                if (newSensorData)
+                {
+                    return Ok(newSensorData); // Return the new sensor data if method is successful
+                }
 
-                return Ok(sensorData); // Return zero for IoT device if method is successful
+                return Ok(0); // Return zero for IoT device if method is successful
             }
             catch (Exception e)
             {
                 return BadRequest(new { success = false, error = e.Message });
+            }
+            
+            private SensorData? GetNewSensorData()
+            {
+                return _sensorDataService.GetLatestSensorData();
             }
         }
     }
