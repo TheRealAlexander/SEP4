@@ -15,7 +15,7 @@ public class BrokerController : ControllerBase
         _brokerService = brokerService;
     }
 
-    [HttpGet]
+    [HttpGet("GetSensorData")]
     public async Task<List<SensorData>> GetSensorData()
     {
         return await _brokerService.GetSensorData();

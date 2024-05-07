@@ -15,7 +15,7 @@ namespace Broker.Services
         }
         public async Task<List<SensorData>> GetSensorData()
         {
-            return await _httpClient.GetFromJsonAsync<List<SensorData>>("https://localhost:5001/GetEnvironmentData");
+            return await _httpClient.GetFromJsonAsync<List<SensorData>>("http://indeklima_webapi:5200/GetEnvironmentData");
         }
         public Task AddSensorData(SensorData sensorData)
         {
@@ -24,7 +24,7 @@ namespace Broker.Services
                 throw new ArgumentNullException(nameof(sensorData));
             }
 
-            return _httpClient.PostAsJsonAsync("https://localhost:5001/AddEnvironmentData", sensorData);
+            return _httpClient.PostAsJsonAsync("http://indeklima_webapi:5200/AddEnvironmentData", sensorData);
         }
     }
 }

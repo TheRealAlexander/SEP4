@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/aspnet:7.0 AS base
 WORKDIR /app
 EXPOSE 5202
 
-ENV ASPNETCORE_URLS=http://+:5200
+ENV ASPNETCORE_URLS=http://+:5202
 
 RUN adduser -u 5678 --disabled-password --gecos "" appuser && chown -R appuser /app
 USER appuser
