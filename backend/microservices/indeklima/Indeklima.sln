@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34202.233
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "unittest_indeklima_webapi", "unittest_indeklima_webapi\unittest_indeklima_webapi.csproj", "{D0B7629D-ED55-436D-AB06-66B020FDF334}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "IndeklimaWebApi", "WebApi\IndeklimaWebApi.csproj", "{9C9A732E-10BF-43E5-B7A0-7188D54358AB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{D0B7629D-ED55-436D-AB06-66B020FDF334}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0B7629D-ED55-436D-AB06-66B020FDF334}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0B7629D-ED55-436D-AB06-66B020FDF334}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0B7629D-ED55-436D-AB06-66B020FDF334}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9C9A732E-10BF-43E5-B7A0-7188D54358AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9C9A732E-10BF-43E5-B7A0-7188D54358AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9C9A732E-10BF-43E5-B7A0-7188D54358AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9C9A732E-10BF-43E5-B7A0-7188D54358AB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {5146EAD8-345B-41B1-8902-9D5FA609DC12}
+	EndGlobalSection
+EndGlobal
