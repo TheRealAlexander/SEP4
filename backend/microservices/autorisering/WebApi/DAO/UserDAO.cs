@@ -102,6 +102,41 @@ public class UserDAO : IUserDAO
         }
     }
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        try
+        {
+            // Define a sort by 'Role' in ascending order
+            var sortByRole = Builders<User>.Sort.Ascending(u => u.Role);
+        
+            // Retrieve all users from the collection and sort them by 'Role'
+            return await _userMongoCollection.Find(new BsonDocument()).Sort(sortByRole).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle or log the exception as needed
+            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
+        }
+        
+    }
+    
+    public async Task<User> UpdateUserAsync(User user)
+    {
+        try
+        {
+            var userObject = Builders<User>.Filter.Eq(userData => userData.Username, user.Username);
 
+            var newRole = Builders<User>.Update.Set(userData => userData.Role, user.Role);
+            
+            await _userMongoCollection.UpdateOneAsync(userObject, newRole);
 
+            return user;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
+        }
+    }
+
+    
 }

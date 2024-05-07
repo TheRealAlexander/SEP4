@@ -1,7 +1,11 @@
 using System.Security.Claims;
+using Microsoft.Extensions.DependencyInjection;
 
-public static class AuthorizationPolicies {
-     public static void AddPolicies(IServiceCollection services)
+namespace Shared.Auth;
+
+public static class AuthorizationPolicies
+{
+    public static void AddPolicies(IServiceCollection services)
     {
         services.AddAuthorizationCore(options =>
         {
@@ -9,8 +13,6 @@ public static class AuthorizationPolicies {
                 a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "Admin"));
             options.AddPolicy("MustBeUser", a =>
                 a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "User"));
-            options.AddPolicy("MustBeSuperUser",
-                a => a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "SuperUser"));
         });
     }
 }

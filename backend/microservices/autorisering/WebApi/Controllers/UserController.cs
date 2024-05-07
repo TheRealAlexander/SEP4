@@ -26,7 +26,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await authService.GetUser(username);
+            var user = await authService.GetUserAsync(username);
             return Ok(user);
         }
         catch (Exception ex)
@@ -40,8 +40,22 @@ public class UserController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
         }
     }
-
-
+    
+    [HttpGet("/GetAllUsers")]
+    public async Task<ActionResult<List<User>>> GetAllUsers()
+    {
+        try
+        {
+            var users = await authService.GetAllUsersAsync();
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.ToString()}");  // Log full exception stack trace
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
+        }
+    }
+    
     [HttpPost("register")]
     public async Task<ActionResult<User>> RegisterUser([FromBody] UserCreationDTO userCreationDTO)
     {
@@ -52,7 +66,7 @@ public class UserController : ControllerBase
 
         try
         {
-            await authService.RegisterUser(userCreationDTO);
+            await authService.RegisterUserAsync(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
             return CreatedAtAction(nameof(GetUser), new { username = userCreationDTO.Username }, userCreationDTO);
         }
@@ -71,5 +85,42 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpPost("swapRoles")]
+    public async Task<ActionResult<List<User>>> SwapRolesAsync([FromBody] List<User> users)
+    {
+        if (users == null)
+        {
+            return BadRequest("No users provided.");
+        }
 
+        try
+        {
+            var processedUsers = new List<User>();
+            foreach (var user in users)
+            {
+                if (user.Role == "SuperUser")
+                {
+                    user.Role = "User";
+                }
+                else
+                {
+                    user.Role = "SuperUser";
+                }
+                
+                await authService.UpdateUserAsync(user);
+
+                processedUsers.Add(user);
+            }
+
+            return Ok(processedUsers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Error processing users: {ex.Message}");
+        }
+
+    }
+    
+    
+    
 }

@@ -15,7 +15,7 @@ namespace WebApi.Services
         _userDAO = userDAO;
     }
 
-    public async Task<User> ValidateUser(string username, string password)
+    public async Task<User> ValidateUserAsync(string username, string password)
     {
         try
         {
@@ -38,12 +38,12 @@ namespace WebApi.Services
         }
     }
 
-    public async Task<User> GetUser(string username)
+    public async Task<User> GetUserAsync(string username)
     {
         return await _userDAO.GetUserAsync(username); 
     }
 
-    public async Task RegisterUser(UserCreationDTO userCreationDTO)
+    public async Task RegisterUserAsync(UserCreationDTO userCreationDTO)
     {
         if (string.IsNullOrEmpty(userCreationDTO.Username) || string.IsNullOrEmpty(userCreationDTO.Password) || string.IsNullOrEmpty(userCreationDTO.Email))
         {
@@ -58,7 +58,7 @@ namespace WebApi.Services
                 Username = userCreationDTO.Username,
                 Password = userCreationDTO.Password,
                 Email = userCreationDTO.Email,
-                Role = userCreationDTO.Role,
+                Role = "User",
                 Age = userCreationDTO.Age
             };
 
@@ -75,5 +75,15 @@ namespace WebApi.Services
         }
     }
 
-} 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        return await _userDAO.GetAllUsersAsync();
+    }
+
+    public async Task<User> UpdateUserAsync(User user)
+    {
+        return await _userDAO.UpdateUserAsync(user);
+    }
+
+}
 }
