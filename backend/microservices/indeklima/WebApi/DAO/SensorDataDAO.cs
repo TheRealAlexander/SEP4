@@ -51,5 +51,32 @@ namespace WebApi.DAO
                 throw new Exception(ex.Message);
             }
         }
+
+        public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
+        {
+            try
+            {
+                if (sensorGoal == null)
+                {
+                    throw new ArgumentNullException(nameof(sensorGoal));
+                }
+
+                //Check for dubplicate data
+                var duplicateData = await _sensorDataMongoCollection.Find(s => s.Timestamp == sensorGoal.Timestamp)
+                    .FirstOrDefaultAsync();
+                if (duplicateData != null)
+                {
+                    throw new Exception("Duplicate data");
+                }
+
+                //Add data to the collection
+                await _sensorDataMongoCollection.InsertOneAsync(sensorGoal);
+                //Return 0 if successful
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+        }
     }
 }

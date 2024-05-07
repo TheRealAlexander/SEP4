@@ -9,6 +9,7 @@ namespace WebApi.Services
     {
         public Task<List<SensorData>> GetSensorData();
         public Task AddSensorData(SensorData sensorData);
-        public Task GetLatestSensorData();
+        public Task GetSensorDataGoal();
+        public Task AddSensorDataGoal(SensorGoal sensorGoal);
     }
 }
