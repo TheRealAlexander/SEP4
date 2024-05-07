@@ -47,7 +47,8 @@ services:
     networks:
       - backend
     depends_on:
-      - mongo
+      - indeklima_webapi
+      - auth_webapi
 
 volumes:
   mongodbdata:
