@@ -17,7 +17,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [AuthorizePolicy(Policy = "MustBeAdmin")]
+        [Authorize(Policy = "MustBeAdmin")]
         public IActionResult PostSensorData(IOTSensorDataDto data)
         {
             try
@@ -31,11 +31,11 @@ namespace WebApi.Controllers
 
                 _sensorDataService.AddSensorData(sensorData);
 
-                return Ok(0); // Return zero for IoT device if method is successful
+                return Ok(sensorData); // Return zero for IoT device if method is successful
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                return BadRequest(new { success = false, error = e.Message });
             }
         }
     }
