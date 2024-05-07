@@ -17,9 +17,9 @@ public class GetEnvironmentDataController : ControllerBase
     }
 
     [HttpGet]
+    [AuthorizePolicy(Policy = "MustBeAdmin")]
     public async Task<List<SensorData>> GetSensorData()
     {
         return await _sensorDataService.GetSensorData();
     }
-
 }

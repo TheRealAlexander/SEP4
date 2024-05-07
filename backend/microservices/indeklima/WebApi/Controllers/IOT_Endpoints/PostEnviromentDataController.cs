@@ -17,6 +17,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
+        [AuthorizePolicy(Policy = "MustBeAdmin")]
         public IActionResult PostSensorData(IOTSensorDataDto data)
         {
             try
