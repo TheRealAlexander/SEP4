@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Card, CardActionArea, CardContent, Typography } from '@mui/material';
-import TemperatureHumidityControl from '../TemperatureHumidity/TemperatureHumidity';
+import TemperatureHumidityControl from '../HumidityTemperaturePreferences/TemperatureHumidity';
 
 function HomePage() {
     const [selectedHal, setSelectedHal] = useState(null);
