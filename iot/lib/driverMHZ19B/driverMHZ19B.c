@@ -1,9 +1,14 @@
-#include "uart.h"
-#include <stdint.h>
-#include <stdbool.h>
-#include <string.h>
-#include "includes.h"
-#include "driverMHZ19B.h"
+#if NOT_PLATFORMIO
+// Nothing
+#else
+#   include "uart.h"
+#   include <stdint.h>
+#   include <stdbool.h>
+#   include <string.h>
+#   include "includes.h"
+#   include "driverMHZ19B.h"
+#endif
+
 #define Co2SensorRead 0x86
 #define ZERO_POINT_CALIBRATION 0x87
 #define SPAN_POINT_CALIBRATION 0x88
@@ -30,7 +35,7 @@ void WHZ19B_init(void) {
 void reset_rx_buffer(){
   memset(rx_buffer, 0, sizeof(rx_buffer)); // Clear the buffer contents
     rx_count = 0; // Reset the count of bytes in the buffer
-    send_to_pc("\nBuffer reset.\n");
+    //send_to_pc("\nBuffer reset.\n");
 }void byte_process(uint8_t byte){
    // Check if a new packet is starting
     if (byte == 0xFF && rx_count == 0) {
@@ -52,7 +57,7 @@ void reset_rx_buffer(){
                     process_co2_data();
                 } else {
                     // If checksum fails, log the error and reset the buffer
-                    send_to_pc("Checksum failed. Packet discarded.\n");
+                    //send_to_pc("Checksum failed. Packet discarded.\n");
                 }
 
                 // Always reset the buffer after processing or discarding
@@ -60,7 +65,7 @@ void reset_rx_buffer(){
             }
         } 
         else {
-            send_to_pc("Buffer overflow detected. Buffer reset.\n");
+            //send_to_pc("Buffer overflow detected. Buffer reset.\n");
             reset_rx_buffer(); // Reset on overflow to avoid processing garbage data
          }             
     }
@@ -70,7 +75,7 @@ void usart3_co2_rx_handler(uint8_t received_byte) {
 }
 
 void process_co2_data() {
-   send_to_pc("\nProcessing CO2 data...\n");
+   //send_to_pc("\nProcessing CO2 data...\n");
     uint16_t co2_concentration = calculatePartsPerMil(rx_buffer);
     latest_co2_concentration = co2_concentration;  // Update global variable
     new_co2_data_available = true;
@@ -78,7 +83,7 @@ void process_co2_data() {
     // Format and send the CO2 concentration to the PC
     char debug_msg[128];
     snprintf(debug_msg, sizeof(debug_msg), "CO2 Concentration: %u ppm\n", co2_concentration);
-    send_to_pc(debug_msg);
+    //send_to_pc(debug_msg);
 }
 
 uint8_t checksum(uint8_t* packet) {
@@ -102,13 +107,13 @@ uint8_t checksum(uint8_t* packet) {
     uint8_t calculatedChecksum = 0xFF - sum + 1;
 
     snprintf(debug_msg, sizeof(debug_msg), "Expected checksum: %02X, Calculated checksum: %02X\n", packet[6], calculatedChecksum);
-    send_to_pc(debug_msg);
+    //send_to_pc(debug_msg);
 
     if (calculatedChecksum == packet[6]) {
-        send_to_pc("Checksum correct. Processing packet...\n");
+        //send_to_pc("Checksum correct. Processing packet...\n");
         return true;
     } else {
-        send_to_pc("Checksum failed.\n");
+        //send_to_pc("Checksum failed.\n");
         return false;
     }
 }
