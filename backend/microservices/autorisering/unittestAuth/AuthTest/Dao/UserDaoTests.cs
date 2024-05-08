@@ -85,6 +85,26 @@
             var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _dao.ValidateUserAsync("testuser", "wrongpass"));
             Assert.Equal("Password is incorrect.", exception.Message);
         }
+        
+        [Fact]
+        public async Task UpdateUserAsync_ShouldUpdateUserDetails()
+        {
+            // Arrange
+            var user = new User { Username = "updateuser", Password = "pass", Email = "update@test.com", Role = "User", Age = 25 };
+            await _dao.RegisterUserAsync(user);
+            var updatedUser = new User { Username = "updateuser", Password = "newpass", Email = "updateNew@test.com", Role = "SuperUser", Age = 26 };
 
+            // Act
+            await _dao.UpdateUserAsync(updatedUser);
+
+            // Assert - Fetch the updated user and verify changes
+            var result = await _dao.GetUserAsync("updateuser");
+            Assert.NotNull(result);
+            Assert.Equal("updateuser", result.Username);
+            Assert.Equal("newpass", result.Password);
+            Assert.Equal("updateNew@test.com", result.Email);
+            Assert.Equal("SuperUser", result.Role);
+            Assert.Equal(26, result.Age);
+        }
     }
 }

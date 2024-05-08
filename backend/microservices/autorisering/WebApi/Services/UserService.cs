@@ -5,12 +5,12 @@ using System.Data;
 
 namespace WebApi.Services
 {
-   public class AuthService : IAuthService
+   public class UserService : IUserService
 {
 
     private readonly IUserDAO _userDAO;
 
-    public AuthService(IUserDAO userDAO)
+    public UserService(IUserDAO userDAO)
     {
         _userDAO = userDAO;
     }
@@ -75,9 +75,40 @@ namespace WebApi.Services
         }
     }
 
-    public async Task<List<User>> GetAllUsersAsync()
+    public async Task<List<List<User>>> GetAllUsersAsync()
     {
-        return await _userDAO.GetAllUsersAsync();
+        try
+        {
+            List<User> adminList = new List<User>();
+            List<User> superUserList = new List<User>();
+            List<User> userList = new List<User>();
+            List<List<User>> allUsersList = new List<List<User>>();
+
+            foreach (User user in await _userDAO.GetAllUsersAsync())
+            {
+                if (user.Role == "Admin")
+                {
+                    adminList.Add(user);
+                } else if (user.Role == "SuperUser")
+                {
+                    superUserList.Add(user);
+                }
+                else
+                {
+                    userList.Add(user);
+                }
+            }
+            
+            allUsersList.Add(adminList);
+            allUsersList.Add(superUserList);
+            allUsersList.Add(userList);
+
+            return allUsersList;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
+        }
     }
 
     public async Task<User> UpdateUserAsync(User user)

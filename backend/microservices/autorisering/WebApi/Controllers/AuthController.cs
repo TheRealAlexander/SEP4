@@ -12,12 +12,12 @@ using WebApi.Services;
 public class AuthController : ControllerBase
 {
     private readonly IConfiguration config;
-    private readonly IAuthService authService;
+    private readonly IUserService _userService;
 
-    public AuthController(IConfiguration config, IAuthService authService)
+    public AuthController(IConfiguration config, IUserService userService)
     {
         this.config = config;
-        this.authService = authService;
+        this._userService = userService;
     }
 
     private List<Claim> GenerateClaims(User user)
@@ -62,7 +62,7 @@ public class AuthController : ControllerBase
     {
         try
         {
-            User user = await authService.ValidateUserAsync(userLoginDto.Username, userLoginDto.Password);
+            User user = await _userService.ValidateUserAsync(userLoginDto.Username, userLoginDto.Password);
             string token = GenerateJwt(user);
 
             return Ok(token);

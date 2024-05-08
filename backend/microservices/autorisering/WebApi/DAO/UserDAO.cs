@@ -121,22 +121,37 @@ public class UserDAO : IUserDAO
     }
     
     public async Task<User> UpdateUserAsync(User user)
-    {
-        try
-        {
-            var userObject = Builders<User>.Filter.Eq(userData => userData.Username, user.Username);
+	{
+   		try
+    	{
+        	// Create a filter to match the user by username (which remains unchanged)
+        	var filter = Builders<User>.Filter.Eq(userData => userData.Username, user.Username);
 
-            var newRole = Builders<User>.Update.Set(userData => userData.Role, user.Role);
-            
-            await _userMongoCollection.UpdateOneAsync(userObject, newRole);
+        	// Create an update definition to set new values for all updatable fields
+        	var updateDefinition = Builders<User>.Update
+            	.Set(userData => userData.Password, user.Password)
+            	.Set(userData => userData.Email, user.Email)
+            	.Set(userData => userData.Role, user.Role)
+            	.Set(userData => userData.Age, user.Age);  // Add more fields as necessary
 
-            return user;
-        }
-        catch (Exception ex)
-        {
-            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
-        }
-    }
+        	// Perform the update operation
+        	var result = await _userMongoCollection.UpdateOneAsync(filter, updateDefinition);
+
+        	// Check if the update was successful, if not, handle it appropriately
+        	if (result.MatchedCount == 0)
+            	throw new KeyNotFoundException($"No user found with username {user.Username}");
+        	if (result.ModifiedCount == 0)
+            	throw new Exception("No changes were made during the update operation.");
+
+        	// Return the updated user data - consider fetching the user again if accurate data is needed
+        	return user;
+    	}
+    	catch (Exception ex)
+    	{
+        	throw new Exception($"Failed to update user: {ex.Message}", ex);
+    	}
+	}
+
 
     
 }

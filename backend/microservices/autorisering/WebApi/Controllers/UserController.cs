@@ -13,12 +13,12 @@ using System.Data;
 public class UserController : ControllerBase
 {
     private readonly IConfiguration config;
-    private readonly IAuthService authService;
+    private readonly IUserService _userService;
 
-    public UserController(IConfiguration config, IAuthService authService)
+    public UserController(IConfiguration config, IUserService userService)
     {
         this.config = config;
-        this.authService = authService;
+        this._userService = userService;
     }
     
     [HttpGet("{username}")]
@@ -26,7 +26,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var user = await authService.GetUserAsync(username);
+            var user = await _userService.GetUserAsync(username);
             return Ok(user);
         }
         catch (Exception ex)
@@ -46,7 +46,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var users = await authService.GetAllUsersAsync();
+            var users = await _userService.GetAllUsersAsync();
             return Ok(users);
         }
         catch (Exception ex)
@@ -66,7 +66,7 @@ public class UserController : ControllerBase
 
         try
         {
-            await authService.RegisterUserAsync(userCreationDTO);
+            await _userService.RegisterUserAsync(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
             return CreatedAtAction(nameof(GetUser), new { username = userCreationDTO.Username }, userCreationDTO);
         }
@@ -102,12 +102,12 @@ public class UserController : ControllerBase
                 {
                     user.Role = "User";
                 }
-                else
+                else if (user.Role == "User")
                 {
                     user.Role = "SuperUser";
                 }
                 
-                await authService.UpdateUserAsync(user);
+                await _userService.UpdateUserAsync(user);
 
                 processedUsers.Add(user);
             }
