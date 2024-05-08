@@ -9,8 +9,12 @@
  * @date September 2023
  */
 
-#include "periodic_task.h"
-#include "includes.h"
+#if NOT_PLATFORMIO
+// Nothing
+#else
+#   include "periodic_task.h"
+#   include "includes.h"
+#endif
 
 static void (*user_func_a)(void);  // Pointer to first user function
 static void (*user_func_b)(void);  // Pointer to second user function

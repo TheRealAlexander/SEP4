@@ -1,14 +1,16 @@
 #ifndef EXCLUDE_UART
 
+#if NOT_PLATFORMIO
+#else
+#   include "uart.h"
+#   include <stdint.h>
+#   include <stddef.h>
+#   include <stdlib.h>
 
-#include "uart.h"
-#include <stdint.h>
-#include <stddef.h>
-#include <stdlib.h>
+#   include <string.h>
 
-#include <string.h>
-
-#include "includes.h"
+#   include "includes.h"
+#endif
 
 static UART_Callback_t usart0_rx_callback = NULL;
 static UART_Callback_t usart1_rx_callback = NULL;
