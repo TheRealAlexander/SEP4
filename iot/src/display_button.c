@@ -1,4 +1,4 @@
-#include "display_button.h"
+#include <display_button.h>
 #include <buttons.h>
 #include <display.h>
 int teamscore_a = 0;
@@ -9,12 +9,12 @@ void controller_init(void) {
     display_init();
 }
 void setScoreTo40(void){
-    teamscore_a == 40;
-    teamscore_b == 40;
+    teamscore_a = 40;
+    teamscore_b = 40;
 }
 void resetScore(void){
-    teamscore_a == 0;
-    teamscore_b == 0;
+    teamscore_a = 0;
+    teamscore_b = 0;
 }
 void handle_buttons(void) {
         int tensA = teamscore_a / 10;
@@ -29,8 +29,7 @@ void handle_buttons(void) {
         checkScoreAMinus();
         display_setValues(tensA, onesA, tensB, onesB);
     } else if (buttons_2_pressed){
-         teamscore_a == 0;
-         teamscore_b == 0;
+        resetScore();
          display_setValues(tensA, onesA, tensB, onesB);
     } else if( buttons_3_pressed){
         teamscore_b ++;
@@ -68,6 +67,7 @@ void checkScoreAPlus(){
         default:
             break;; 
     }
+    break;
 }
 void checkScoreAMinus(void){
     switch(teamscore_a){
