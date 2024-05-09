@@ -20,8 +20,8 @@ void setScoreTo40(void)
 
 void resetScore(void)
 {
-    teamscore_a == 0;
-    teamscore_b == 0;
+    teamscore_a = 0;
+    teamscore_b = 0;
     updateDisplay();
 }
 
@@ -35,32 +35,23 @@ void updateDisplay(void)
 
 }
 
-void handle_buttons(void)
-{
-    if (buttons_1_pressed())
-    {
-        checkScoreAPlus();
-    }
-    else if (buttons_1_pressed() && buttons_2_pressed())
-    {
+void handle_buttons(void) {
+    if (buttons_1_pressed() && buttons_2_pressed()) {
         checkScoreAMinus();
-    }
-    else if (buttons_2_pressed())
-    {
+    } else if (buttons_1_pressed()) {
+        checkScoreAPlus();
+    } else if (buttons_2_pressed() && buttons_3_pressed()) {
+        checkScoreBMinus();
+    } else if (buttons_2_pressed()) {
         resetScore();
-    }
-    else if (buttons_3_pressed())
-    {
+    } else if (buttons_3_pressed()) {
         checkScoreBPlus();
-    }
-    else if (buttons_2_pressed() && buttons_3_pressed())
-    {
-        checkScoreBMinus(); 
     }
     updateDisplay();
 }
 
-void checkScoreAPlus()
+
+void checkScoreAPlus(void)
 {
     switch (teamscore_a)
     {
@@ -94,7 +85,6 @@ void checkScoreAPlus()
         break;
     default:
         break;
-        ;
     }
 }
 
@@ -124,7 +114,7 @@ void checkScoreAMinus(void)
     }
 }
 
-void checkScoreBPlus()
+void checkScoreBPlus(void)
     {
         switch (teamscore_b)
         {
