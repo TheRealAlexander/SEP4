@@ -3,6 +3,8 @@
  * @brief Initialize the display (the 4 7-segments)
  * 
  */
+extern const uint8_t hex_digits[];
+
 void display_init(void);
 
 /**

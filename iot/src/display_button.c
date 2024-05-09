@@ -31,7 +31,8 @@ void updateDisplay(void)
     int onesA = teamscore_a % 10;
     int tensB = teamscore_b / 10;
     int onesB = teamscore_b % 10;
-    display_setValues(tensA, onesA, tensB, onesB);
+    display_setValues(hex_digits[tensA], hex_digits[onesA], hex_digits[tensB], hex_digits[onesB]);
+
 }
 
 void handle_buttons(void)
