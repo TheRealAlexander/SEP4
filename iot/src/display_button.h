@@ -2,6 +2,9 @@
 #define DISPLAY_BUTTON_H
 #include "includes/includes.h"
 
+extern int teamscore_a;
+extern int teamscore_b;
+
 void controller_init(void);
 void handle_buttons(void);
 void resetScore(void);
