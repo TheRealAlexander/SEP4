@@ -1,7 +1,7 @@
 #include "display_button.h"
 #include <buttons.h>
 #include <display.h>
-#include <includes.h>
+#include "includes/includes.h"
 int teamscore_a = 0;
 int teamscore_b = 0;
 
@@ -54,7 +54,7 @@ void handle_buttons(void)
     }
     else if (buttons_2_pressed() && buttons_3_pressed())
     {
-        checkScoreBMinus(); // Assuming there's a similar function for B
+        checkScoreBMinus(); 
     }
     updateDisplay();
 }
@@ -85,9 +85,8 @@ void checkScoreAPlus()
     case 41:
         if (teamscore_b < 41)
         {
-            teamscore_a = 42
-        }
-        else
+            teamscore_a = 42;
+        } else
         {
             setScoreTo40();
         }
@@ -97,6 +96,9 @@ void checkScoreAPlus()
         ;
     }
 }
+
+
+
 void checkScoreAMinus(void)
 {
     switch (teamscore_a)
@@ -117,10 +119,11 @@ void checkScoreAMinus(void)
         break;
     default:
         break;
-        ;
+        
     }
+}
 
-    void checkScoreBPlus()
+void checkScoreBPlus()
     {
         switch (teamscore_b)
         {
@@ -158,22 +161,20 @@ void checkScoreAMinus(void)
         }
     }
 
-    void checkScoreBMinus(void)
+void checkScoreBMinus(void)
     {
         switch (teamscore_b)
         {
         case 15:
-            teamscore_b = 0; // If score is 15, decrement to 0
+            teamscore_b = 0; 
             break;
         case 30:
-            teamscore_b = 15; // If score is 30, decrement to 15
+            teamscore_b = 15; 
             break;
         case 40:
-            // If Team A is not in an advantage state and score is 40, decrement to 30
-            // If Team A is in advantage, it means we are in a deuce situation
             if (teamscore_a == 41)
             {
-                setScoreTo40(); // Set score back to 40-40 if it's a deuce
+                setScoreTo40(); 
             }
             else
             {
@@ -181,14 +182,12 @@ void checkScoreAMinus(void)
             }
             break;
         case 41:
-            // If Team B is in advantage, move back to 40
             teamscore_b = 40;
             break;
         case 42:
-            // If Team B had won the game, move to advantage before losing the game
             teamscore_b = 41;
             break;
         }
-        updateDisplay(); // Update the display after processing the decrement
+        updateDisplay(); 
     }
-}
+
