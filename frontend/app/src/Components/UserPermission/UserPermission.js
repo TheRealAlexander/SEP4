@@ -4,6 +4,57 @@ import Users from './Users';
 import UserChangeDialog from './ConfirmationDialogWindow';
 import { Button, Box } from '@mui/material';
 
+const UserPermissionPage = () => {
+  let AdminUsers=[
+    {
+      id: 1,
+      name: "Admin1",
+    },
+    {
+      id: 2,
+      name: "Admin2",
+    },
+    {
+      id: 3,
+      name: "Admin3",
+    },
+  ];
+  
+  let SuperUsers= [
+    {
+      id: 4,
+      name: "Super1",
+    },
+    {
+      id: 5,
+      name: "Super2",
+    },
+    {
+      id: 6,
+      name: "Super3",
+    },
+  ];
+  
+  
+  let StandardUsers= [
+    {
+      id: 7,
+      name: "Standard1",
+    },
+    {
+      id: 8,
+      name: "Standard2",
+    },
+    {
+      id: 9,
+      name: "Standard3",
+    },
+  ];
+  return (
+    <UserList adminUsers={AdminUsers} superUsers={SuperUsers} standardUsers={StandardUsers} />
+  );
+}
+
 const UserList = ({ adminUsers, superUsers, standardUsers }) => {
   const [superUserIds, setSuperUserIds] = useState(superUsers.map(user => user.id));
   const [originalSuperUserIds, setOriginalSuperUserIds] = useState(superUsers.map(user => user.id));
@@ -81,4 +132,7 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
   );
 };
 
-export default UserList;
+export {
+  UserPermissionPage,
+  UserList
+}
