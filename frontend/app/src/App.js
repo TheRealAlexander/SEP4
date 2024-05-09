@@ -11,6 +11,7 @@ import ClimatePage from './Components/ClimatePage/ClimatePage';
 import Controls from "./Components/Controls/Controls";
 import LoginPage from './Components/Login/LoginPage';
 import Registration from './Components/Registration/Registration';
+import UserList from './Components/UserPermission/UserPermission';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
 import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
@@ -71,6 +72,7 @@ function AppContent() {
             <Route path="/Controls/1" element={<Controls />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
+            <Route path="/users" element={<UserList adminUsers={AdminUsers} superUsers={SuperUsers} standardUsers={StandardUsers}/>} />
           </Routes>
         </div>
       </Box>
@@ -230,6 +232,52 @@ let data = {
   humidity: 50,
   co2_concentration: 800,
 };
+
+let AdminUsers=[
+  {
+    id: 1,
+    name: "Admin1",
+  },
+  {
+    id: 2,
+    name: "Admin2",
+  },
+  {
+    id: 3,
+    name: "Admin3",
+  },
+];
+
+let SuperUsers= [
+  {
+    id: 4,
+    name: "Super1",
+  },
+  {
+    id: 5,
+    name: "Super2",
+  },
+  {
+    id: 6,
+    name: "Super3",
+  },
+];
+
+
+let StandardUsers= [
+  {
+    id: 7,
+    name: "Standard1",
+  },
+  {
+    id: 8,
+    name: "Standard2",
+  },
+  {
+    id: 9,
+    name: "Standard3",
+  },
+];
 
 export default App;
 export { ResponsiveAppBar };
