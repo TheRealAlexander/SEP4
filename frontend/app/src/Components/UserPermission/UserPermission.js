@@ -24,7 +24,14 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
 
   const handleRemoveUser = (userId) => {
     setUpdatedSuperUserIds(current => current.filter(id => id !== userId));
-    setSuperUserIds(current => current.includes(userId) ? current.filter(id => id !== userId) : current);
+    // Determine if the user was originally a super user and being downgraded.
+    // If so, and they are removed from the change list, restore their super user status.
+    if (originalSuperUserIds.includes(userId) && !superUserIds.includes(userId)) {
+      setSuperUserIds(current => [...current, userId]);
+    } else {
+      // If they are not originally super users and are being removed, ensure they are not in the list.
+      setSuperUserIds(current => current.filter(id => id !== userId));
+    }
   };
 
   const handleConfirmChanges = () => {
