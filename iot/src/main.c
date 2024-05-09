@@ -4,11 +4,11 @@
 
 
 #include "driverMHZ19B.h"
-
 #include <util/delay.h>
 #include <stdio.h>
 #include <string.h> 
 #include <periodic_task.h>
+#include <display_button.h>
 volatile uint16_t seconds_count = 0; // Counter for the seconds
 volatile bool time_to_send_command = true;
 
@@ -36,8 +36,9 @@ int main() {
 
     // Initialize your periodic task to call `periodic_count_seconds` every second
     periodic_task_init_a(periodic_count_seconds, 1000); // Assuming the driver uses milliseconds
-
+    controller_init();
     while (1) {
+        handle_buttons();
         // Check if it's time to send the CO2 command
         if (time_to_send_command) {
             send_co2_command(Co2SensorRead);  // Trigger CO2 reading

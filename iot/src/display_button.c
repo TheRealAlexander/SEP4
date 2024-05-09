@@ -28,14 +28,18 @@ void resetScore(void)
 void updateDisplay(void)
 {
     int tensA = teamscore_a / 10;
+    
     int onesA = teamscore_a % 10;
     int tensB = teamscore_b / 10;
     int onesB = teamscore_b % 10;
-    display_setValues(hex_digits[tensA], hex_digits[onesA], hex_digits[tensB], hex_digits[onesB]);
+    display_setValues(tensA, onesA, tensB, onesB);
 
 }
 
 void handle_buttons(void) {
+
+
+    #if 1
     if (buttons_1_pressed() && buttons_2_pressed()) {
         checkScoreAMinus();
     } else if (buttons_1_pressed()) {
@@ -48,6 +52,7 @@ void handle_buttons(void) {
         checkScoreBPlus();
     }
     updateDisplay();
+    #endif
 }
 
 
