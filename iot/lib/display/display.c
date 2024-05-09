@@ -15,7 +15,7 @@
 #define CLOCK_DDR DDRH
 #define CLOCK_PORT PORTH
 
-const static uint8_t hex_digits[] = {
+const uint8_t hex_digits[] = {
     0b00111111, // 0
     0b00000110, // 1
     0b01011011, // 2

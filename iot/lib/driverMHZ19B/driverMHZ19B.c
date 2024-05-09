@@ -1,8 +1,8 @@
-#include "uart.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <string.h>
-#include "includes.h"
+#include "uart.h"
+#include "includes/includes.h"
 #include "driverMHZ19B.h"
 #define Co2SensorRead 0x86
 #define ZERO_POINT_CALIBRATION 0x87
@@ -14,6 +14,8 @@ volatile bool new_co2_data_available = false;
 
 uint8_t rx_buffer[7];
 uint8_t rx_count = 0;
+
+size_t strlen( const char *str ); // TODO: HACK
 
 void send_to_pc(char *s) {
     int len = strlen(s);
