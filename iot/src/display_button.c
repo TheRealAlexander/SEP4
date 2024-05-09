@@ -13,19 +13,21 @@ void setScoreTo40(void){
     teamscore_a == 40;
     teamscore_b == 40;
 }
-
+void resetScore(void){
+    teamscore_a == 0;
+    teamscore_b == 0;
+}
 void handle_buttons(void) {
         int tensA = teamscore_a / 10;
         int onesA = teamscore_a % 10;
         int tensB = teamscore_b / 10;
         int onesB = teamscore_b % 10;
     if (buttons_1_pressed()) {
-        teamscore_a ++;
-        
+        checkScoreAPlus();    
         display_setValues(tensA, onesA, tensB, onesB);
 
     } else if (buttons_1_pressed && buttons_2_pressed){
-        teamscore_a --;
+        checkScoreAMinus();
         display_setValues(tensA, onesA, tensB, onesB);
     } else if (buttons_2_pressed){
          teamscore_a == 0;
@@ -39,32 +41,53 @@ void handle_buttons(void) {
         display_setValues(tensA, onesA, tensB, onesB);
     }
 }
-int checkScoreA(){
+void checkScoreAPlus(){
    switch(teamscore_a) {
         case 0:
-            return 15;
+            teamscore_a = 15;
+            break;
         case 15:
-            return 30;
+            teamscore_a = 30;
+            break;
         case 30:
-            return 40;
+            teamscore_a = 40;
+            break;
         case 40:
             if (teamscore_b < 41) {
-                return 41; 
+                teamscore_a = 41; 
             } else {
                setScoreTo40();
             }
             break;
         case 41:
             if (teamscore_b < 41){
-                return 42
+               teamscore_a = 42
             } else {
                 setScoreTo40();
             }
             break;
         default:
-            return teamscore_a; // Return the current score if none of the above conditions are met.
+            break;; 
     }
-    return teamscore_a;
-int checkScoreB(void){
+}
+void checkScoreAMinus(void){
+    switch(teamscore_a){
+        case 0:
+           break;
+        case 15: 
+           teamscore_a = 0;
+           break;
+        case 30:
+           teamscore_a = 15;
+           break;
+        case 40:
+           teamscore_a = 30;
+           break;
+        case 41:
+           teamscore_a = 40;
+           break;
+        default:
+        break;;
 
+    }    
 }
