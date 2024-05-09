@@ -1,5 +1,8 @@
 import React from 'react';
-import { Typography, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, Checkbox } from '@mui/material';
+import {
+  Typography, TableContainer, Paper, Table, TableHead, TableRow, TableCell,
+  TableBody, Checkbox, FormControlLabel
+} from '@mui/material';
 
 const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
   <div style={{ marginBottom: '20px' }}>
@@ -19,9 +22,14 @@ const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.name}</TableCell>
               <TableCell>
-                <Checkbox
-                  checked={superUserIds.includes(user.id)}
-                  onChange={() => handleSuperUserToggle(user.id)}
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={superUserIds.includes(user.id)}
+                      onChange={() => handleSuperUserToggle(user.id)}
+                    />
+                  }
+                  label={user.name}  // Label is not needed here since we have a separate TableCell for user name
                 />
               </TableCell>
             </TableRow>
