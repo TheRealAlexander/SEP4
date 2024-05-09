@@ -1,3 +1,12 @@
+#if NOT_PLATFORMIO
+// Nothing
+#else
+#include <stdlib.h>
+#include <stdbool.h>
+#include "string.h"
+#include "textbuf.h"
+#endif
+
 ////////////////////////////////////////////////////////////////
 //- Write HTTP request
 

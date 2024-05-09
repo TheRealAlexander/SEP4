@@ -1,3 +1,9 @@
+#if NOT_PLATFORMIO
+// Nothing
+#else
+#include "string.h"
+#endif
+
 ////////////////////////////////////////////////////////////////
 //- Counted string
 

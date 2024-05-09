@@ -1,3 +1,9 @@
+#if NOT_PLATFORMIO
+// Nothing
+#else
+#include "http.h"
+#endif
+
 ////////////////////////////////////////////////////////////////
 //- Write HTTP request
 
