@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import UserList from './UserPermission';
+import { UserList } from './UserPermission';
 
 describe('UserList Component', () => {
   const adminUsers = [{ id: 1, name: 'Admin1' }];
