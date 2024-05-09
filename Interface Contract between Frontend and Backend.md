@@ -97,7 +97,7 @@ None
 **Description:** This request is used to change the user type of a 
 list of users, namely SuperUsers and StandardUsers.
 
-**Method:** UPDATE
+**Method:** PATCH
 
 **Parameters:**
 
@@ -112,3 +112,58 @@ List of Users
 **Example Response:**
 
 See: Get Users By Role
+
+
+## Requests for login/registration
+
+### Request: Register User Account
+
+**Description:** This request is used to register a new user account.
+
+**Method:** POST
+
+**Parameters:**
+
+Username
+Password
+
+**Response:**
+
+- Status Code: 200 OK
+
+
+### Request: Login
+
+**Description:** This request is used to verify login information.
+
+**Method:** POST
+
+**Parameters:**
+
+Username
+Password
+
+**Response:**
+
+- Status Code: 200 OK
+- body: JSON Web Token
+
+**Example Response:**
+
+Might be up for debate - Not completely sure how sendings/recieving/using
+JWT works yet.
+
+```json
+{
+  "Header": {
+    "alg": "HS256",
+    "typ": "JWT"
+  },
+  "Payload": {
+    "sub": "1234567890",
+    "name": "SomeUsername",
+    "userType": "Admin"
+  },
+  //some HMACSHA256 Signature
+}
+```
