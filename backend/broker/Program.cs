@@ -1,6 +1,5 @@
-
-using WebApi.DAO;
-using WebApi.Services;
+using Broker.Services;
+using SharedObjects.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,18 +12,20 @@ builder.Services.AddControllers().AddNewtonsoftJson(options =>
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Register the MongoDbContext
-builder.Services.AddSingleton<MongoDbContext>(sp =>
-    new MongoDbContext(
-        builder.Configuration.GetConnectionString("MongoDb"),
-        "indeklima_db"
-    )
+builder.Services.AddScoped(
+    sp =>
+        new HttpClient { }
 );
-builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
-builder.Services.AddScoped<ISensorDataService, SensorDataService>();
 
+builder.Services.AddScoped<IBrokerService, BrokerService>();
 
 var app = builder.Build();
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) // allow any origin
+    .AllowCredentials());
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
@@ -33,11 +34,7 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-app.UseCors(x => x
-    .AllowAnyMethod()
-    .AllowAnyHeader()
-    .SetIsOriginAllowed(origin => true) // allow any origin
-    .AllowCredentials());
+
 
 app.UseHttpsRedirection();
 
