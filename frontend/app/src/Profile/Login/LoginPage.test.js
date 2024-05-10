@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
+import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import LoginPage from './LoginPage';
 import AuthService from '../../Services/AuthService';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -18,10 +18,10 @@ describe('LoginPage', () => {
         </Router>
         );
 
-    fireEvent.change(getByLabelText(/username/i), { target: { value: 'testuser' } });
-    fireEvent.change(getByLabelText(/password/i), { target: { value: 'testpass' } });
+    fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
+    fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'testpass' } });
 
-    fireEvent.click(getByRole('button', { name: /sign in/i }));
+    fireEvent.click(screen.getByRole('button', { name: /sign in/i }));
 
     await waitFor(() => {
       expect(AuthService.login).toHaveBeenCalledWith('testuser', 'testpass');
