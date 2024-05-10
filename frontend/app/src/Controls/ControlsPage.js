@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Card, CardActionArea, CardContent, Typography, Grid, Container, Button } from '@mui/material';
-import TemperatureHumidityControl from '../HumidityTemperaturePreferences/TemperatureHumidity';
-import LightControl from '../LightControl/LightControl';
-import CurrentConditions from '../CurrentConditons/CurrentConditions';
+import TempHumiComp from './TempHumiComp';
+import LightControlComp from './LightControlComp';
+import CurrentConditionsComp from './CurrentConditionsComp';
+
 
 function HomePage() {
     const [selectedHal, setSelectedHal] = useState(null);
@@ -86,7 +87,7 @@ function HomePage() {
                       <Grid item xs={4} sx={{ overflowY: 'auto', maxHeight: 500 }}>
                           <Box>
                               {tempControlStates[selectedHal].lights.map((intensity, index) => (
-                                  <LightControl
+                                  <LightControlComp
                                       key={index}
                                       laneId={index + 1}
                                       initialIntensity={intensity}
@@ -96,7 +97,7 @@ function HomePage() {
                           </Box>
                       </Grid>
                       <Grid item xs={4}>
-                          <TemperatureHumidityControl 
+                          <TempHumiComp 
                               initialTemperature={tempControlStates[selectedHal].temperature}
                               initialHumidity={tempControlStates[selectedHal].humidity}
                               onTemperatureChange={(newValue) => updateTemperature(selectedHal, newValue)}
@@ -104,7 +105,7 @@ function HomePage() {
                           />
                       </Grid>
                       <Grid item xs={4}>
-                          <CurrentConditions 
+                          <CurrentConditionsComp 
                               temperature={tempControlStates[selectedHal].temperature}
                               humidity={tempControlStates[selectedHal].humidity}
                           />

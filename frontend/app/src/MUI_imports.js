@@ -12,3 +12,4 @@ export { default as Avatar } from '@mui/material/Avatar';
 export { default as Button } from '@mui/material/Button';
 export { default as Tooltip } from '@mui/material/Tooltip';
 export { default as MenuItem } from '@mui/material/MenuItem';
+export { default as Card } from '@mui/material/Card';

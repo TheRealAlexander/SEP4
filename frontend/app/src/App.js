@@ -8,9 +8,9 @@ import React from 'react';
 
 // Component Imports
 import ClimatePage from './Components/ClimatePage/ClimatePage';
-import Controls from "./Components/Controls/Controls";
-import LoginPage from './Components/Login/LoginPage';
-import Registration from './Components/Registration/Registration';
+import LoginPage from './Profile/Login/LoginPage.js';
+import Registration from './Profile/Registration/Registration.js';
+import ControlsPage from './Controls/ControlsPage.js';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
 import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
@@ -68,7 +68,7 @@ function AppContent() {
             <Route path="/" element={<ClimatePage data={data} />} />
             <Route path="/thermostat" element={<ThermostatDataWrapper />} />
             <Route path="/humidity" element={<HumidityDataWrapper />} />
-            <Route path="/Controls/1" element={<Controls />} />
+            <Route path="/controlsPage" element={<ControlsPage />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
           </Routes>
@@ -85,7 +85,7 @@ function ResponsiveAppBar() {
 
   const pathMapping = {
     Home: "/",
-    Controls: "/Controls/1",
+    Controls: "/controlsPage",
   };
 
   const handleOpenNavMenu = (event) => {
