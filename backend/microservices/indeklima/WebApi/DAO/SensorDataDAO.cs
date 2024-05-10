@@ -6,10 +6,12 @@ namespace WebApi.DAO
     public class SensorDataDao : ISensorDataDAO
     {
         private readonly IMongoCollection<SensorData> _sensorDataMongoCollection;
+        private readonly IMongoCollection<SensorGoal> _sensorGoalMongoCollection;
 
         public SensorDataDao(MongoDbContext context)
         {
             _sensorDataMongoCollection = context.Database.GetCollection<SensorData>("SensorData");
+            _sensorGoalMongoCollection = context.Database.GetCollection<SensorGoal>("SensorGoal");
         }
 
         public async Task<List<SensorData>> GetSensorDataAsync()
@@ -26,57 +28,25 @@ namespace WebApi.DAO
 
         public async Task AddSensorDataAsync(SensorData sensorData)
         {
-            try
-            {
-                if (sensorData == null)
-                {
-                    throw new ArgumentNullException(nameof(sensorData));
-                }
-
-                //Check for dubplicate data
-                var duplicateData = await _sensorDataMongoCollection.Find(s => s.Timestamp == sensorData.Timestamp)
-                    .FirstOrDefaultAsync();
-                if (duplicateData != null)
-                {
-                    throw new Exception("Duplicate data");
-                }
-
-                //Add data to the collection
-                await _sensorDataMongoCollection.InsertOneAsync(sensorData);
-                //Return 0 if successful
-                return;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
+            await _sensorDataMongoCollection.InsertOneAsync(sensorData);
         }
 
         public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
         {
+            await _sensorGoalMongoCollection.InsertOneAsync(sensorGoal);
+        }
+
+        public async Task<SensorGoal> GetLatestSensorGoalAsync()
+        {
             try
             {
-                if (sensorGoal == null)
-                {
-                    throw new ArgumentNullException(nameof(sensorGoal));
-                }
-
-                //Check for dubplicate data
-                var duplicateData = await _sensorDataMongoCollection.Find(s => s.Timestamp == sensorGoal.Timestamp)
+                return await _sensorGoalMongoCollection.Find(s => true)
                     .FirstOrDefaultAsync();
-                if (duplicateData != null)
-                {
-                    throw new Exception("Duplicate data");
-                }
-
-                //Add data to the collection
-                await _sensorDataMongoCollection.InsertOneAsync(sensorGoal);
-                //Return 0 if successful
-                return;
             }
             catch (Exception ex)
             {
-                throw new Exception(ex.Message);
+                throw new NullReferenceException(ex.Message);
+            }
         }
     }
 }

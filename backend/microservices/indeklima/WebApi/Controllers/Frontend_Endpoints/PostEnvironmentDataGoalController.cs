@@ -1,33 +1,36 @@
-namespace DefaultNamespace;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using WebApi.Models;
+using WebApi.Services;
 
-[ApiController]
-[Route("[controller]")
-public class PostEnvironmentDataGoalController : ControllerBase
+namespace WebApi.Controllers
 {
-    private ISensorDataService _sensorDataService;
-    
-    public PostEnvironmentDataGoalController(ISensorDataService sensorDataService)
+    [ApiController]
+    [Route("[controller]")]
+    public class PostEnvironmentDataGoalController : ControllerBase
     {
-        _sensorDataService = sensorDataService;
-    }
-    
-    [HttpPost]
-    [Authorize(Policy = "MustBeAdmin")]
-    public IActionResult PostSensorDataGoal(SensorGoal sensorGoal)
-    {
-        try
+        private readonly ISensorDataService _sensorDataService;
+
+        public PostEnvironmentDataGoalController(ISensorDataService sensorDataService)
         {
-            _sensorDataService.AddSensorDataGoal(sensorGoal);
-            SensorGoal newSensorDataGoal = _sensorDataService.GetSensorDataGoal();
-            if (newSensorDataGoal != null)
-            {
-                return Ok(newSensorDataGoal); // Return the new sensor data if method is successful
-            }
-            return Ok(0); // Return zero for IoT device if method is successful
+            _sensorDataService = sensorDataService;
         }
-        catch (Exception e)
+
+        [HttpPost]
+        [Authorize(Policy = "MustBeAdmin")]
+        public async Task<IActionResult> PostSensorDataGoal(SensorGoal sensorGoal)
         {
-            return BadRequest(new { success = false, error = e.Message });
+            try
+            {
+                await _sensorDataService.AddSensorDataGoalAsync(sensorGoal);
+                
+                return Ok(new { success = true });
+            }
+            catch (Exception e)
+            {
+                return BadRequest(new { success = false, error = e.Message });
+            }
         }
     }
 }

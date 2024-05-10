@@ -13,31 +13,25 @@ namespace WebApi.Services
         {
             _sensorDataDao = sensorDataDao;
         }
+
         public async Task<List<SensorData>> GetSensorData()
         {
             return await _sensorDataDao.GetSensorDataAsync();
         }
-        public Task AddSensorData(SensorData sensorData)
-        {
-            if (sensorData == null)
-            {
-                throw new ArgumentNullException(nameof(sensorData));
-            }
 
-            return _sensorDataDao.AddSensorDataAsync(sensorData);
-        }
-        public Task GetSensorDataGoal()
+        public async Task AddSensorDataAsync(SensorData sensorData)
         {
-            return _sensorDataDao.GetSensorDataGoalAsync();
+            _sensorDataDao.AddSensorDataAsync(sensorData);
         }
-        
-        public Task AddSensorDataGoal(SensorGoal sensorGoal)
-        {
-            if (sensorGoal == null)
-            {
-                throw new ArgumentNullException(nameof(sensorGoal));
-            }
 
-            return _sensorDataDao.AddSensorDataGoalAsync(sensorGoal);
+        public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
+        {
+            _sensorDataDao.AddSensorDataGoalAsync(sensorGoal);
+        }
+
+        public async Task<SensorGoal> GetSensorDataGoalAsync()
+        {
+            return await _sensorDataDao.GetLatestSensorGoalAsync();
+        }
     }
 }
