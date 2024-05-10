@@ -12,7 +12,7 @@
 //#define SERVER_IP       "216.58.211.14"
 //#define SERVER_IP       "172.20.10.6" // Alexander
 #define SERVER_IP       "172.20.10.3" // Rune 
-#define SERVER_PORT     8888
+#define SERVER_PORT     5200
 //#define SERVER_PORT      5038
 
 #define WIFI_SSID       "Rune - iPhone"
@@ -153,10 +153,8 @@ static int build_http_request(char *http_buf, int http_cap) {
 
     int http_len = snprintf(
         http_buf, http_cap,
-        "POST /data HTTP/1.0\r\n"
-        //"Host: sep4dk1.free.beeceptor.com\r\n"
-        //"Host: google.com\r\n"
-        "Host: sep4dk1.free.beeceptor.com\r\n"
+        "POST /PostEnviromentData HTTP/1.0\r\n"
+        "Host: indeklima\r\n"
         "Connection: Close\r\n"
         "Accept: application/json\r\n"
         "Accept-Encoding: identity\r\n"
