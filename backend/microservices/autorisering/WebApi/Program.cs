@@ -21,7 +21,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
     )
 );
 builder.Services.AddScoped<IUserDAO, UserDAO>();
-builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 AuthorizationPolicies.AddPolicies(builder.Services);
