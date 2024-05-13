@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const API_BASE_URL = 'http://localhost:5200';
+const API_BASE_URL = 'http://localhost:5202';
 
 export function useThermostatData() {
   const [thermData, setThermData] = useState({ temperature: 0 });
@@ -10,7 +10,8 @@ export function useThermostatData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/GetEnvironmentData`);
+        const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
+        console.log('response:', response);
         const data = response.data;
 
         let temperatureValue = data[0]?.temperature; // Use optional chaining to handle undefined
@@ -64,7 +65,8 @@ export function useHumidityData() {
   useEffect(() => {
       const fetchData = async () => {
           try {
-              const response = await axios.get(`${API_BASE_URL}/GetEnvironmentData`);
+            const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
+            console.log('response:', response);
               const data = response.data;
               const humidityValue = data[0].humidity;
 
