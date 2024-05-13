@@ -2,8 +2,7 @@
 
 
 #ifdef UNIT_TEST
-#include "simple mock avr io.h"
-#include "simple mock util delay.h"
+
 #else
 #include <avr/io.h>
 #include <util/delay.h>

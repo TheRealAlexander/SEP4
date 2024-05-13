@@ -18,7 +18,6 @@ void setScoreTo40(void)
 {
     teamscore_a = 40;
     teamscore_b = 40;
-    updateDisplay();
 }
 
 void resetScore(void)
