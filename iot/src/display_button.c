@@ -2,8 +2,11 @@
 #include <buttons.h>
 #include <display.h>
 #include "includes/includes.h"
+#include <uart.h>
+#include "tone.h"
 int teamscore_a = 0;
 int teamscore_b = 0;
+
 
 void controller_init(void)
 {
@@ -58,6 +61,9 @@ void handle_buttons(void) {
 
 void checkScoreAPlus(void)
 {
+    if (teamscore_b == 42) {
+        return;
+    }
     switch (teamscore_a)
     {
     case 0:
@@ -83,6 +89,7 @@ void checkScoreAPlus(void)
         if (teamscore_b < 41)
         {
             teamscore_a = 42;
+            tone_play_final_fantasy_victory();
         } else
         {
             setScoreTo40();
@@ -121,6 +128,10 @@ void checkScoreAMinus(void)
 
 void checkScoreBPlus(void)
     {
+         if (teamscore_a == 42) {
+        return;
+    }
+
         switch (teamscore_b)
         {
         case 0:
@@ -146,6 +157,7 @@ void checkScoreBPlus(void)
             if (teamscore_a < 41)
             {
                 teamscore_b = 42;
+                tone_play_final_fantasy_victory();
             }
             else
             {

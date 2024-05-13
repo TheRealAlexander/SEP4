@@ -15,7 +15,7 @@ volatile bool new_co2_data_available = false;
 uint8_t rx_buffer[7];
 uint8_t rx_count = 0;
 
-size_t strlen( const char *str ); // TODO: HACK
+size_t strlen( const char *str ); // TODO>
 
 void send_to_pc(char *s) {
     int len = strlen(s);
@@ -82,31 +82,35 @@ void process_co2_data() {
     snprintf(debug_msg, sizeof(debug_msg), "CO2 Concentration: %u ppm\n", co2_concentration);
     send_to_pc(debug_msg);
 }
-
+uint8_t checksum2(uint8_t* packet) {
+    uint8_t sum = 0;
+    for (int i = 1; i < 8; i++) {
+        sum += packet[i];
+    }
+    uint8_t checksumVal = 0xFF - sum;
+    checksumVal += 1;
+    return checksumVal;
+}
 uint8_t checksum(uint8_t* packet) {
-  char debug_msg[256] = "Bytes for checksum calculation: ";  // Initialize with initial message
+  // Debugging output to show packet bytes
+    char debug_msg[256] = "Bytes for checksum calculation: ";
     char byte_msg[10];
-
-    // Adjusted to show all bytes except the start marker and the checksum itself
-    for (int i = 0; i < 6; i++) {  
+    for (int i = 0; i < 9; i++) {  // Display all bytes, including start and checksum
         snprintf(byte_msg, sizeof(byte_msg), "%02X ", packet[i]);
         strcat(debug_msg, byte_msg);
     }
     strcat(debug_msg, "\n");
-    //send_to_pc(debug_msg);  // Send the compiled debug message
-
-    //send_to_pc("Calculating checksum...\n");
-    uint8_t sum = 0;
-    // Calculate checksum from bytes between the initial and final markers
-    for (int i = 1; i < 6; i++) {
-        sum += packet[i];
-    }
-    uint8_t calculatedChecksum = 0xFF - sum + 1;
-
-    snprintf(debug_msg, sizeof(debug_msg), "Expected checksum: %02X, Calculated checksum: %02X\n", packet[6], calculatedChecksum);
     send_to_pc(debug_msg);
 
-    if (calculatedChecksum == packet[6]) {
+    // Use checksum2 to calculate the checksum
+    uint8_t calculatedChecksum = checksum2(packet);
+
+    // Prepare and send the comparison message
+    snprintf(debug_msg, sizeof(debug_msg), "Expected checksum: %02X, Calculated checksum: %02X\n", packet[8], calculatedChecksum);
+    send_to_pc(debug_msg);
+
+    // Compare the calculated checksum with the expected checksum (assumed to be at packet[8])
+    if (calculatedChecksum == packet[8]) {
         send_to_pc("Checksum correct. Processing packet...\n");
         return true;
     } else {
@@ -131,29 +135,12 @@ uint16_t calculatePartsPerMil(uint8_t *packet) {
 
     return co2_concentration;
 }
-uint8_t checksum2(uint8_t* packet) {
-    uint8_t sum = 0;
-    for (int i = 1; i < 8; i++) {
-        sum += packet[i];
-    }
-    return 0xFF - sum + 1;
-}
+
 void send_co2_command(uint8_t command_type) {
     send_to_pc("Sending CO2 command...\n");
-    uint8_t buf[9] = {0};
-    
-    // read co2 concentration
-    buf[0] = 0xff; 
-    buf[1] = 0x01;
-    buf[2] = command_type;
-    buf[3] = 0x00;
-    buf[4] = 0x00;
-    buf[5] = 0x00;
-    buf[6] = 0x00;
-    buf[7] = 0x00;
-    buf[8] = checksum2(buf);
-     // Calculate checksum, excluding the position of the checksum itself
+    uint8_t buf[9] = {0xFF, 0x01, command_type, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
+    buf[8] = checksum2(buf);
     uart_send_array_blocking(USART_3, buf, sizeof(buf)); // Send the command via USART
 }
 
