@@ -111,14 +111,19 @@ void tone_play_starwars()
     tone_play(392, 1000); // G4 for 1000 ms
 }
 void tone_play_final_fantasy_victory(){
-    tone_play(392, 200); 
-    tone_play(330, 200); 
-    tone_play(349, 200); 
-    tone_play(392, 200); 
-    tone_play(523, 400); 
-    tone_play(493, 200); 
-    tone_play(392, 200); 
-    tone_play(349, 200); 
-    tone_play(392, 400);
+    tone_play(400, 140); 
+    tone_play(0, 20); 
+    tone_play(400, 140); 
+    tone_play(0, 20); 
+    tone_play(400, 140); 
+    tone_play(0, 20); 
+    tone_play(400, 480); 
+    tone_play(350, 480); 
+    tone_play(385, 480); 
+    tone_play(400, 300); 
+    tone_play(0, 20); 
+    tone_play(385, 140); 
+     tone_play(0, 20); 
+    tone_play(400, 480);
 
 }

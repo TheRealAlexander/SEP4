@@ -24,7 +24,7 @@ void periodic_count_seconds() {
     if (seconds_count >= 10) {
         time_to_send_command = true; // Set the flag to send the command
     }
-     if (seconds_count % 2 == 0) {  // Every 5 seconds
+     if (seconds_count % 2 == 0) {  // Every 2 seconds
         time_to_check_buttons = true;
     }
 }
@@ -43,7 +43,6 @@ int main() {
     periodic_task_init_a(periodic_count_seconds, 1000); // Assuming the driver uses milliseconds
     controller_init();
     while (1) {
-        
         // Check if it's time to send the CO2 command
         if (time_to_send_command) {
             send_co2_command(Co2SensorRead);  // Trigger CO2 reading
