@@ -51,6 +51,16 @@ services:
       - indeklima_webapi
       - auth_webapi
 
+  frontend:
+    image: frontend
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+
 volumes:
   mongodbdata:
   authmongodbdata:
