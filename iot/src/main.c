@@ -143,6 +143,14 @@ static void do_wifi(void) {
     static wifi_step curr_wifi_step = WIFI_STEP_RESET;
     static wifi_step next_wifi_step = WIFI_STEP_RESET;
 
+    // TODO(rune): Burde dette command timeout være en del af driveren, eller er det mere fleksibelt at lade user-koden bestemme?
+    // NOTE(rune): Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
+    static timestamp wifi_cmd_timestamp = 0;
+
+    // NOTE(rune): Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
+    // Skal være større end packet_timeout. Er meget høj, da det kan tage langt tid at join et access point.
+    static timestamp wifi_cmd_timeout = 20000;
+
     static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
     static timestamp packet_interval = 5000; // NOTE(rune): Hvor ofte sendes ny packet?
     static timestamp packet_timeout = 1000;
@@ -165,6 +173,7 @@ static void do_wifi(void) {
             case WIFI_STEP_AP_JOIN: {
                 wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
+                wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi ap join\n");
             } break;
@@ -175,6 +184,7 @@ static void do_wifi(void) {
 
                     wifi2_async_tcp_open(SERVER_IP, SERVER_PORT);
                     next_wifi_step = WIFI_STEP_TCP_SEND;
+                    wifi_cmd_timestamp = g_timestamp;
 
                     send_to_pc_fmt("📡 wifi tcp open\n");
                 }
@@ -186,6 +196,7 @@ static void do_wifi(void) {
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
+                wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi tcp send\n");
                 send_to_pc(ANSI_FG_MAGENTA);
@@ -200,15 +211,18 @@ static void do_wifi(void) {
                     wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
-                    send_to_pc_fmt("📡 wifi tcp close\n");
+                    wifi_cmd_timestamp = g_timestamp;
+
+                    send_to_pc_fmt("📡 wifi tcp close\n"); 
                 }
             } break;
         }
     }
 
     ////////////////////////////////////////////////////////////////
-    // Tjek om nuværende command er færdig
+    // Tjek om nuværende command er timeout eller færdig
 
+    bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
 
@@ -227,13 +241,24 @@ static void do_wifi(void) {
             // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
             // hvilket den vil være er, hvis transaction blev færdig uden fejl, så vi ignorerer bare at ok == false.
         } else {
-            // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
-            next_wifi_step = WIFI_STEP_RESET;
+            timeout_or_error = true;
 
             send_to_pc(ANSI_FG_RED);
             send_to_pc("cmd_result.ok == false\n");
             send_to_pc(ANSI_RESET);
         }
+    } else if (wifi_cmd_timestamp + wifi_cmd_timeout <= g_timestamp) {
+        timeout_or_error = true;
+
+        send_to_pc(ANSI_FG_RED);
+        send_to_pc("wifi cmd timeout\n");
+        send_to_pc(ANSI_RESET);
+    }
+
+    if (timeout_or_error) {
+        // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
+        next_wifi_step = WIFI_STEP_RESET;
+        wifi2_canel_async();
     }
 }
 
