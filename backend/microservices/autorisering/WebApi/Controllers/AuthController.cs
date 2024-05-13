@@ -58,7 +58,7 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost, Route("login")]
-    public async Task<ActionResult> Login([FromBody] UserLoginDTO userLoginDto)
+    public async Task<ActionResult> LoginAsync([FromBody] UserLoginDTO userLoginDto)
     {
         try
         {

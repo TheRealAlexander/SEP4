@@ -36,7 +36,7 @@ namespace AuthTest
             _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -52,7 +52,7 @@ namespace AuthTest
             _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).Throws(new ArgumentException("Invalid username or password"));
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -68,7 +68,7 @@ namespace AuthTest
             _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
             var okResult = Assert.IsType<OkObjectResult>(result);
             var jwt = (string)okResult.Value!;
             List<System.Security.Claims.Claim> claims;

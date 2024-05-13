@@ -22,7 +22,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("{username}")]
-    public async Task<ActionResult<User>> GetUser(string username)
+    public async Task<ActionResult<User>> GetUserAsync(string username)
     {
         try
         {
@@ -42,7 +42,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("/GetAllUsers")]
-    public async Task<ActionResult<List<User>>> GetAllUsers()
+    public async Task<ActionResult<List<User>>> GetAllUsersAsync()
     {
         try
         {
@@ -57,7 +57,7 @@ public class UserController : ControllerBase
     }
     
     [HttpPost("register")]
-    public async Task<ActionResult<User>> RegisterUser([FromBody] UserCreationDTO userCreationDTO)
+    public async Task<ActionResult<User>> RegisterUserAsync([FromBody] UserCreationDTO userCreationDTO)
     {
         if (!ModelState.IsValid)
         {
@@ -68,7 +68,7 @@ public class UserController : ControllerBase
         {
             await _userService.RegisterUserAsync(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
-            return CreatedAtAction(nameof(GetUser), new { username = userCreationDTO.Username }, userCreationDTO);
+            return CreatedAtAction(nameof(GetUserAsync), new { username = userCreationDTO.Username }, userCreationDTO);
         }
         catch (DuplicateNameException ex)
         {
@@ -88,7 +88,7 @@ public class UserController : ControllerBase
     [HttpPost("swapRoles")]
     public async Task<ActionResult<List<User>>> SwapRolesAsync([FromBody] List<User> users)
     {
-        if (users == null)
+        if (users.IsNullOrEmpty())
         {
             return BadRequest("No users provided.");
         }
@@ -105,6 +105,10 @@ public class UserController : ControllerBase
                 else if (user.Role == "User")
                 {
                     user.Role = "SuperUser";
+                }
+                else
+                {
+                    return BadRequest("Role must be either User or SuperUser!");
                 }
                 
                 await _userService.UpdateUserAsync(user);
