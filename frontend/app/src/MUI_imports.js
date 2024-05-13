@@ -13,3 +13,5 @@ export { default as Button } from '@mui/material/Button';
 export { default as Tooltip } from '@mui/material/Tooltip';
 export { default as MenuItem } from '@mui/material/MenuItem';
 export { default as Card } from '@mui/material/Card';
+export { default as CardContent } from '@mui/material/CardContent';
+export { default as CircularProgress } from '@mui/material/CircularProgress';
