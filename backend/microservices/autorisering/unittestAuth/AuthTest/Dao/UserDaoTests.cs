@@ -106,5 +106,6 @@
             Assert.Equal("SuperUser", result.Role);
             Assert.Equal(26, result.Age);
         }
+
     }
 }

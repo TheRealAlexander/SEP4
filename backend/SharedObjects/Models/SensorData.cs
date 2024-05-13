@@ -1,0 +1,16 @@
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
+
+namespace SharedObjects.Models
+{
+    public class SensorData
+    {
+        [BsonId]
+        [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
+        public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
+        public double Temperature { get; set; }
+        public double Humidity { get; set; }
+        public double CO2 { get; set; }
+        public DateTime Timestamp { get; set; }
+    }
+}

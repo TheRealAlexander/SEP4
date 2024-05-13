@@ -20,8 +20,9 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
         "indeklima_db"
     )
 );
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-builder.Services.AddScoped<SensorDataDao>();
+
 
 var app = builder.Build();
 
@@ -31,6 +32,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) // allow any origin
+    .AllowCredentials());
 
 app.UseHttpsRedirection();
 

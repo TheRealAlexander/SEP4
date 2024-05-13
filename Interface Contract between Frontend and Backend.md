@@ -34,7 +34,9 @@ time.
 - Double 'humidity' - average across 1 minute.
 - Double 'co2_concentration' - average across 1 minute.
 
+
 **Response Example:**
+
 
 ```json
 {
@@ -49,6 +51,7 @@ time.
   ]
 }
 ```
+
 ## Request: User Login
 **Description:**
 
