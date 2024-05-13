@@ -25,13 +25,16 @@
 // Measurements
 
 typedef struct measurements {
-    uint8_t humidity_integral;     // NOTE(rune): Før komma
-    uint8_t humidity_decimal;      // NOTE(rune): Efter komma
-    uint8_t temperature_integral;  // NOTE(rune): Før komma
-    uint8_t temperature_decimal;   // NOTE(rune): Efter komma
-
+    // NOTE(rune): From sensors
+    uint8_t humidity_integral;    // Før komma
+    uint8_t humidity_decimal;     // Efter komma
+    uint8_t temperature_integral; // Før komma
+    uint8_t temperature_decimal;  // Efter komma
     uint16_t co2;
+
+    // NOTE(rune): From backend
     bool open_window;
+    int want_next_measurement_delay;
 } measurements;
 
 static measurements g_measurements;
@@ -84,6 +87,49 @@ static int build_http_request(char *http_buf, int http_cap) {
     return http_len;
 }
 
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_bool_from_http_response(char *response, char *property, bool *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        char *value_ptr = needle_ptr + needle_len;
+        if (strstr(value_ptr, "true") == value_ptr) {
+            *value = true;
+            return true;
+        }
+
+        if (strstr(value_ptr, "false") == value_ptr) {
+            *value = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_int_from_http_response(char *response, char *property, int *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        *value = 0;
+        char *value_ptr = needle_ptr + needle_len;
+        while (*value_ptr >= '0' && *value_ptr <= '9') {
+            int digit = *value_ptr - '0';
+            *value *= 10;
+            *value += digit;
+
+            value_ptr++;
+        }
+    }
+
+    return false;
+}
+
 static void process_http_response(char *http_buf, int http_len) {
 
     send_to_pc(ANSI_FG_GREEN);
@@ -119,8 +165,8 @@ static void process_http_response(char *http_buf, int http_len) {
     send_to_pc("\n");
     send_to_pc(ANSI_RESET);
 
-    if (strstr(trim_buf, "\"openWindow\":false")) { g_measurements.open_window = false; }
-    if (strstr(trim_buf, "\"openWindow\":true"))  { g_measurements.open_window = true; }
+    read_bool_from_http_response(trim_buf, "openWindow", &g_measurements.open_window);
+    read_int_from_http_response(trim_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
 
     send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
     send_to_pc_fmt("window: %d\n", g_measurements.open_window);
@@ -152,8 +198,8 @@ static void do_wifi(void) {
     static timestamp wifi_cmd_timeout = 20000;
 
     static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
-    static timestamp packet_interval = 5000; // NOTE(rune): Hvor ofte sendes ny packet?
     static timestamp packet_timeout = 1000;
+    timestamp packet_interval = g_measurements.want_next_measurement_delay;
 
     ////////////////////////////////////////////////////////////////
     // Tjek om vi skal starte en ny command
@@ -168,6 +214,7 @@ static void do_wifi(void) {
                 wifi2_init();
                 wifi2_async_reset();
                 next_wifi_step = WIFI_STEP_AP_JOIN;
+                wifi_cmd_timestamp = g_timestamp;
             } break;
 
             case WIFI_STEP_AP_JOIN: {
@@ -213,7 +260,7 @@ static void do_wifi(void) {
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
                     wifi_cmd_timestamp = g_timestamp;
 
-                    send_to_pc_fmt("📡 wifi tcp close\n"); 
+                    send_to_pc_fmt("📡 wifi tcp close\n");
                 }
             } break;
         }
@@ -339,7 +386,9 @@ static void do_buttons_and_display() {
 // Main loop
 
 int main() {
-    uart_init(USART_0, 9600, 0);            // USB
+    g_measurements.want_next_measurement_delay = 5000;
+
+    uart_init(USART_0, 9600, 0);        // USB
     uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
     tone_init();
