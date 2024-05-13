@@ -20,12 +20,12 @@ namespace Broker.Services
 
         public async Task<SensorData> GetSensorData(DateTime dateTime1, DateTime dateTime2)
         {
-            return await _httpClient.GetFromJsonAsync<SensorData>($"http://indeklima_webapi:5200/GetEnvironmentData/{dateTime1}/{dateTime2}");
+            return await _httpClient.GetFromJsonAsync<SensorData>($"http://indeklima_webapi:5200/GetEnvironmentData?dateTime1={dateTime1}&dateTime2={dateTime2}");
         }
 
         public async Task SetPrefClimateValues(int temp, int humidity)
         {
-            await _httpClient.PostAsJsonAsync($"http://indeklima_webapi:5200/SetPrefClimateValues/{temp}/{humidity}");
+            await _httpClient.PostAsJsonAsync($"http://indeklima_webapi:5200/SetPrefClimateValues?temp={temp}&humidity={humidity}");
         }
     }
 }
