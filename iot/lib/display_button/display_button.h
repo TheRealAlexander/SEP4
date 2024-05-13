@@ -2,18 +2,18 @@
 #define DISPLAY_BUTTON_H
 
 #include "includes/includes.h"
+#ifndef PLATFORMIO_UNIT_TEST
+int teamscore_a;
+int teamscore_b;
 
-extern int teamscore_a;
-extern int teamscore_b;
-
-extern void controller_init(void);
-extern void handle_buttons(void);
-extern void resetScore(void);
-extern void setScoreTo40(void);
-extern void updateDisplay(void);
-extern void checkScoreAPlus(void);
-extern void checkScoreAMinus(void);
-extern void checkScoreBPlus(void);
-extern void checkScoreBMinus(void);
-
+void controller_init(void);
+void handle_buttons(void);
+void resetScore(void);
+void setScoreTo40(void);
+void updateDisplay(void);
+void checkScoreAPlus(void);
+void checkScoreAMinus(void);
+void checkScoreBPlus(void);
+void checkScoreBMinus(void);
+#endif // PLATFORMIO_UNIT_TEST
 #endif // DISPLAY_BUTTON_H
