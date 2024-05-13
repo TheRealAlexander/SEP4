@@ -18,6 +18,8 @@ public class AuthController : ControllerBase
     {
         this.config = config;
         this._userService = userService;
+    }
+
     private readonly IAuthService authService;
 
 
