@@ -17,14 +17,15 @@ namespace Broker.Services
         {
             return await _httpClient.GetFromJsonAsync<List<SensorData>>("http://indeklima_webapi:5200/GetEnvironmentData");
         }
-        public Task AddSensorData(SensorData sensorData)
-        {
-            if (sensorData == null)
-            {
-                throw new ArgumentNullException(nameof(sensorData));
-            }
 
-            return _httpClient.PostAsJsonAsync("http://indeklima_webapi:5200/AddEnvironmentData", sensorData);
+        public async Task<SensorData> GetSensorData(DateTime dateTime1, DateTime dateTime2)
+        {
+            return await _httpClient.GetFromJsonAsync<SensorData>($"http://indeklima_webapi:5200/GetEnvironmentData/{dateTime1}/{dateTime2}");
+        }
+
+        public async Task SetPrefClimateValues(int temp, int humidity)
+        {
+            await _httpClient.PostAsJsonAsync($"http://indeklima_webapi:5200/SetPrefClimateValues/{temp}/{humidity}");
         }
     }
 }
