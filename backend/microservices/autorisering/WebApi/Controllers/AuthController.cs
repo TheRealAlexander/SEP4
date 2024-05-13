@@ -20,9 +20,6 @@ public class AuthController : ControllerBase
         this._userService = userService;
     }
 
-    private readonly IAuthService authService;
-
-
     private List<Claim> GenerateClaims(User user)
     {
         var claims = new[]
