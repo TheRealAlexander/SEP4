@@ -7,7 +7,7 @@ on:
       - ".github/workflows/backend_build_indeklima_webapi.yml"
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -23,3 +23,6 @@ jobs:
       - name: Build with dotnet
         working-directory: backend/microservices/indeklima/WebApi
         run: dotnet build IndeklimaWebApi.csproj -c release
+      - name: Test with dotnet
+        working-directory: backend/microservices/indeklima/unittest_indeklima_webapi
+        run: dotnet test unittest_indeklima_webapi.csproj -c release

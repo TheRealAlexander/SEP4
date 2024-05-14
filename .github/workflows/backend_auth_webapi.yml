@@ -23,7 +23,7 @@ on:
       - ".github/workflows/backend_auth_webapi.yml"
 
 jobs:
-  build:
+  build_and_test:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -39,3 +39,6 @@ jobs:
       - name: Build with dotnet
         working-directory: backend/microservices/autorisering/WebApi
         run: dotnet build AuthWebApi.csproj -c release
+      - name: Test with dotnet
+        working-directory: backend/microservices/autorisering/unittestAuth/AuthTest
+        run: dotnet test AuthTest.csproj -c release
