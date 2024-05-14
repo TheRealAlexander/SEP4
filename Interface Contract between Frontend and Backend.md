@@ -13,7 +13,7 @@ the players and make it comfortable for the players.
 
 ## Requests for Environmental Data
 
-### Request: Get Environmental Data
+### Request: Get Environmental Data By Hall ID
 
 **Description:** This request is utilized to retrieve environmental data such as
 indoor climate, temperature, humidity, and CO2 concentration over a period of
@@ -47,6 +47,169 @@ time.
       "temperature": 22.5,
       "humidity": 50,
       "co2_concentration": 800
+    }
+  ]
+}
+```
+
+
+### Request: Get Environmental Data With Limit
+
+**Description** This request is utilized to retrieve environmental data with a limit 
+to how many data entries there should be retrieved.
+
+**Method** GET
+
+**Parameters:**
+
+- Integer 'limit'
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing environmental data.
+
+- Double 'temperature' - average across 1 minute.
+- Double 'humidity' - average across 1 minute.
+- Double 'co2_concentration' - average across 1 minute.
+
+**Response Example:**
+
+```json
+{
+  "data": [
+    {
+      "timestamp": "2024-04-10T12:00:00Z",
+      "temperature": 22.5,
+      "humidity": 50,
+      "co2_concentration": 800
+    },
+    //and more data entries
+  ]
+}
+```
+
+
+### Request: Get Environmental Data by Date interval
+
+**Description** This request is utilized to retrieve environmental data between two dates
+
+**Method:** GET
+
+**Parameters:**
+
+- DateTime 'dateTime1'
+- DateTime 'dateTime2'
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing a list of environmental data objects.
+
+- Double 'temperature' - average across 1 minute.
+- Double 'humidity' - average across 1 minute.
+- Double 'co2_concentration' - average across 1 minute.
+
+**Response Example:**
+
+```json
+  {
+    "data1": [
+      {
+        "timestamp": "2024-04-10T12:00:00Z",
+        "temperature": 22.5,
+        "humidity": 50,
+        "co2_concentration": 800
+      }
+    ],
+    "data2": [
+      {
+        "timestamp": "2024-04-10T12:01:00Z",
+        "temperature": 24,
+        "humidity": 45,
+        "co2_concentration": 790
+      }
+    ]
+  }
+```
+
+
+## **Requirement:** 
+
+Som admin vil jeg gerne have, at hallens indeklima kan justeres automatisk, for at styrke helbredet af spillerne.
+
+## Requests for setting preferred climate settings:
+
+### Request: Get preferred climate settings for each hall
+
+**Description**
+
+This request will be utilized to fetch the current preferred climate settings for each hall.
+
+**Method:** GET
+
+**Parameters:**
+
+- NONE
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing a list of all halls and their respective current preferred climate settings.
+
+**Response Example:**
+
+```json
+  {
+    "Hall1": [
+      {
+        "HallID" : 1,
+        "Temperature" : 21,
+        "Humidity" : 40,
+        "CO2_Concentration" : 800
+      }
+    ],
+    "Hall2": [
+      {
+        "HallID" : 2,
+        "Temperature" : 21,
+        "Humidity" : 40,
+        "CO2_Concentration" : 800
+      }
+    ]
+  }
+```
+
+### Request: Get preferred climate settings for specific hall
+
+**Description**
+
+This request will be utilized to set the preferred climate settings for a specific hall
+
+**Method:** POST
+
+**Parameters:**
+
+- Integer: 'HallID'
+- Double: 'Temperature'
+- Double: 'Humidity'
+- Integer: 'CO2_Concentration'
+
+**Response:**
+
+- Status Code: 200 OK
+- Json body which confirms that the posted data corresponds with what the user expects to have posted
+
+**Example Reponse:**
+
+```json
+{
+  "hall1" [
+    {
+      "HallID" : 1,
+      "Temperature" : 21,
+      "Humidity" : 40,
+      "CO2_Concentration" : 800
     }
   ]
 }
@@ -258,5 +421,3 @@ No users provided.
 ```json
 Role must be either User or SuperUser!
 ```
-
-
