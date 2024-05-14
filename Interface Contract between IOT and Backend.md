@@ -14,6 +14,7 @@ request contains one or more measurements:
 
 ```json5
 {
+    "hallId": 1,            // Integer
     "temperatures": 20.3,   // Unit: Celcius
     "temperature": 20.3,    // Unit: Celcius
     "humidity": 40.5,       // Unit: % volume
