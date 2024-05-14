@@ -4,7 +4,7 @@
 
 /iot/.pio/build/megaatmega2560
 /iot/.pio
-*.json
+*.json 
 *.ini
 
 ###################
@@ -269,3 +269,9 @@ FakesAssemblies/
 *.opt
 .vscode/launch.json
 .vscode/tasks.json
+
+
+#Make sure that launchSettings.json is not ignored
+!Properties/launchSettings.json
+!appsettings.json
+!appsettings.Development.json
