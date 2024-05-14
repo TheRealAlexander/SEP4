@@ -7,7 +7,7 @@ on:
       - ".github/workflows/backend_build_indeklima_webapi.yml"
 
 jobs:
-  build_and_test:
+  build:
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -24,6 +24,20 @@ jobs:
       - name: Build with dotnet
         working-directory: backend/microservices/indeklima/WebApi
         run: dotnet build IndeklimaWebApi.csproj -c release
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ["3.1.x", "8.0.x"]
+        mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Display dotnet version
+        run: dotnet --version
       - name: Start MongoDB
         uses: supercharge/mongodb-github-action@1.10.0
         with:
