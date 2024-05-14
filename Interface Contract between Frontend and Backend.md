@@ -24,6 +24,7 @@ time.
 **Parameters:**
 
 - Integer 'hall_id'
+- Integer 'limit'
 
 **Response:**
 
