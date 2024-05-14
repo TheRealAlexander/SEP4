@@ -7,12 +7,13 @@
 int teamscore_a = 0;
 int teamscore_b = 0;
 
-
+#ifndef PIO_UNIT_TESTING
 void controller_init(void)
 {
     buttons_init();
     display_init();
 }
+#endif
 
 void setScoreTo40(void)
 {
@@ -27,6 +28,7 @@ void resetScore(void)
     updateDisplay();
 }
 
+#ifndef PIO_UNIT_TESTING
 void updateDisplay(void)
 {
     int tensA = teamscore_a / 10;
@@ -37,6 +39,7 @@ void updateDisplay(void)
     display_setValues(tensA, onesA, tensB, onesB);
 
 }
+#endif
 
 void handle_buttons(void) {
 
