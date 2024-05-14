@@ -70,11 +70,11 @@ jobs:
       - name: Set Message
         id: set_message
         run: |
-          message="Workflow Run: [Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})%0A%0A"
+          message="Workflow Run: [Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) - "
           if [ "${{ needs.compile.result }}" != "success" ]; then
-            message+="Build failed. Please check the logs for errors.%0A"
+            message+="Build failed. Please check the logs for errors. "
           elif [ "${{ needs.test.outputs.test_success }}" != "success" ]; then
-            message+="Tests failed. Please check the test logs.%0A"
+            message+="Tests failed. Please check the test logs. "
           else
             message+="Build and tests succeeded!"
           fi
