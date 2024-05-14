@@ -4,7 +4,7 @@ import { Card, CardContent, Typography, CircularProgress } from '../../MUI_impor
 export default function ThermostatData({ thermData, isLoading }) {
   if (isLoading) {
     return (
-      <Card variant="outlined">
+      <Card>
         <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px' }}>
           <CircularProgress />
         </CardContent>

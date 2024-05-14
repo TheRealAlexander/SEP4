@@ -7,7 +7,7 @@ export default function HumidityData({ humidityData, isLoading }) {
 
     if (isLoading) {
         return (
-            <Card variant="outlined">
+            <Card>
                 <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px' }}>
                     <CircularProgress />
                 </CardContent>
@@ -16,7 +16,7 @@ export default function HumidityData({ humidityData, isLoading }) {
     }
 
     return (
-        <Card variant="outlined">
+        <Card>
             <CardContent>
                 <Typography variant="h4" component="h2">
                     Humidity Data
