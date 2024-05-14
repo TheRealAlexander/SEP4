@@ -99,6 +99,7 @@ to how many data entries there should be retrieved.
 
 **Parameters:**
 
+- Integer: 'HallID'
 - DateTime 'dateTime1'
 - DateTime 'dateTime2'
 
