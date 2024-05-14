@@ -40,7 +40,7 @@ namespace WebApi.DAO
         {
             try
             {
-                return await _sensorGoalMongoCollection.Find(s => true)
+                return await _sensorGoalMongoCollection.Find(s => true).SortByDescending(s => s.Timestamp)
                     .FirstOrDefaultAsync();
             }
             catch (Exception ex)

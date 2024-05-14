@@ -20,7 +20,7 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Authorize(Policy = "MustBeAdmin")]
-        public async Task<IActionResult> PostSensorData(IOTSensorDataDto data)
+        public async Task<IActionResult> PostSensorData([FromBody] IOTSensorDataDto data)
         {
             try
             {
@@ -32,8 +32,7 @@ namespace WebApi.Controllers
                     Timestamp = DateTime.Now
                 };
 
-                _sensorDataService.AddSensorDataAsync(sensorData);
-                
+                await _sensorDataService.AddSensorDataAsync(sensorData);
                 SensorGoal latestSensorGoal = await _sensorDataService.GetSensorDataGoalAsync();
                 
                 return Ok(new

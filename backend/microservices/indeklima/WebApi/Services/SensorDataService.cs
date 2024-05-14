@@ -21,12 +21,12 @@ namespace WebApi.Services
 
         public async Task AddSensorDataAsync(SensorData sensorData)
         {
-            _sensorDataDao.AddSensorDataAsync(sensorData);
+            await _sensorDataDao.AddSensorDataAsync(sensorData);
         }
 
         public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
         {
-            _sensorDataDao.AddSensorDataGoalAsync(sensorGoal);
+            await _sensorDataDao.AddSensorDataGoalAsync(sensorGoal);
         }
 
         public async Task<SensorGoal> GetSensorDataGoalAsync()

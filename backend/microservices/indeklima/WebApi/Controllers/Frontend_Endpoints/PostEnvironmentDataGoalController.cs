@@ -19,12 +19,11 @@ namespace WebApi.Controllers
 
         [HttpPost]
         [Authorize(Policy = "MustBeAdmin")]
-        public async Task<IActionResult> PostSensorDataGoal(SensorGoal sensorGoal)
+        public async Task<IActionResult> PostSensorDataGoal([FromBody] SensorGoal sensorGoal)
         {
             try
             {
                 await _sensorDataService.AddSensorDataGoalAsync(sensorGoal);
-                
                 return Ok(new { success = true });
             }
             catch (Exception e)

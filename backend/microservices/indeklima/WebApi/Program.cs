@@ -21,7 +21,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
     )
 );
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-builder.Services.AddScoped<SensorDataDao>();
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDao>();
 
 var app = builder.Build();
 
