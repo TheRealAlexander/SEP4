@@ -88,7 +88,7 @@ function ResponsiveAppBar() {
   const pathMapping = {
     Home: "/",
     Controls: "/controlsPage",
-    Tounament: "/tournamentPage",
+    Tournaments: "/tournamentPage",
   };
 
   const handleOpenNavMenu = (event) => {
