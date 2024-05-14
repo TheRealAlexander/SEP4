@@ -8,10 +8,19 @@ export default function TournamentPage() {
      const [selectedTournament, setSelectedTournament] = useState(null);
 
      //Dummy data for tournaments
+     const Participants = ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"];
      const tournaments = [
-       { id: 1, name: "Tournament A", date: "2024-06-01", currentParticipants: 10, description: "This is a sample tournament A.", participants: ["Alice", "Bob"] },
+       { 
+          id: 1, 
+          name: "Tournament A", 
+          date: "2024-06-01", 
+          currentParticipants: Participants.length, 
+          description: "This is a sample tournament A.", 
+          participants: Participants 
+       },
        { id: 2, name: "Tournament B", date: "2024-07-15", currentParticipants: 8, description: "This is a sample tournament B.", participants: ["Charlie", "Dave"] },
      ];
+     //End of dummy data for tournaments
    
      const handleTournamentClick = (tournament) => {
        setSelectedTournament(tournament);

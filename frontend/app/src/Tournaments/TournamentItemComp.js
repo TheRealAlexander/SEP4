@@ -4,7 +4,7 @@ import { Card, CardActionArea, CardContent, Typography } from '../MUI_imports';
 
 function TournamentItem({ tournament, onClick }) {
   return (
-    <Card sx={{ Width: '100%', m: 2 }}>
+    <Card sx={{ width: '100%', m: 2 }}>
       <CardActionArea onClick={() => onClick(tournament)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
