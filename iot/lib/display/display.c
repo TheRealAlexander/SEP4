@@ -1,19 +1,18 @@
-#include "display.h"
-#include <includes/includes.h>
+
 //LATCH
-#define LATCH_BIT PG5
-#define LATCH_DDR DDRG
-#define LATCH_PORT PORTG
+#define DISPLAY_LATCH_BIT PG5
+#define DISPLAY_LATCH_DDR DDRG
+#define DISPLAY_LATCH_PORT PORTG
 
 //DATA
-#define DATA_BIT PH5  // Serial Data Input.
-#define DATA_DDR DDRH
-#define DATA_PORT PORTH
+#define DISPLAY_DATA_BIT PH5  // Serial Data Input.
+#define DISPLAY_DATA_DDR DDRH
+#define DISPLAY_DATA_PORT PORTH
 
 // CLOCK
-#define CLOCK_BIT PH4 // SFTCLK stands for Shift Clock or Shift Register Clock
-#define CLOCK_DDR DDRH
-#define CLOCK_PORT PORTH
+#define DISPLAY_CLOCK_BIT PH4 // SFTCLK stands for Shift Clock or Shift Register Clock
+#define DISPLAY_CLOCK_DDR DDRH
+#define DISPLAY_CLOCK_PORT PORTH
 
 const uint8_t hex_digits[] = {
     0b00111111, // 0
@@ -99,9 +98,9 @@ void pulse_latch();
 
 void display_init()
 {
-    LATCH_DDR |= (1 << LATCH_BIT);
-    DATA_DDR |= (1 << DATA_BIT); 
-    CLOCK_DDR|= (1 << CLOCK_BIT);
+    DISPLAY_LATCH_DDR |= (1 << DISPLAY_LATCH_BIT);
+    DISPLAY_DATA_DDR |= (1 << DISPLAY_DATA_BIT); 
+    DISPLAY_CLOCK_DDR|= (1 << DISPLAY_CLOCK_BIT);
 
     // Set up Timer1 for CTC mode (Clear Timer on Compare Match)
     TCCR1B |= (1 << WGM12);
@@ -122,10 +121,10 @@ void display_init()
 ISR(TIMER1_COMPA_vect)
 {
     uint8_t static current_digit = 0;
-    LATCH_PORT &= ~(1 << LATCH_BIT);
+    DISPLAY_LATCH_PORT &= ~(1 << DISPLAY_LATCH_BIT);
     shift_out(~hex_digits[display_data[current_digit]]);
     shift_out(1 << current_digit);
-    LATCH_PORT |= (1 << LATCH_BIT);
+    DISPLAY_LATCH_PORT |= (1 << DISPLAY_LATCH_BIT);
     // pulse_latch();
 
     current_digit = (current_digit + 1) % 4;
@@ -138,25 +137,25 @@ void shift_out(uint8_t data)
     {
         if (data & (1 << (7 - i)))
         {
-            DATA_PORT |= (1 << DATA_BIT);
+            DISPLAY_DATA_PORT |= (1 << DISPLAY_DATA_BIT);
         }
         else
         {
-            DATA_PORT &= ~(1 << DATA_BIT);
+            DISPLAY_DATA_PORT &= ~(1 << DISPLAY_DATA_BIT);
         }
 
         // Pulse the clock pin
-        CLOCK_PORT |= (1 << CLOCK_BIT);
+        DISPLAY_CLOCK_PORT |= (1 << DISPLAY_CLOCK_BIT);
         // _delay_us(1);
-        CLOCK_PORT &= ~(1 << CLOCK_BIT);
+        DISPLAY_CLOCK_PORT &= ~(1 << DISPLAY_CLOCK_BIT);
         //_delay_us(1);
     }
 }
 
 void pulse_latch()
 {
-    LATCH_PORT |= (1 << LATCH_BIT);
+    DISPLAY_LATCH_PORT |= (1 << DISPLAY_LATCH_BIT);
     //_delay_us(1);
-    LATCH_PORT &= ~(1 << LATCH_BIT);
+    DISPLAY_LATCH_PORT &= ~(1 << DISPLAY_LATCH_BIT);
     // _delay_us(1);
 }

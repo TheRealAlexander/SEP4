@@ -68,6 +68,14 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "wifi/wifi2.c"
 #include "servo/servo.h"
 #include "servo/servo.c"
+#include "tone/tone.h"
+#include "tone/tone.c"
+#include "buttons/buttons.h"
+#include "buttons/buttons.c"
+#include "display/display.h"
+#include "display/display.c"
+#include "display_button/display_button.h"
+#include "display_button/display_button.c"
 
 ////////////////////////////////////////////////////////////////
 // Include testing framework

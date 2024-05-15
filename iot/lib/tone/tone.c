@@ -1,6 +1,3 @@
-#include "tone.h"
-#include "includes/includes.h"
-
 #define BUZ_BIT PA7
 #define BUZ_DDR DDRA
 #define BUZ_PORT PORTA
@@ -110,6 +107,8 @@ void tone_play_starwars()
     tone_play(466, 150);  // B4 for 150 ms
     tone_play(392, 1000); // G4 for 1000 ms
 }
+
+#if !TESTING // Fake function
 void tone_play_final_fantasy_victory(){
     tone_play(400, 140); 
     tone_play(0, 20); 
@@ -127,3 +126,4 @@ void tone_play_final_fantasy_victory(){
     tone_play(400, 480);
 
 }
+#endif
