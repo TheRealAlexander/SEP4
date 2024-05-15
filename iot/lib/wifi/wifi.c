@@ -1,8 +1,4 @@
-#include "wifi.h"
-#include <includes.h>
 
-
-#include "uart.h"
 #define WIFI_DATABUFFERSIZE 128
 static uint8_t wifi_dataBuffer[WIFI_DATABUFFERSIZE];
 static uint8_t wifi_dataBufferIndex;
@@ -65,6 +61,9 @@ WIFI_ERROR_MESSAGE_t wifi_command(const char *str, uint16_t timeOut_s)
         error= WIFI_FAIL;
     else
         error= WIFI_ERROR_RECEIVING_GARBAGE;
+
+    send_to_pc("WIFI DATABUFFER\n");
+    send_to_pc(wifi_dataBuffer);
     
     wifi_clear_databuffer_and_index();
     uart_init(USART_WIFI, wifi_baudrate, callback_state);

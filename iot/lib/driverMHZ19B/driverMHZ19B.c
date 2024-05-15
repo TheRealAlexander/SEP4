@@ -1,12 +1,4 @@
 
-#   include "uart.h"
-#   include <stdint.h>
-#   include <stdbool.h>
-#   include <string.h>
-#   include "driverMHZ19B.h"
-# include "includes/includes.h"
-
-
 #define Co2SensorRead 0x86
 #define ZERO_POINT_CALIBRATION 0x87
 #define SPAN_POINT_CALIBRATION 0x88
@@ -17,11 +9,6 @@ volatile bool new_co2_data_available = false;
 
 uint8_t rx_buffer[7];
 uint8_t rx_count = 0;
-
-void send_to_pc(char *s) {
-    int len = strlen(s);
-    uart_send_array_blocking(USART_0, (uint8_t*)s, len); // Utilize USART_0 to send data to PC
-}
 
 void WHZ19B_init(void) {
     uint16_t ubrr_value = (F_CPU / (16UL * 9600)) - 1;
@@ -126,7 +113,7 @@ uint16_t calculatePartsPerMil(uint8_t *packet) {
 
     uint16_t co2_concentration = highByte * 256 + lowByte;
 
-    char debug_msg[50];
+    char debug_msg[100];
     snprintf(debug_msg, sizeof(debug_msg), "High byte: %02X, Low byte: %02X, CO2 Concentration: %u ppm\n",
              highByte, lowByte, co2_concentration);
 
@@ -164,6 +151,8 @@ void sendZeroPointCalibration(void) {
 }
 
 void sendSpanPointCalibration(uint8_t high_byte, uint8_t low_byte) {
+    UNUSED(low_byte);
+    UNUSED(high_byte);
     send_co2_command(SPAN_POINT_CALIBRATION);
 }
 

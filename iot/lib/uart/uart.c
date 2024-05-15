@@ -1,15 +1,5 @@
 #ifndef EXCLUDE_UART
 
-
-#include "uart.h"
-#include <stdint.h>
-#include <stddef.h>
-#include <stdlib.h>
-
-#include <string.h>
-
-#include "includes/includes.h"
-
 static UART_Callback_t usart0_rx_callback = NULL;
 static UART_Callback_t usart1_rx_callback = NULL;
 static UART_Callback_t usart2_rx_callback = NULL;
