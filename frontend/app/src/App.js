@@ -12,6 +12,7 @@ import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
 import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
 import ControlsPage from './Controls/ControlsPage.js';
+import TournamentPage from './Tournaments/TournamentPage.js';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
 import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
@@ -32,7 +33,7 @@ import {
   MenuItem
 } from './MUI_imports';
 
-const pages = ["Home", "Controls", "Data"];
+const pages = ["Home", "Controls", "Data", "Tournaments"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function App() {
@@ -70,6 +71,7 @@ function AppContent() {
             <Route path="/thermostat" element={<ThermostatDataWrapper />} />
             <Route path="/humidity" element={<HumidityDataWrapper />} />
             <Route path="/controlsPage" element={<ControlsPage />} />
+            <Route path="/tournamentPage" element={<TournamentPage />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
             <Route path="/users" element={<UserPermissionPage />} />
@@ -88,6 +90,7 @@ function ResponsiveAppBar() {
   const pathMapping = {
     Home: "/",
     Controls: "/controlsPage",
+    Tournaments: "/tournamentPage",
   };
 
   const handleOpenNavMenu = (event) => {

@@ -14,10 +14,10 @@ request contains one or more measurements:
 
 ```json5
 {
-    "temperatures": 20.3,   // Unit: Celcius
     "temperature": 20.3,    // Unit: Celcius
     "humidity": 40.5,       // Unit: % volume
-    "co2": 423              // Unit: ppm
+    "co2": 423,             // Unit: ppm
+    "hallId": 37            // Identifies the Arduino unit
 }
 ```
 

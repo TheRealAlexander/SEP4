@@ -16,7 +16,7 @@ extern uint8_t rx_count;
 
 // Function declarations that are universal
 uint8_t checksum(uint8_t* packet);
-void send_to_pc(char *s);
+uint8_t checksum2(uint8_t* packet);
 
 #ifndef PLATFORMIO_UNIT_TEST
 // Exclude these from native unit testing environment
