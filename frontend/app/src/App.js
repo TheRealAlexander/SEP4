@@ -8,9 +8,6 @@ import React from 'react';
 
 // Component Imports
 import ClimatePage from './Components/ClimatePage/ClimatePage';
-import Controls from "./Components/Controls/Controls";
-import LoginPage from './Components/Login/LoginPage';
-import Registration from './Components/Registration/Registration';
 import { UserPermissionPage } from './Components/UserPermission/UserPermission';
 import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
