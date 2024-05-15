@@ -189,6 +189,5 @@ void checkScoreBMinus(void)
             teamscore_b = 41;
             break;
         }
-        updateDisplay(); 
     }
 
