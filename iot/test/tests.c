@@ -158,6 +158,36 @@ void test_resetScores(void) {
     assert_int(0, teamscore_a);
     assert_int(0, teamscore_b);
 }
+
+
+///TCP test 
+void test_tcp_connection() {
+    mock_socket();   
+    mock_connect();  
+    mock_send();      
+    mock_recv();      
+
+    client_main();
+    assert_called_socket(AF_INET, SOCK_STREAM, 0);
+    assert_called_connect("127.0.0.1", 8080);
+    assert_called_send("Hello from client");
+
+    
+    simulate_server_response("Hello from server");
+    assert_correct_client_response_handling();
+}
+
+void test_tcp_server() {
+    mock_socket();    
+    mock_bind();      
+    mock_listen();    
+    mock_accept();    
+    mock_recv();      
+    server_main();
+    assert_server_received_message("Hello from client");
+    assert_server_sent_response("Hello from server");
+}
+
 ////////////////////////////////////////////////////////////////
 // Test runner
 
@@ -192,6 +222,14 @@ int main(void) {
     test_run(test_checkScoreBMinus_DeincrementsCorrectly);
     test_run(test_resetScores);
     test_end();
+
+  ////////////////////////////////////////////////////////////////
+    // Run tcp tests
+    test_begin("tcp", test_display_setup, test_display_teardown);
+    test_run(test_tcp_connection);
+    test_run(test_tcp_server)
+    test_end();
+
 
     ////////////////////////////////////////////////////////////////
     // Print results

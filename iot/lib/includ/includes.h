@@ -77,8 +77,8 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "display/display.c"
 #include "display_button/display_button.h"
 #include "display_button/display_button.c"
-#include "pir/pir.h"
-#include "pir/pir.c"
+#include "network/tcp-client.c"
+#include "network/tcp-server.c"
 
 ////////////////////////////////////////////////////////////////
 // Include testing framework
