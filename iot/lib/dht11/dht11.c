@@ -1,11 +1,4 @@
 
-#if NOT_PLATFORMIO
-// Nothing
-#else
-#	include "dht11.h"
-#	include "includes.h"
-#endif
-
 //Data (The data goes both ways)
 #define DATA_BIT PL1
 #define DATA_PIN PINL

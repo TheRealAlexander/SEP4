@@ -36,26 +36,26 @@ typedef struct wifi2_cmd_result {
 ////////////////////////////////////////////////////////////////
 // Globals
 
-extern wifi2_state  wifi2_g_state;
-extern char         wifi2_g_recv_buf[WIFI2_MAX_RECV];
-extern int          wifi2_g_recv_len;
+static wifi2_state  wifi2_g_state;
+static char         wifi2_g_recv_buf[WIFI2_MAX_RECV];
+static int          wifi2_g_recv_len;
 
-extern int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortæller hvor langt response data er.
-extern int          wifi2_g_ipd_idx; // Index i wifi2_g_recv_buf for data efter "+IPD,1234:" prefixet.
+static int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortæller hvor langt response data er.
+static int          wifi2_g_ipd_idx; // Index i wifi2_g_recv_buf for data efter "+IPD,1234:" prefixet.
 
 ////////////////////////////////////////////////////////////////
 // Functions
 
-extern void  wifi2_init();
-extern void  wifi2_uart_callback(uint8_t byte);
+static void wifi2_init();
+static void wifi2_uart_callback(uint8_t byte);
 
-extern void wifi2_async(char *cmd, bool ipd);
-extern void wifi2_async_reset(void);
-extern void wifi2_async_ap_join(char *ssid, char *password);
-extern void wifi2_async_tcp_open(char *ip, int port);
-extern void wifi2_async_tcp_send(char *data, int data_len);
-extern void wifi2_async_tcp_close(void);
+static void wifi2_async(char *cmd, bool ipd);
+static void wifi2_async_reset(void);
+static void wifi2_async_ap_join(char *ssid, char *password);
+static void wifi2_async_tcp_open(char *ip, int port);
+static void wifi2_async_tcp_send(char *data, int data_len);
+static void wifi2_async_tcp_close(void);
 
-extern bool wifi2_can_begin_async(void); // Klar til at starte ny async command?
-extern bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command færdig eller har fejlet?
+static bool wifi2_can_begin_async(void); // Klar til at starte ny async command?
+static bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command færdig eller har fejlet?
 
