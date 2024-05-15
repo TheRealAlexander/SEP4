@@ -8,18 +8,13 @@
 
 // TODO(rune): Define udfra build-script?
 
-//#define SERVER_IP       "172.20.10.8"
-//#define SERVER_PORT     8080
-
-//#define SERVER_IP       "159.89.140.122"
-//#define SERVER_IP       "216.58.211.14"
-//#define SERVER_IP       "172.20.10.6" // Alexander
 #define SERVER_IP       "172.20.10.3" // Rune
 #define SERVER_PORT     5200
-//#define SERVER_PORT      5038
 
 #define WIFI_SSID       "Rune - iPhone"
 #define WIFI_PASSWORD   "123456789"
+
+#define HALL_ID          37
 
 ////////////////////////////////////////////////////////////////
 // Measurements
@@ -63,11 +58,13 @@ static int build_http_request(char *http_buf, int http_cap) {
         "{"
         "\"temperature\": %d.%d, "
         "\"humidity\": %d.%d, "
-        "\"co2\": %d"
+        "\"co2\": %d, "
+        "\"hallId\": %d"
         "}",
         g_measurements.temperature_integral, g_measurements.temperature_decimal,
         g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2
+        g_measurements.co2,
+        HALL_ID
     );
 
     int http_len = snprintf(
@@ -388,7 +385,7 @@ static void do_buttons_and_display() {
 int main() {
     g_measurements.want_next_measurement_delay = 5000;
 
-    uart_init(USART_0, 9600, 0);        // USB
+    uart_init(USART_0, 9600, 0);            // USB
     uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
     tone_init();
