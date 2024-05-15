@@ -8,11 +8,10 @@ import React from 'react';
 
 // Component Imports
 import ClimatePage from './Components/ClimatePage/ClimatePage';
-import { UserPermissionPage } from './Components/UserPermission/UserPermission';
+import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
 import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
 import ControlsPage from './Controls/ControlsPage.js';
-import { UserPermissionPage } from './Components/UserPermission/UserPermission';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
 import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
