@@ -14,6 +14,7 @@ request contains one or more measurements:
 
 ```json5
 {
+    "temperatures": 20.3,   // Unit: Celcius
     "temperature": 20.3,    // Unit: Celcius
     "humidity": 40.5,       // Unit: % volume
     "co2": 423              // Unit: ppm
@@ -24,6 +25,7 @@ The backend response can contain zero or more instructions for the IoT-device:
 
 ```json5
 {
+    "wantNextMeasurementDelay": 15, // Controls the number of seconds before the IoT-device sends the next measurements
     "openWindow": false     // If the response is empty, previous openWindow value is used
 }
 ```

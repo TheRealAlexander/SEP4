@@ -9,6 +9,8 @@ public static class AuthorizationPolicies {
                 a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "Admin"));
             options.AddPolicy("MustBeUser", a =>
                 a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "User"));
+            options.AddPolicy("MustBeSuperUser",
+                a => a.RequireAuthenticatedUser().RequireClaim(ClaimTypes.Role, "SuperUser"));
         });
     }
 }

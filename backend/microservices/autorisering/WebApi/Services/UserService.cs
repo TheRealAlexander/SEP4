@@ -5,17 +5,17 @@ using System.Data;
 
 namespace WebApi.Services
 {
-   public class AuthService : IAuthService
+   public class UserService : IUserService
 {
 
     private readonly IUserDAO _userDAO;
 
-    public AuthService(IUserDAO userDAO)
+    public UserService(IUserDAO userDAO)
     {
         _userDAO = userDAO;
     }
 
-    public async Task<User> ValidateUser(string username, string password)
+    public async Task<User> ValidateUserAsync(string username, string password)
     {
         try
         {
@@ -38,12 +38,12 @@ namespace WebApi.Services
         }
     }
 
-    public async Task<User> GetUser(string username)
+    public async Task<User> GetUserAsync(string username)
     {
         return await _userDAO.GetUserAsync(username); 
     }
 
-    public async Task RegisterUser(UserCreationDTO userCreationDTO)
+    public async Task RegisterUserAsync(UserCreationDTO userCreationDTO)
     {
         if (string.IsNullOrEmpty(userCreationDTO.Username) || string.IsNullOrEmpty(userCreationDTO.Password) || string.IsNullOrEmpty(userCreationDTO.Email))
         {
@@ -58,7 +58,7 @@ namespace WebApi.Services
                 Username = userCreationDTO.Username,
                 Password = userCreationDTO.Password,
                 Email = userCreationDTO.Email,
-                Role = userCreationDTO.Role,
+                Role = "User",
                 Age = userCreationDTO.Age
             };
 
@@ -75,5 +75,46 @@ namespace WebApi.Services
         }
     }
 
-} 
+    public async Task<List<List<User>>> GetAllUsersAsync()
+    {
+        try
+        {
+            List<User> adminList = new List<User>();
+            List<User> superUserList = new List<User>();
+            List<User> userList = new List<User>();
+            List<List<User>> allUsersList = new List<List<User>>();
+
+            foreach (User user in await _userDAO.GetAllUsersAsync())
+            {
+                if (user.Role == "Admin")
+                {
+                    adminList.Add(user);
+                } else if (user.Role == "SuperUser")
+                {
+                    superUserList.Add(user);
+                }
+                else
+                {
+                    userList.Add(user);
+                }
+            }
+            
+            allUsersList.Add(adminList);
+            allUsersList.Add(superUserList);
+            allUsersList.Add(userList);
+
+            return allUsersList;
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
+        }
+    }
+
+    public async Task<User> UpdateUserAsync(User user)
+    {
+        return await _userDAO.UpdateUserAsync(user);
+    }
+
+}
 }
