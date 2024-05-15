@@ -16,9 +16,9 @@ public class PostTournamentController : ControllerBase
     }
     
     [HttpPost]
-    public async Task<IActionResult> PostTournament([FromBody] Tournament tournament)
+    public async Task<IActionResult> PostTournament([FromBody] TournamentCreationDTO tournamentCreationDto)
     {
-        await _tournamentService.AddTournament(tournament);
+        await _tournamentService.AddTournamentAsync(tournamentCreationDto);
         return Ok();
     }
 }
