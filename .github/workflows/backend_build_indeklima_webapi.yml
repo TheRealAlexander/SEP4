@@ -23,3 +23,24 @@ jobs:
       - name: Build with dotnet
         working-directory: backend/microservices/indeklima/WebApi
         run: dotnet build IndeklimaWebApi.csproj -c release
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ["3.1.x", "8.0.x"]
+        mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup dotnet ${{ matrix.dotnet-version }}
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+      - name: Display dotnet version
+        run: dotnet --version
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+      - name: Test with dotnet
+        working-directory: backend/microservices/indeklima/unittest_indeklima_webapi
+        run: dotnet test unittest_indeklima_webapi.csproj -c release
