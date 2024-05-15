@@ -21,6 +21,10 @@ namespace WebApi.Services
 
         public async Task AddSensorDataAsync(SensorData sensorData)
         {
+            if (sensorData == null)
+            {
+                throw new ArgumentNullException(nameof(sensorData));
+            }
             await _sensorDataDao.AddSensorDataAsync(sensorData);
         }
 

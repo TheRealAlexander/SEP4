@@ -13,20 +13,20 @@ using System.Data;
 public class UserController : ControllerBase
 {
     private readonly IConfiguration config;
-    private readonly IAuthService authService;
+    private readonly IUserService _userService;
 
-    public UserController(IConfiguration config, IAuthService authService)
+    public UserController(IConfiguration config, IUserService userService)
     {
         this.config = config;
-        this.authService = authService;
+        this._userService = userService;
     }
     
     [HttpGet("{username}")]
-    public async Task<ActionResult<User>> GetUser(string username)
+    public async Task<ActionResult<User>> GetUserAsync(string username)
     {
         try
         {
-            var user = await authService.GetUser(username);
+            var user = await _userService.GetUserAsync(username);
             return Ok(user);
         }
         catch (Exception ex)
@@ -40,10 +40,24 @@ public class UserController : ControllerBase
             return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
         }
     }
-
-
+    
+    [HttpGet("/GetAllUsers")]
+    public async Task<ActionResult<List<User>>> GetAllUsersAsync()
+    {
+        try
+        {
+            var users = await _userService.GetAllUsersAsync();
+            return Ok(users);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"An error occurred: {ex.ToString()}");  // Log full exception stack trace
+            return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
+        }
+    }
+    
     [HttpPost("register")]
-    public async Task<ActionResult<User>> RegisterUser([FromBody] UserCreationDTO userCreationDTO)
+    public async Task<ActionResult<User>> RegisterUserAsync([FromBody] UserCreationDTO userCreationDTO)
     {
         if (!ModelState.IsValid)
         {
@@ -52,9 +66,9 @@ public class UserController : ControllerBase
 
         try
         {
-            await authService.RegisterUser(userCreationDTO);
+            await _userService.RegisterUserAsync(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
-            return CreatedAtAction(nameof(GetUser), new { username = userCreationDTO.Username }, userCreationDTO);
+            return CreatedAtAction(nameof(GetUserAsync), new { username = userCreationDTO.Username }, userCreationDTO);
         }
         catch (DuplicateNameException ex)
         {
@@ -71,5 +85,46 @@ public class UserController : ControllerBase
         }
     }
 
+    [HttpPost("swapRoles")]
+    public async Task<ActionResult<List<User>>> SwapRolesAsync([FromBody] List<User> users)
+    {
+        if (users.IsNullOrEmpty())
+        {
+            return BadRequest("No users provided.");
+        }
 
+        try
+        {
+            var processedUsers = new List<User>();
+            foreach (var user in users)
+            {
+                if (user.Role == "SuperUser")
+                {
+                    user.Role = "User";
+                }
+                else if (user.Role == "User")
+                {
+                    user.Role = "SuperUser";
+                }
+                else
+                {
+                    return BadRequest("Role must be either User or SuperUser!");
+                }
+                
+                await _userService.UpdateUserAsync(user);
+
+                processedUsers.Add(user);
+            }
+
+            return Ok(processedUsers);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(StatusCodes.Status500InternalServerError, $"Error processing users: {ex.Message}");
+        }
+
+    }
+    
+    
+    
 }

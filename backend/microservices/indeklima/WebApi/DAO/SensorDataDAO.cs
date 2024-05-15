@@ -3,12 +3,12 @@ using WebApi.Models;
 
 namespace WebApi.DAO
 {
-    public class SensorDataDao : ISensorDataDAO
+    public class SensorDataDAO : ISensorDataDAO
     {
         private readonly IMongoCollection<SensorData> _sensorDataMongoCollection;
         private readonly IMongoCollection<SensorGoal> _sensorGoalMongoCollection;
 
-        public SensorDataDao(MongoDbContext context)
+        public SensorDataDAO(MongoDbContext context)
         {
             _sensorDataMongoCollection = context.Database.GetCollection<SensorData>("SensorData");
             _sensorGoalMongoCollection = context.Database.GetCollection<SensorGoal>("SensorGoal");
@@ -28,14 +28,37 @@ namespace WebApi.DAO
 
         public async Task AddSensorDataAsync(SensorData sensorData)
         {
-            await _sensorDataMongoCollection.InsertOneAsync(sensorData);
-        }
+            try
+            {
+                if (sensorData == null)
+                {
+                    throw new ArgumentNullException(nameof(sensorData));
+                }
 
+                //Check for dubplicate data
+                var duplicateData = await _sensorDataMongoCollection.Find(s => s.Timestamp == sensorData.Timestamp)
+                    .FirstOrDefaultAsync();
+                if (duplicateData != null)
+                {
+                    throw new Exception("Duplicate data");
+                }
+
+                //Add data to the collection
+                await _sensorDataMongoCollection.InsertOneAsync(sensorData);
+                //Return 0 if successful
+                return;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+        
         public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
         {
             await _sensorGoalMongoCollection.InsertOneAsync(sensorGoal);
         }
-
+        
         public async Task<SensorGoal> GetLatestSensorGoalAsync()
         {
             try
