@@ -1,11 +1,4 @@
 
-#if NOT_PLATFORMIO
-// Nothing
-#else
-#   include <servo.h>
-#   include "includes.h"
-#endif
-
 #define DDR_SERVO DDRE
 #define P_SERVO PE3
 #define PORT_SERVO PORTE
@@ -15,8 +8,6 @@ void servo(uint8_t angle)
     // Initialize as output
     DDR_SERVO |= (1 << P_SERVO);
 
-    if (angle < 0)
-        angle = 0;
     if (angle > 180)
         angle = 180;
 
