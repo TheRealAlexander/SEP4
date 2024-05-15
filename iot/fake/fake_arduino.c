@@ -26,12 +26,12 @@
 ////////////////////////////////////////////////////////////////
 //- Include our own stuff
 
-#include "../src/string.h"
-#include "../src/string.c"
-#include "../src/textbuf.h"
-#include "../src/textbuf.c"
-#include "../src/http.h"
-#include "../src/http.c"
+#include "string.h"
+#include "string.c"
+#include "textbuf.h"
+#include "textbuf.c"
+#include "http.h"
+#include "http.c"
 
 ////////////////////////////////////////////////////////////////
 //- File system
@@ -159,7 +159,7 @@ static string socket_send_and_recieve(char *addr, unsigned short port, string se
 
         // NOTE(rune): Connection has closed gracefully.
         // See: https://learn.microsoft.com/en-us/windows/win32/api/winsock/nf-winsock-recv
-        if (curr_recv_len == 0) { 
+        if (curr_recv_len == 0) {
             break;
         }
 
@@ -200,7 +200,7 @@ static void send_http_post_request(char *host, unsigned short port, string endpo
     http_append_head_end(&buf);
     textbuf_append_string(&buf, body);
 
-    // Send over TCP socket 
+    // Send over TCP socket
     string req = textbuf_to_string(&buf);
     string res = socket_send_and_recieve(lookup_result.ipv4_address, port, req, res_storage, sizeof(res_storage));
 
@@ -239,7 +239,7 @@ static void send_http_get_request(char *host, unsigned short port, string endpoi
     //http_append_head_string(&buf, string("Accept"), string("application/json"));
     http_append_head_end(&buf);
 
-    // Send over TCP socket 
+    // Send over TCP socket
     string req = textbuf_to_string(&buf);
     string res = socket_send_and_recieve(lookup_result.ipv4_address, port, req, res_storage, sizeof(res_storage));
 
@@ -314,7 +314,7 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-    //- Subcommand: Single request 
+    //- Subcommand: Single request
     if (strcmp(sub_cmd, "single-request") == 0) {
         if (args.count != 4) {
             printf("Usage: %s <host> <port> <endpoint> <body file name>\n", exe_name);
