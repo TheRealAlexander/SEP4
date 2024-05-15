@@ -6,7 +6,5 @@ namespace WebApi.DAO
     {
         Task<List<SensorData>> GetSensorDataAsync();
         Task AddSensorDataAsync(SensorData sensorData);
-        Task AddSensorDataGoalAsync(SensorGoal sensorGoal);
-        Task <SensorGoal> GetLatestSensorGoalAsync();
     }
 }

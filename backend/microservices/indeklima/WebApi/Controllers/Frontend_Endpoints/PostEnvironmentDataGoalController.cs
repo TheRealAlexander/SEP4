@@ -1,6 +1,7 @@
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 using WebApi.Models;
 using WebApi.Services;
 
@@ -10,21 +11,27 @@ namespace WebApi.Controllers
     [Route("[controller]")]
     public class PostEnvironmentDataGoalController : ControllerBase
     {
-        private readonly ISensorDataService _sensorDataService;
+        private readonly IQueueService _queueService;
 
-        public PostEnvironmentDataGoalController(ISensorDataService sensorDataService)
+        public PostEnvironmentDataGoalController(IQueueService queueService)
         {
-            _sensorDataService = sensorDataService;
+            _queueService = queueService;
         }
 
         [HttpPost]
-        [Authorize(Policy = "MustBeAdmin")]
+        // [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> PostSensorDataGoal([FromBody] SensorGoal sensorGoal)
         {
             try
             {
-                await _sensorDataService.AddSensorDataGoalAsync(sensorGoal);
-                return Ok(new { success = true });
+                await _queueService.EnqueueSensorGoalAsync(sensorGoal);
+                return Ok(new
+                {
+                    success = true,
+                    desiredTemperature = sensorGoal.DesiredTemperature,
+                    desiredHumidity = sensorGoal.DesiredHumidity,
+                    desiredCo2 = sensorGoal.DesiredCo2
+                });
             }
             catch (Exception e)
             {

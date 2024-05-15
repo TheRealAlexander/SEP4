@@ -54,22 +54,5 @@ namespace WebApi.DAO
             }
         }
         
-        public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
-        {
-            await _sensorGoalMongoCollection.InsertOneAsync(sensorGoal);
-        }
-        
-        public async Task<SensorGoal> GetLatestSensorGoalAsync()
-        {
-            try
-            {
-                return await _sensorGoalMongoCollection.Find(s => true).SortByDescending(s => s.Timestamp)
-                    .FirstOrDefaultAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new NullReferenceException(ex.Message);
-            }
-        }
     }
 }

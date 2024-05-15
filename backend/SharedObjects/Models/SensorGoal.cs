@@ -1,7 +1,6 @@
+﻿using Newtonsoft.Json;
 
-using Newtonsoft.Json;
-
-namespace WebApi.Models
+namespace SharedObjects.Models
 {
     public class SensorGoal
     {
