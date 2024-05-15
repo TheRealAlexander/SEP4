@@ -1,3 +1,4 @@
+using MongoDB.Bson;
 using MongoDB.Driver;
 using WebApi.Models;
 
@@ -16,5 +17,11 @@ public class TournamentDAO : ITournamentDAO
     public async Task AddTournamentAsync(Tournament tournament)
     {
         await _tournamentMongoCollection.InsertOneAsync(tournament);
+    }
+
+    public async Task<Tournament> GetTournamentAsync(int tournamentID)
+    {
+        var filter = Builders<Tournament>.Filter.Eq(t => t.Id, tournamentID.ToString());
+        return await _tournamentMongoCollection.Find(filter).FirstOrDefaultAsync();
     }
 }

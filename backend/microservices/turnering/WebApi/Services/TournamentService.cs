@@ -38,4 +38,21 @@ public class TournamentService : ITournamentService
         
         await _tournamentDAO.AddTournamentAsync(tournament);
     }
+
+    public async Task<Tournament> GetTournamentAsync(int tournamentID)
+    {
+        return await _tournamentDAO.GetTournamentAsync(tournamentID);
+    }
+
+    public async Task<Round> RequestNewRoundAsync(int tournamentID)
+    {
+        Tournament tournament = await GetTournamentAsync(tournamentID);
+        return tournament.Format.GenerateRound(tournament.Players);
+    }
+
+    public async Task<List<Player>> GetScoreboardAsync(int tournamentID)
+    {
+        Tournament tournament = await GetTournamentAsync(tournamentID);
+        return tournament.Players; // TODO Make sure this returns players ordered by their score
+    }
 }
