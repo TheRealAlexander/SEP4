@@ -369,6 +369,26 @@ static void do_servo() {
 }
 
 ////////////////////////////////////////////////////////////////
+// Infrared sensor and lights
+
+static void do_pir() {
+    static timestamp motion_timestamp = 0;
+    static timestamp motion_delay = 10*1000; // Bestemmer hvor langt tid skal der gå før lyset slukker igen.
+
+    if (pir_motion()) {
+        motion_timestamp = g_timestamp;
+    }
+
+    if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
+        DDRB = 0xff;
+        PORTB = 0x00;
+    } else {
+        DDRB = 0xff;
+        PORTB = 0xff;
+    }
+}
+
+////////////////////////////////////////////////////////////////
 // Buttons and display
 
 static void do_buttons_and_display() {
@@ -394,6 +414,7 @@ int main() {
     tone_init();
     buttons_init();
     display_init();
+    pir_init();
 
     while (1) {
         do_wifi();
@@ -401,6 +422,7 @@ int main() {
         do_dht11();
         do_servo();
         do_buttons_and_display();
+        do_pir();
 
         _delay_ms(100);
     }
