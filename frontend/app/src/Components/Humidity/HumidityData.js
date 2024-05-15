@@ -1,21 +1,36 @@
 import React from 'react';
+import { Card, CardContent, Typography, CircularProgress } from '../../MUI_imports';
 
 export default function HumidityData({ humidityData, isLoading }) {
     // Destructure humidityData object
-    const { humidity, average } = humidityData;
+    let { humidity, average } = humidityData;
 
     if (isLoading) {
-        return <div>Loading...</div>;
+        return (
+            <Card>
+                <CardContent style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '150px' }}>
+                    <CircularProgress />
+                </CardContent>
+            </Card>
+        );
     }
 
     return (
-        <div>
-            <h1>Humidity Data</h1>
-            <div>Current Humidity: {humidity}%</div>
-            <br />
-            <div>Average Humidity: {average.toFixed(2)}%</div>
-            <br />
-            <div>Preferred Humidity: 40% - 60%</div>
-        </div>
+        <Card>
+            <CardContent>
+                <Typography variant="h4" component="h2">
+                    Humidity Data
+                </Typography>
+                <Typography variant="body1">
+                    Current Humidity: {humidity}%
+                </Typography>
+                <Typography variant="body1" style={{ marginTop: '8px' }}>
+                    Average Humidity: {average.toFixed(2)}%
+                </Typography>
+                <Typography variant="body1" style={{ marginTop: '8px' }}>
+                    Preferred Humidity: 40% - 60%
+                </Typography>
+            </CardContent>
+        </Card>
     );
 }

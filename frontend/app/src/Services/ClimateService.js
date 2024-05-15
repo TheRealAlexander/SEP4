@@ -13,8 +13,8 @@ export function useThermostatData() {
         const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
         console.log('response:', response);
         const data = response.data;
-
-        let temperatureValue = data[0]?.temperature; // Use optional chaining to handle undefined
+        // data.length-1 is sete for testing purposes, remove it to get the latest data
+        let temperatureValue = data[data.length-1]?.temperature; // Use optional chaining to handle undefined
 
         if (temperatureValue === undefined) {
           // Set a default value if temperature is undefined or null
@@ -33,11 +33,11 @@ export function useThermostatData() {
       }
     };
     // Remove comment to fetch data every 5 seconds
-    // const interval = setInterval(fetchData, 5000);
+     const interval = setInterval(fetchData, 5000);
     fetchData(); // Fetch immediately when component mounts
 
      // Remove comment to clear interval when component unmounts
-     //return () => clearInterval(interval);
+     return () => clearInterval(interval);
   }, []);
 
   return { thermData, isLoading };
@@ -68,7 +68,8 @@ export function useHumidityData() {
             const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
             console.log('response:', response);
               const data = response.data;
-              const humidityValue = data[0].humidity;
+              // data.length-1 is set for testing purposes, remove it to get the latest data
+              const humidityValue = data[data.length-1].humidity;
 
               setHumidityData(prevData => {
                   const newReadings = [...prevData.readings, humidityValue];
@@ -95,11 +96,11 @@ export function useHumidityData() {
       };
 
       // Remove comment to fetch data every 5 seconds
-      //const interval = setInterval(fetchData, 5000);
+      const interval = setInterval(fetchData, 5000);
       fetchData(); // Fetch immediately when component mounts
 
       // Remove comment to clear interval when component unmounts
-      //return () => clearInterval(interval);
+      return () => clearInterval(interval);
   }, []);
 
   return { humidityData, isLoading };
