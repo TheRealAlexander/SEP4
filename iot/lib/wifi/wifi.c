@@ -1,11 +1,3 @@
-#if NOT_PLATFORMIO
-// Nothing
-#else
-#   include "wifi.h"
-#   include <includes.h>
-#   include "uart.h"
-#endif
-
 
 #define WIFI_DATABUFFERSIZE 128
 static uint8_t wifi_dataBuffer[WIFI_DATABUFFERSIZE];
