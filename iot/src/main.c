@@ -297,18 +297,36 @@ static void do_servo() {
 }
 
 ////////////////////////////////////////////////////////////////
+// Buttons and display
+
+static void do_buttons_and_display() {
+    static timestamp button_timestamp = 0;
+    static timestamp button_interval = 2000; // Hver 2 sekunder
+
+    if (button_timestamp + button_interval <= g_timestamp) {
+        button_timestamp = g_timestamp;
+
+        handle_buttons();
+    }
+}
+
+////////////////////////////////////////////////////////////////
 // Main loop
 
 int main() {
     uart_init(USART_0, 9600, 0);            // USB
     uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
+    tone_init();
+    buttons_init();
+    display_init();
 
     while (1) {
         do_wifi();
         do_co2();
         do_dht11();
         do_servo();
+        do_buttons_and_display();
 
         _delay_ms(100);
     }
