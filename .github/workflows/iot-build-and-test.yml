@@ -9,51 +9,43 @@ on:
       - 'iot/**'
 
 jobs:
-  compile:
-    name: Compile IoT Code
+  avr-build:
+    name: Compile for AVR
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      
+
       - name: Cache AVR-GCC Dependencies
         uses: actions/cache@v3
         with:
           path: /usr/lib/avr
           key: ${{ runner.os }}-gcc-avr-cache
           restore-keys: ${{ runner.os }}-gcc-avr-
-      
+
       - name: Install AVR-GCC
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc-avr avr-libc
-      
-      - name: Compile with AVR-GCC
-        run: |
-          cd iot
-          ./build-main.sh
 
-  test:
-    name: Run IoT Tests
+      - name: Compile main with AVR-GCC
+        run:  cd iot && ./iot.sh build
+
+      - name: Compile tests with AVR-GCC
+        run:  cd iot && ./iot.sh build test # To run the tests with AVR we would need an emulator.
+
+  linux-test:
+    name: Compile and run tests on Linux
     runs-on: ubuntu-latest
-    needs: compile
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      
-      - name: Cache Test Results
-        uses: actions/cache@v3
-        with:
-          path: iot/tests
-          key: ${{ runner.os }}-iot-tests-cache
-          restore-keys: ${{ runner.os }}-iot-tests-
-      
-      - name: Run Tests
+
+      - name: Compile and run tests
         id: run_tests
-        run: |
-          cd iot
-          ./build-and-test.sh
+        run: cd iot && ./iot.sh test-local
+
     continue-on-error: true
     outputs:
       test_success: ${{ steps.run_tests.outcome }}
@@ -61,19 +53,19 @@ jobs:
   notify:
     name: Notify PR with Build and Test Results
     runs-on: ubuntu-latest
-    needs: [compile, test]
+    needs: [avr-build, linux-test]
     if: github.event_name == 'pull_request'
     steps:
       - name: Checkout Code
         uses: actions/checkout@v3
-      
+
       - name: Set Message
         id: set_message
         run: |
           message="Workflow Run: [Logs](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}) - "
-          if [ "${{ needs.compile.result }}" != "success" ]; then
-            message+="Build failed. Please check the logs for errors. "
-          elif [ "${{ needs.test.outputs.test_success }}" != "success" ]; then
+          if [ "${{ needs.avr-build.result }}" != "success" ]; then
+            message+="AVR build failed. Please check the logs for errors. "
+          elif [ "${{ needs.linux-test.outputs.test_success }}" != "success" ]; then
             message+="Tests failed. Please check the test logs. "
           else
             message+="Build and tests succeeded!"
@@ -81,7 +73,7 @@ jobs:
           echo "result_message<<EOF" >> $GITHUB_ENV
           echo -e "$message" >> $GITHUB_ENV
           echo "EOF" >> $GITHUB_ENV
-      
+
       - name: Comment on PR
         uses: thollander/actions-comment-pull-request@v2
         with:

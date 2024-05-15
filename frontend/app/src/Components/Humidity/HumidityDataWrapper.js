@@ -3,7 +3,7 @@ import HumidityData from './HumidityData';
 import { useHumidityData } from '../../Services/ClimateService';
 
 export default function HumidityDataWrapper() {
-    const { humidityData, isLoading } = useHumidityData();
+    let { humidityData, isLoading } = useHumidityData();
 
     return <HumidityData humidityData={humidityData} isLoading={isLoading} />;
 }

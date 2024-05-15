@@ -1,7 +1,10 @@
+﻿////////////////////////////////////////////////////////////////
+// Includ dependencies
+
+#include "../lib/includes.h"
+
 ////////////////////////////////////////////////////////////////
 // Macros
-
-#define countof(a)          (sizeof(a) / sizeof(*(a)))
 
 // TODO(rune): Define udfra build-script?
 
@@ -11,7 +14,7 @@
 //#define SERVER_IP       "159.89.140.122"
 //#define SERVER_IP       "216.58.211.14"
 //#define SERVER_IP       "172.20.10.6" // Alexander
-#define SERVER_IP       "172.20.10.3" // Rune 
+#define SERVER_IP       "172.20.10.3" // Rune
 #define SERVER_PORT     5200
 //#define SERVER_PORT      5038
 
@@ -19,103 +22,19 @@
 #define WIFI_PASSWORD   "123456789"
 
 ////////////////////////////////////////////////////////////////
-// Debugging
-
-void send_to_pc(char *str);
-void send_to_pc_fmt(char *fmt, ...);
-
-////////////////////////////////////////////////////////////////
-// Depedencies
-
-// NOTE(rune): Når vi compiler udenom Platform IO, compiler vi bare det hele
-// i en translation unit, så vi kan have et meget simpelt build script.
-// Platform IO gør nogle mærkelige ting med stier, f.eks. #include'er wifi.h
-// uart.h uden at sige "../uart/uart.h", selvom wifi.h og uart.h ligger i
-// forskellige mapper. Vi bruger #if NOT_PLATFORMIO til at arbejde rundt om 
-// forskellene mellem Platform IO og ikke-Platform IO.
-
-#if NOT_PLATFORMIO
-#   include <stdio.h>
-#   include <string.h>
-#   include <util/delay.h>
-#   include <avr/io.h>
-#   include <avr/interrupt.h>
-#   include "../lib/uart/uart.h"
-#   include "../lib/uart/uart.c"
-#   include "../lib/driverMHZ19B/driverMHZ19B.h"
-#   include "../lib/driverMHZ19B/driverMHZ19B.c"
-#   include "../lib/Periodic/periodic_task.h"
-#   include "../lib/Periodic/periodic_task.c"
-#   include "../lib/dht11/dht11.h"
-#   include "../lib/dht11/dht11.c"
-#   include "../lib/wifi/wifi2.h"
-#   include "../lib/wifi/wifi2.c"
-#   include "../lib/servo/servo.h"
-#   include "../lib/servo/servo.c"
-#else
-#   include <stdio.h>
-#   include <string.h>
-#   include "uart.h"
-#   include "driverMHZ19B.h"
-#   include <periodic_task.h>
-#endif
-
-void callback(uint8_t byte) {
-    usart3_co2_rx_handler(byte);
-}
-
-void send_to_pc_fmt(char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    char temp[1024];
-    vsnprintf(temp, sizeof(temp), fmt, args);
-    va_end(args);
-    send_to_pc(temp);
-}
-
-////////////////////////////////////////////////////////////////
-// ANSI console escape codes
-
-#define ANSI_HOME                   "\x1b[H"
-#define ANSI_ERASE_SCREEN           "\x1b[2J"
-
-#define ANSI_RESET                  "\x1b[0m"
-#define ANSI_BOLD                   "\x1b[1m"
-#define ANSI_FAINT                  "\x1b[2m"
-#define ANSI_ITALIC                 "\x1b[3m"
-#define ANSI_UNDERLINE              "\x1b[4m"
-#define ANSI_BLINKING               "\x1b[5m"
-#define ANSI_STRIKETHROUGH          "\x1b[9m"
-
-#define ANSI_FG_DEFAULT             "\x1b[39m"
-#define ANSI_FG_BLACK               "\x1b[30m"
-#define ANSI_FG_WHITE               "\x1b[97m"
-#define ANSI_FG_RED                 "\x1b[31m"
-#define ANSI_FG_GREEN               "\x1b[32m"
-#define ANSI_FG_YELLOW              "\x1b[33m"
-#define ANSI_FG_BLUE                "\x1b[34m"
-#define ANSI_FG_MAGENTA             "\x1b[35m"
-#define ANSI_FG_CYAN                "\x1b[36m"
-#define ANSI_FG_GRAY                "\x1b[90m"
-#define ANSI_FG_BRIGHT_GRAY         "\x1b[37m"
-#define ANSI_FG_BRIGHT_RED          "\x1b[91m"
-#define ANSI_FG_BRIGHT_GREEN        "\x1b[92m"
-#define ANSI_FG_BRIGHT_YELLOW       "\x1b[93m"
-#define ANSI_FG_BRIGHT_BLUE         "\x1b[94m"
-#define ANSI_FG_BRIGHT_MAGENTA      "\x1b[95m"
-#define ANSI_FG_BRIGHT_CYAN         "\x1b[96m"
-
-////////////////////////////////////////////////////////////////
 // Measurements
 
 typedef struct measurements {
-    uint8_t humidity_integral;     // NOTE(rune): Før komma
-    uint8_t humidity_decimal;      // NOTE(rune): Efter komma
-    uint8_t temperature_integral;  // NOTE(rune): Før komma
-    uint8_t temperature_decimal;   // NOTE(rune): Efter komma
-
+    // NOTE(rune): From sensors
+    uint8_t humidity_integral;    // Før komma
+    uint8_t humidity_decimal;     // Efter komma
+    uint8_t temperature_integral; // Før komma
+    uint8_t temperature_decimal;  // Efter komma
     uint16_t co2;
+
+    // NOTE(rune): From backend
     bool open_window;
+    int want_next_measurement_delay;
 } measurements;
 
 static measurements g_measurements;
@@ -168,15 +87,58 @@ static int build_http_request(char *http_buf, int http_cap) {
     return http_len;
 }
 
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_bool_from_http_response(char *response, char *property, bool *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        char *value_ptr = needle_ptr + needle_len;
+        if (strstr(value_ptr, "true") == value_ptr) {
+            *value = true;
+            return true;
+        }
+
+        if (strstr(value_ptr, "false") == value_ptr) {
+            *value = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_int_from_http_response(char *response, char *property, int *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        *value = 0;
+        char *value_ptr = needle_ptr + needle_len;
+        while (*value_ptr >= '0' && *value_ptr <= '9') {
+            int digit = *value_ptr - '0';
+            *value *= 10;
+            *value += digit;
+
+            value_ptr++;
+        }
+    }
+
+    return false;
+}
+
 static void process_http_response(char *http_buf, int http_len) {
 
     send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, http_buf, http_len);
+    uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
     send_to_pc("\n");
     send_to_pc(ANSI_RESET);
     send_to_pc("========================\n");
 
-    // NOTE(rune): Fjern whitespace så vi kan lave string comparison, 
+    // NOTE(rune): Fjern whitespace så vi kan lave string comparison,
     // uden at bekymre os om formatting fra serveren.
     char trim_buf[WIFI2_MAX_RECV];
     int read = 0;
@@ -196,14 +158,15 @@ static void process_http_response(char *http_buf, int http_len) {
     }
 
     int trim_len = write;
+    trim_buf[trim_len] = '\0';
+
     send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, trim_buf, trim_len);
+    send_to_pc(trim_buf);
     send_to_pc("\n");
     send_to_pc(ANSI_RESET);
 
-    trim_buf[trim_len] = '\0';
-    if (strstr(trim_buf, "\"openWindow\":false")) { g_measurements.open_window = false; } 
-    if (strstr(trim_buf, "\"openWindow\":true"))  { g_measurements.open_window = true; }
+    read_bool_from_http_response(trim_buf, "openWindow", &g_measurements.open_window);
+    read_int_from_http_response(trim_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
 
     send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
     send_to_pc_fmt("window: %d\n", g_measurements.open_window);
@@ -226,10 +189,17 @@ static void do_wifi(void) {
     static wifi_step curr_wifi_step = WIFI_STEP_RESET;
     static wifi_step next_wifi_step = WIFI_STEP_RESET;
 
-    static bool      packet_proccesed = true;
+    // TODO(rune): Burde dette command timeout være en del af driveren, eller er det mere fleksibelt at lade user-koden bestemme?
+    // NOTE(rune): Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
+    static timestamp wifi_cmd_timestamp = 0;
+
+    // NOTE(rune): Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
+    // Skal være større end packet_timeout. Er meget høj, da det kan tage langt tid at join et access point.
+    static timestamp wifi_cmd_timeout = 20000;
+
     static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
-    static timestamp packet_interval = 5000; // NOTE(rune): Hvor ofte sendes ny packet? 
-    static timestamp packet_timeout = 1000;  
+    static timestamp packet_timeout = 1000;
+    timestamp packet_interval = g_measurements.want_next_measurement_delay;
 
     ////////////////////////////////////////////////////////////////
     // Tjek om vi skal starte en ny command
@@ -239,29 +209,31 @@ static void do_wifi(void) {
 
         switch (next_wifi_step) {
             case WIFI_STEP_RESET: {
-                send_to_pc_fmt("📡 wifi reset\n"); // TODO(rune): Conditional debug print
+                send_to_pc_fmt("📡 wifi reset\n");
 
                 wifi2_init();
                 wifi2_async_reset();
                 next_wifi_step = WIFI_STEP_AP_JOIN;
+                wifi_cmd_timestamp = g_timestamp;
             } break;
 
             case WIFI_STEP_AP_JOIN: {
                 wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
+                wifi_cmd_timestamp = g_timestamp;
 
-                send_to_pc_fmt("📡 wifi ap join\n"); // TODO(rune): Conditional debug print
+                send_to_pc_fmt("📡 wifi ap join\n");
             } break;
 
             case WIFI_STEP_TCP_OPEN: {
                 if (packet_timestamp + packet_interval <= g_timestamp) { // Er der gået mere end packet_interval siden vi sendte sidste pakke?
                     packet_timestamp = g_timestamp;
-                    packet_proccesed = false;
 
                     wifi2_async_tcp_open(SERVER_IP, SERVER_PORT);
                     next_wifi_step = WIFI_STEP_TCP_SEND;
+                    wifi_cmd_timestamp = g_timestamp;
 
-                    send_to_pc_fmt("📡 wifi tcp open\n"); // TODO(rune): Conditional debug print
+                    send_to_pc_fmt("📡 wifi tcp open\n");
                 }
             } break;
 
@@ -271,10 +243,11 @@ static void do_wifi(void) {
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
+                wifi_cmd_timestamp = g_timestamp;
 
-                send_to_pc_fmt("📡 wifi tcp send\n"); // TODO(rune): Conditional debug print
+                send_to_pc_fmt("📡 wifi tcp send\n");
                 send_to_pc(ANSI_FG_MAGENTA);
-                uart_send_array_blocking(USART_0, http_buf, http_len);
+                uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
                 send_to_pc("\n");
                 send_to_pc(ANSI_RESET);
             } break;
@@ -282,51 +255,66 @@ static void do_wifi(void) {
             case WIFI_STEP_TCP_CLOSE: {
                 if (packet_timestamp + packet_timeout <= g_timestamp) {
                     process_http_response(wifi2_g_recv_buf, wifi2_g_recv_len);
+                    wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
-                    send_to_pc_fmt("📡 wifi tcp close\n"); // TODO(rune): Conditional debug print
+                    wifi_cmd_timestamp = g_timestamp;
+
+                    send_to_pc_fmt("📡 wifi tcp close\n");
                 }
             } break;
         }
     }
 
     ////////////////////////////////////////////////////////////////
-    // Tjek om nuværende command er færdig
+    // Tjek om nuværende command er timeout eller færdig
 
+    bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
 
         send_to_pc(ANSI_FG_YELLOW);
-        uart_send_array_blocking(USART_0, wifi2_g_recv_buf, wifi2_g_recv_len);
+        uart_send_array_blocking(USART_0, (uint8_t *)wifi2_g_recv_buf, wifi2_g_recv_len);
         send_to_pc("\n");
         send_to_pc(ANSI_RESET);
 
         if (cmd_result.ok) {
-            if (curr_wifi_step == WIFI_STEP_TCP_SEND) {
-                //process_http_response(cmd_result.data, cmd_result.data_len);
-            }
-
-            // TODO(rune): Conditional debug print
             send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
             send_to_pc(ANSI_FG_CYAN);
             uart_send_array_blocking(USART_0, cmd_result.data, cmd_result.data_len);
             send_to_pc("\n");
             send_to_pc(ANSI_RESET);
         } else if (curr_wifi_step == WIFI_STEP_TCP_CLOSE) {
-            // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket, så vi ignorerer bare fejlen.
+            // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
+            // hvilket den vil være er, hvis transaction blev færdig uden fejl, så vi ignorerer bare at ok == false.
         } else {
-            // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
-            next_wifi_step = WIFI_STEP_RESET;
+            timeout_or_error = true;
 
             send_to_pc(ANSI_FG_RED);
             send_to_pc("cmd_result.ok == false\n");
             send_to_pc(ANSI_RESET);
         }
+    } else if (wifi_cmd_timestamp + wifi_cmd_timeout <= g_timestamp) {
+        timeout_or_error = true;
+
+        send_to_pc(ANSI_FG_RED);
+        send_to_pc("wifi cmd timeout\n");
+        send_to_pc(ANSI_RESET);
+    }
+
+    if (timeout_or_error) {
+        // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
+        next_wifi_step = WIFI_STEP_RESET;
+        wifi2_canel_async();
     }
 }
 
 ////////////////////////////////////////////////////////////////
 // CO2
+
+static void co2_callback(uint8_t byte) {
+    usart3_co2_rx_handler(byte);
+}
 
 static void do_co2(void) {
     static timestamp co2_timestamp = 0;
@@ -334,7 +322,7 @@ static void do_co2(void) {
 
     if (co2_timestamp + co2_interval <= g_timestamp) {
         co2_timestamp = g_timestamp;
-        send_to_pc("⚡ Send CO2 command\n"); // TODO(rune): Conditional debug print
+        send_to_pc("⚡ Send CO2 command\n");
         send_co2_command(Co2SensorRead);  // Trigger CO2 reading
     }
 
@@ -373,7 +361,6 @@ static void do_dht11() {
 // Servo
 
 static void do_servo() {
-
     if (g_measurements.open_window) {
         servo(0);
     } else {
@@ -382,18 +369,60 @@ static void do_servo() {
 }
 
 ////////////////////////////////////////////////////////////////
+// Infrared sensor and lights
+
+static void do_pir() {
+    static timestamp motion_timestamp = 0;
+    static timestamp motion_delay = 10*1000; // Bestemmer hvor langt tid skal der gå før lyset slukker igen.
+
+    if (pir_motion()) {
+        motion_timestamp = g_timestamp;
+    }
+
+    if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
+        DDRB = 0xff;
+        PORTB = 0x00;
+    } else {
+        DDRB = 0xff;
+        PORTB = 0xff;
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// Buttons and display
+
+static void do_buttons_and_display() {
+    static timestamp button_timestamp = 0;
+    static timestamp button_interval = 2000; // Hver 2 sekunder
+
+    if (button_timestamp + button_interval <= g_timestamp) {
+        button_timestamp = g_timestamp;
+
+        handle_buttons();
+    }
+}
+
+////////////////////////////////////////////////////////////////
 // Main loop
 
 int main() {
+    g_measurements.want_next_measurement_delay = 5000;
+
     uart_init(USART_0, 9600, 0);        // USB
-    uart_init(USART_3, 9600, callback); // CO2
+    uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
+    tone_init();
+    buttons_init();
+    display_init();
+    pir_init();
 
     while (1) {
         do_wifi();
         do_co2();
         do_dht11();
-        //do_servo();
+        do_servo();
+        do_buttons_and_display();
+        do_pir();
 
         _delay_ms(100);
     }
