@@ -1,7 +1,7 @@
 import React from 'react';
 import { Card, CardContent, Typography, CircularProgress } from '../../MUI_imports';
 
-function CO2Component({ co2_concentration, isLoading }) {
+export default function CO2Component({ co2_concentration, isLoading }) {
 
      if (isLoading) {
           return (
@@ -26,5 +26,3 @@ function CO2Component({ co2_concentration, isLoading }) {
         </Card>
     );
 }
-
-export default CO2Component;
