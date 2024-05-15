@@ -28,22 +28,22 @@ namespace Broker.Services
             return await _httpClient.PostAsJsonAsync<ActionResult<Tournament>>("http://turnering_webapi:5100/tournaments", tournamentData);
         }
 
-        public async Task<ActionResult<Tournament>> UpdateTournament(int tournamentID, Tournament tournamentData)
+        public async Task<ActionResult<Tournament>> UpdateTournament(string tournamentID, Tournament tournamentData)
         {
             return await _httpClient.PutAsJsonAsync<ActionResult<Tournament>>($"http://turnering_webapi:5100/tournaments/{tournamentID}", tournamentData);
         }
 
-        public async Task<ActionResult> DeleteTournament(int tournamentID)
+        public async Task<ActionResult> DeleteTournament(string tournamentID)
         {
             return await _httpClient.DeleteAsync($"http://turnering_webapi:5100/tournaments/{tournamentID}");
         }
 
-        public async Task<ActionResult<Participant>> AddParticipant(int tournamentID, string participant)
+        public async Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant)
         {
             return await _httpClient.PostAsJsonAsync<ActionResult<Participant>>($"http://turnering_webapi:5100/tournaments/{tournamentID}/participants", participant);
         }
 
-        public async Task<ActionResult> RemoveParticipant(int tournamentID, string participant)
+        public async Task<ActionResult> RemoveParticipant(string tournamentID, string participant)
         {
             return await _httpClient.DeleteAsync($"http://turnering_webapi:5100/tournaments/{tournamentID}/participants/{participant}");
         }

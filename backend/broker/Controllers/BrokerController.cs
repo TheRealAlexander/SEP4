@@ -39,28 +39,28 @@ namespace Broker.Controllers
 
         // Corresponds to UpdateTournament
         [HttpPut("tournaments/{tournamentID}")]
-        public async Task<ActionResult<Tournament>> UpdateTournament(int tournamentID, Tournament tournamentData)
+        public async Task<ActionResult<Tournament>> UpdateTournament(string tournamentID, Tournament tournamentData)
         {
             return await _brokerService.UpdateTournament(tournamentID, tournamentData);
         }
 
         // Corresponds to RemoveTournament
         [HttpDelete("tournaments/{tournamentID}")]
-        public async Task<ActionResult> DeleteTournament(int tournamentID)
+        public async Task<ActionResult> DeleteTournament(string tournamentID)
         {
             return await _brokerService.DeleteTournament(tournamentID);
         }
 
         // Corresponds to AddParticipant
         [HttpPost("tournaments/{tournamentID}/participants")]
-        public async Task<ActionResult<Participant>> AddParticipant(int tournamentID, string participant)
+        public async Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant)
         {
             return await _brokerService.AddParticipant(tournamentID, participant);
         }
 
         // Corresponds to RemoveParticipant
         [HttpDelete("tournaments/{tournamentID}/participants/{participant}")]
-        public async Task<ActionResult> RemoveParticipant(int tournamentID, string participant)
+        public async Task<ActionResult> RemoveParticipant(string tournamentID, string participant)
         {
             return await _brokerService.RemoveParticipant(tournamentID, participant);
         }
