@@ -1,3 +1,3 @@
 ﻿namespace WebApi.Models;
 
-public record TournamentCreationDTO(string Name, string TournamentFormat, int NumberOfCourts, List<Player> Players);
+public record TournamentCreationDTO(string Name, string TournamentFormat, int NumberOfCourts, int PointsPerMatch, List<Player> Players);

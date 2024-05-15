@@ -34,7 +34,7 @@ public class TournamentService : ITournamentService
         }
 
         Tournament tournament = new Tournament(tournamentDTO.Name, format, tournamentDTO.Players.Count,
-            tournamentDTO.NumberOfCourts, tournamentDTO.Players);
+            tournamentDTO.NumberOfCourts, tournamentDTO.PointsPerMatch, tournamentDTO.Players);
         
         await _tournamentDAO.AddTournamentAsync(tournament);
     }
@@ -47,12 +47,17 @@ public class TournamentService : ITournamentService
     public async Task<Round> RequestNewRoundAsync(int tournamentID)
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
-        return tournament.Format.GenerateRound(tournament.Players);
+        Round round = tournament.Format.GenerateRound(tournament.Players, tournament);
+        return round;
     }
+
+
 
     public async Task<List<Player>> GetScoreboardAsync(int tournamentID)
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
-        return tournament.Players; // TODO Make sure this returns players ordered by their score
+        var players = tournament.Players;
+        players.Sort((player1, player2) => player2.Points.CompareTo(player1.Points));
+        return players;
     }
 }

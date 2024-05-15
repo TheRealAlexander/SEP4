@@ -2,5 +2,5 @@ namespace WebApi.Models;
 
 public abstract class TournamentFormat
 {
-    public abstract void GenerateRound(List<Player> players); // TODO Needs to return Round object
+    public abstract Round GenerateRound(List<Player> players, Tournament tournament);
 }

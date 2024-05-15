@@ -5,24 +5,40 @@ namespace WebApi.Models
 {
     public class Americano : TournamentFormat
     {
-        public override void GenerateRound(List<Player> players)
+        private void ShufflePlayers(List<Player> players)
         {
-            Random random = new Random();
-            for (int i = players.Count - 1; i > 0; i--)
+            Random rng = new Random();
+            int n = players.Count;
+            while (n > 1)
             {
-                int j = random.Next(0, i + 1);
-                Player temp = players[i];
-                players[i] = players[j];
-                players[j] = temp;
+                n--;
+                int k = rng.Next(n + 1);
+                Player value = players[k];
+                players[k] = players[n];
+                players[n] = value;
             }
+        }
+
+        public override Round GenerateRound(List<Player> players, Tournament tournament)
+        {
+            var round = new Round();
+            var playersPerRound = players.Count / 2;
             
-            int courtCount = (int)Math.Ceiling((double)players.Count / 4);
-            for (int i = 0; i < courtCount; i++)
+            ShufflePlayers(players);
+
+            for (var j = 0; j < playersPerRound; j++)
             {
-                int startIndex = i * 4;
-                int remainingPlayers = Math.Min(4, players.Count - startIndex);
-                List<Player> courtPlayers = players.GetRange(startIndex, remainingPlayers);
+                var player1 = players[j];
+                var player2 = players[playersPerRound + j];
+
+                var court = new Court(tournament.PointsPerMatch);
+                court.AddPlayer(player1);
+                court.AddPlayer(player2);
+
+                round.Courts.Add(court);
             }
+
+            return round;
         }
     }
 }

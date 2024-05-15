@@ -12,14 +12,17 @@ public class Tournament
     public TournamentFormat Format { get; set; }
     public int NumberOfPlayers { get; set; }
     public int NumberOfCourts { get; set; }
+    public int PointsPerMatch { get; set; }
     public List<Player> Players { get; set; }
+    public bool FirstRound { get; set; } = true;
 
-    public Tournament(string name, TournamentFormat format, int numberOfPlayers, int numberOfCourts, List<Player> players)
+    public Tournament(string name, TournamentFormat format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players)
     {
         Name = name;
         Format = format;
         NumberOfPlayers = numberOfPlayers;
         NumberOfCourts = numberOfCourts;
+        PointsPerMatch = pointsPerMatch;
         Players = players;
     }
 }
