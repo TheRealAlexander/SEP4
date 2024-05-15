@@ -55,7 +55,7 @@ static void wifi2_async(char *cmd, bool ipd) {
 }
 
 static void wifi2_uart_callback(uint8_t byte) {
-    if (wifi2_g_recv_len < (int)sizeof(wifi2_g_recv_buf)) {
+    if (wifi2_g_recv_len < isizeof(wifi2_g_recv_buf)) {
         wifi2_g_recv_buf[wifi2_g_recv_len++] = byte;
     }
 
@@ -66,7 +66,7 @@ static void wifi2_uart_callback(uint8_t byte) {
                 "OK", "FAIL", "ERROR"
             };
 
-            for (int i = 0; i < (int)countof(look_for); i++) {
+            for (int i = 0; i < countof(look_for); i++) {
                 int look_for_len = strlen(look_for[i]);
                 if (memmem(wifi2_g_recv_buf, wifi2_g_recv_len, look_for[i], look_for_len)) {
                     if (i > 0) {

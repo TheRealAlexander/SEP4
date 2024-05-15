@@ -1,8 +1,9 @@
 ////////////////////////////////////////////////////////////////
 // Macros
 
-#define countof(a)          (sizeof(a) / sizeof(*(a)))
-#define UNUSED(a)           ((void)a) // NOTE(rune): To supress unused variable warnings
+#define countof(a)          ((int)(sizeof(a) / sizeof(*(a))))
+#define isizeof(a)          ((int)(sizeof(a)))
+#define UNUSED(a)           ((void)(a)) // NOTE(rune): To supress unused variable warnings
 
 ////////////////////////////////////////////////////////////////
 // Include standard library

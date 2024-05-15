@@ -56,7 +56,7 @@ static void test_calculatePartsPerMil_min(void) {
 
 static void test_packet_incomplete(void) {
     uint8_t partial_packet[] = { 0xFF, 0x86 };
-    for (int i = 0; i < sizeof(partial_packet); i++) {
+    for (int i = 0; i < isizeof(partial_packet); i++) {
         usart3_co2_rx_handler(partial_packet[i]);
     }
     assert_uint8_msg(0, new_co2_data_available, "Data should not be available with incomplete packet");
@@ -64,7 +64,7 @@ static void test_packet_incomplete(void) {
 
 static void test_packet_error(void) {
     uint8_t error_packet[] = { 0xFF, 0x86, 0x01, 0x9A, 0x41, 0xFF, 0x00 }; // Incorrect checksum deliberately
-    for (int i = 0; i < sizeof(error_packet); i++) {
+    for (int i = 0; i < isizeof(error_packet); i++) {
         usart3_co2_rx_handler(error_packet[i]);
     }
     assert_uint8_msg(0, new_co2_data_available, "Data should not be available with erroneous content");

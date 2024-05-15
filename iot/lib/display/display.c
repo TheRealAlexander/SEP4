@@ -35,7 +35,7 @@ const uint8_t hex_digits[] = {
     0b00000000  // (Empty space)
 };
 
-uint8_t static display_data[] = {0x3, 0x3, 0x3, 0x3};
+static uint8_t display_data[] = {0x3, 0x3, 0x3, 0x3};
 
 void display_setValues(uint8_t seg1, uint8_t seg2, uint8_t seg3, uint8_t seg4)
 {
@@ -120,7 +120,7 @@ void display_init()
 #ifndef WINDOWS_TEST
 ISR(TIMER1_COMPA_vect)
 {
-    uint8_t static current_digit = 0;
+    static uint8_t current_digit = 0;
     DISPLAY_LATCH_PORT &= ~(1 << DISPLAY_LATCH_BIT);
     shift_out(~hex_digits[display_data[current_digit]]);
     shift_out(1 << current_digit);
