@@ -8,7 +8,7 @@ export default function TournamentPage() {
      const [selectedTournament, setSelectedTournament] = useState(null);
 
      //Dummy data for tournaments
-     const Participants = ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy"];
+     const Participants = ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Linda", "Mallory", "Nia", "Oscar", "Peggy", "Quinn", "Rene", "Sue", "Trent", "Ursula", "Victor", "Wendy", "Xander", "Yvonne", "Zane"];
      const tournaments = [
        { 
           id: 1, 
