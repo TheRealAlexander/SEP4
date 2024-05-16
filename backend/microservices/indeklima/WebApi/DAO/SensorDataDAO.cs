@@ -6,12 +6,10 @@ namespace WebApi.DAO
     public class SensorDataDAO : ISensorDataDAO
     {
         private readonly IMongoCollection<SensorData> _sensorDataMongoCollection;
-        private readonly IMongoCollection<SensorGoal> _sensorGoalMongoCollection;
 
         public SensorDataDAO(MongoDbContext context)
         {
             _sensorDataMongoCollection = context.Database.GetCollection<SensorData>("SensorData");
-            _sensorGoalMongoCollection = context.Database.GetCollection<SensorGoal>("SensorGoal");
         }
 
         public async Task<List<SensorData>> GetSensorDataAsync()
