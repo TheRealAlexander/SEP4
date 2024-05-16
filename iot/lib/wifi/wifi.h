@@ -8,14 +8,6 @@
  * @copyright Copyright (c) 2023
  * 
  */
-#pragma once
-
-#if NOT_PLATFORMIO
-// Nothing
-#else
-#   include <stdint.h>
-#   include "uart.h"
-#endif
 
 /**
  * @brief Define which USART module is used for WiFi communication.
