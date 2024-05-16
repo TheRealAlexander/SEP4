@@ -8,6 +8,7 @@ import React from 'react';
 
 // Component Imports
 import ClimatePage from './Components/ClimatePage/ClimatePage';
+import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
 import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
 import ControlsPage from './Controls/ControlsPage.js';
@@ -73,6 +74,7 @@ function AppContent() {
             <Route path="/tournamentPage" element={<TournamentPage />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
+            <Route path="/users" element={<UserPermissionPage />} />
           </Routes>
         </div>
       </Box>

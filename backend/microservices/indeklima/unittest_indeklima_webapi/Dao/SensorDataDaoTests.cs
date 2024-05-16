@@ -7,9 +7,9 @@ using WebApi.DAO;
 
 public class SensorDataDaoTests : IAsyncLifetime
 {
-    //Preconditions: 
+    //Preconditions: Database must be running on localhost:27017
 
-    private readonly SensorDataDao _dao;
+    private readonly SensorDataDAO _dao;
     private readonly IMongoDatabase _database;
 
     public SensorDataDaoTests()
@@ -17,7 +17,7 @@ public class SensorDataDaoTests : IAsyncLifetime
         var conn = "mongodb://localhost:27017";
         var client = new MongoClient(conn);
         _database = client.GetDatabase("BackendTestDB");
-        _dao = new SensorDataDao(new MongoDbContext(conn, "BackendTestDB"));
+        _dao = new SensorDataDAO(new MongoDbContext(conn, "BackendTestDB"));
     }
 
     public async Task InitializeAsync()
@@ -36,13 +36,13 @@ public class SensorDataDaoTests : IAsyncLifetime
     public async Task AddSensorDataAsync_ShouldAddData_WhenDataIsUnique()
     {
         // Arrange
-        var sensorData = new SensorData { Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
+        var sensorData = new SensorData { HallId = 1,Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
 
         // Act
         await _dao.AddSensorDataAsync(sensorData);
 
         // Assert
-        var insertedData = await _dao.GetSensorDataAsync();
+        var insertedData = await _dao.GetSensorDataAsync(1);
         Assert.NotNull(insertedData);
         Assert.Equal(sensorData.Temperature, insertedData[0].Temperature);
         Assert.Equal(sensorData.Humidity, insertedData[0].Humidity);

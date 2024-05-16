@@ -21,10 +21,10 @@ public class SensorDataServiceTests
     {
         // Arrange
         var expectedData = new List<SensorData> { new SensorData(), new SensorData() };
-        _mockSensorDataDao.Setup(dao => dao.GetSensorDataAsync()).ReturnsAsync(expectedData);
+        _mockSensorDataDao.Setup(dao => dao.GetSensorDataAsync(1)).ReturnsAsync(expectedData);
 
         // Act
-        var result = await _service.GetSensorData();
+        var result = await _service.GetSensorData(1);
 
         // Assert
         Assert.Equal(expectedData, result);
