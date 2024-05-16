@@ -1,0 +1,40 @@
+name: Deployment
+
+on: push
+
+# on:
+#   push:
+#     branches:
+#       - prod
+
+jobs:
+  convert_dockercompose_to_k8s:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install Kompose
+        run: |
+          curl -L https://github.com/kubernetes/kompose/releases/download/v1.24.0/kompose-linux-amd64 -o kompose
+          chmod +x kompose
+          sudo mv ./kompose /usr/local/bin/kompose
+      - name: Convert docker-compose to k8s
+        run: kompose convert -f docker-compose.yml -o k8s/
+
+  deploy:
+    runs-on: ubuntu-latest
+    name: build and deploy to minikube
+    steps:
+      - uses: actions/checkout@v3
+      - name: Set up Minikube
+        id: minikube
+        uses: medyagh/setup-minikube@latest
+      - name: Try the cluster
+        run: kubectl get pods -A
+      - name: Apply the k8s files
+        run: |
+          kubectl apply -f k8s/
+      - name: Clean up
+        run: |
+          eval $(minikube docker-env -u)
+          minikube delete
