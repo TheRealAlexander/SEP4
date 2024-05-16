@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef struct {
     uint8_t li_vn_mode;       // Eight bits. li, vn, and mode.
@@ -29,3 +30,4 @@ typedef ntp_packet ntp_response_packet;
 
 void construct_ntp_request(ntp_request_packet* packet);
 void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet);
+bool is_ntp_packet_valid(const uint8_t* buffer, size_t size);

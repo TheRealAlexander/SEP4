@@ -23,3 +23,32 @@ void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet) {
     packet->txTm_s = ntohl(packet->txTm_s);
     packet->txTm_f = ntohl(packet->txTm_f);
 }
+
+bool is_ntp_response_packet(const uint8_t* buffer, size_t size) {
+    if (size != sizeof(ntp_packet)) {
+        return false;
+    }
+
+    ntp_packet* packet = (ntp_packet*)buffer;
+
+    // Check the version number (VN) field. It should be 3 or 4.
+    uint8_t vn = (packet->li_vn_mode >> 3) & 0x07;
+    if (vn != 3 && vn != 4) {
+        return false;
+    }
+
+    // Check the mode field. It should be 4, if from a server.
+    uint8_t mode = packet->li_vn_mode & 0x07;
+    if (mode != 4) {
+        return false;
+    }
+
+    // Check the stratum field. It should be between 1 and 15 for a valid server.
+    if (packet->stratum == 0 || packet->stratum > 15) {
+        return false;
+    }
+
+    // Maybe add more checks here... probably not necessary.
+
+    return true;
+}
