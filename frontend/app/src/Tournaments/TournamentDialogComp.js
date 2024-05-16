@@ -45,6 +45,8 @@ function TournamentDialog({ open, onClose, tournament }) {
         <Typography>Date: {tournament.date}</Typography>
         <Typography>Current Participants: {tournament.currentParticipants}</Typography>
         <Typography>Event Description: {tournament.description}</Typography>
+        <Typography>Format: {tournament.format}</Typography>
+        <Typography>Game Fields: {tournament.baneAntal}</Typography>
         <Typography>Participants:</Typography>
         <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1, marginBottom: 2 }}>
           {tournament.participants.map((participant, index) => (
