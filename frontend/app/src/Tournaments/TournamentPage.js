@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import TournamentItem from "./TournamentItemComp";
 import TournamentDialog from "./TournamentDialogComp";
-import { Box } from "../MUI_imports";
+import { Box, Grid } from "../MUI_imports";
 
 export default function TournamentPage() {
   const [open, setOpen] = useState(false);
@@ -67,22 +67,16 @@ export default function TournamentPage() {
   };
 
   return (
-    <Box
-      p={2}
-      sx={{
-        display: "flex",
-        flexDirection: "row",
-        alignItems: "center",
-        justifyContent: "center",
-      }}
-    >
-      {tournaments.map((tournament) => (
-        <TournamentItem
-          key={tournament.id}
-          tournament={tournament}
-          onClick={handleTournamentClick}
-        />
-      ))}
+    <Box p={2}>
+      <Grid container spacing={2}>
+        {tournaments.map((tournament) => (
+          <TournamentItem
+            key={tournament.id}
+            tournament={tournament}
+            onClick={handleTournamentClick}
+          />
+        ))}
+      </Grid>
       {selectedTournament && (
         <TournamentDialog
           open={open}

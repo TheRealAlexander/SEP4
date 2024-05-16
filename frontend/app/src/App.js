@@ -64,9 +64,9 @@ function AppContent() {
         component="main"
         sx={{
           flexGrow: 1,
-          p: 15,
+          p: { xs: 2, sm: 3, md: 15 },
           height: "100vh",
-          mt: "-5vh",
+          mt: { xs: "0vh", sm: "-2vh", md: "-5vh" },
         }}
       >
         <Toolbar />
