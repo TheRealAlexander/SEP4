@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/extend-expect";
 import React from "react";
 import userEvent from "@testing-library/user-event";
 import LiveScorePage from "./LiveScorePage";
-import LiveScoreService from "../../Services/LiveScoreService";
+import LiveScoreService from "../Services/LiveScoreService";
 
 jest.mock("../../Services/LiveScoreService");
 
