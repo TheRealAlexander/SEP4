@@ -6,8 +6,7 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongodbdata:/data/db
-      - authmongodbdata:/data/db
+      - mongodbdata:/data/mongodbdata
     networks:
       - backend
 
