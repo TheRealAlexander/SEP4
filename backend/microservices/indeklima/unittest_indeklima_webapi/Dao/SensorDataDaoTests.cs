@@ -36,13 +36,13 @@ public class SensorDataDaoTests : IAsyncLifetime
     public async Task AddSensorDataAsync_ShouldAddData_WhenDataIsUnique()
     {
         // Arrange
-        var sensorData = new SensorData { Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
+        var sensorData = new SensorData { HallId = 1,Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
 
         // Act
         await _dao.AddSensorDataAsync(sensorData);
 
         // Assert
-        var insertedData = await _dao.GetSensorDataAsync();
+        var insertedData = await _dao.GetSensorDataAsync(1);
         Assert.NotNull(insertedData);
         Assert.Equal(sensorData.Temperature, insertedData[0].Temperature);
         Assert.Equal(sensorData.Humidity, insertedData[0].Humidity);
