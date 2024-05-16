@@ -54,6 +54,22 @@ export default function TournamentPage() {
       description: "This is a sample tournament B.",
       participants: ["Charlie", "Dave"],
     },
+    {
+      id: 3,
+      name: "Tournament C",
+      date: "2024-08-30",
+      currentParticipants: 12,
+      description: "This is a sample tournament C.",
+      participants: ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank"],
+    },
+    {
+      id: 4,
+      name: "Tournament D",
+      date: "2024-09-15",
+      currentParticipants: 4,
+      description: "This is a sample tournament D.",
+      participants: ["Alice", "Bob", "Charlie", "Dave"],
+    },
   ];
   //End of dummy data for tournaments
 

@@ -12,8 +12,8 @@ function TournamentItem({ tournament, onClick }) {
     <Grid item xs={12} sm={6}>
       <Card
         sx={{
-          margin: 10,
-          marginTop: 6,
+          margin: 2,
+          marginTop: 2,
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -23,7 +23,7 @@ function TournamentItem({ tournament, onClick }) {
         <CardActionArea onClick={() => onClick(tournament)}>
           <CardContent
             sx={{
-              padding: 10,
+              padding: { xs: 5, sm: 8, md: 10 },
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
