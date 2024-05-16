@@ -67,7 +67,15 @@ export default function TournamentPage() {
   };
 
   return (
-    <Box p={2}>
+    <Box
+      p={2}
+      sx={{
+        display: "flex",
+        flexDirection: "row",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
+    >
       {tournaments.map((tournament) => (
         <TournamentItem
           key={tournament.id}
