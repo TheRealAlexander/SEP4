@@ -52,6 +52,60 @@ time.
 }
 ```
 
+## **Requirement:**
+Som admin vil jeg gerne kunne indstille hallens indeklima manuelt, så jeg kan tilpasse det til spillernes behov.
+
+### Request: Post Data Goal
+
+**Description:** This request is utilized to post an environmental data goal such as
+temperature, humidity, and CO2 concentration. Desired values for hall id, will be sent to indoor climate.
+
+**Method:** POST
+
+- URL: /PostEnvironmentDataGoal
+- Port: 5200
+
+**Parameters:**
+
+- hallId
+- desiredTemperature
+- desiredHumidity
+- desiredCo2
+
+**Request Example:**
+```json
+{
+    "hallId": 3,
+    "desiredTemperature": 15.5,
+    "desiredHumidity": 30.0,
+    "desiredCO2": 400.0
+}
+```
+
+**Response:**
+
+- Status Code: 200 OK
+- Body: JSON object containing success and sent values
+
+**Response Example:**
+```json
+{
+    "success": true,
+    "hallId": 3,
+    "desiredTemperature": 15.5,
+    "desiredHumidity": 30.0,
+    "desiredCo2": 400.0
+}
+```
+
+**Failed Response:**
+- Status code: 400
+- Bad Request
+
+---
+
+## Requests for Authorization Data
+
 ## Request: User Login
 **Description:**
 
@@ -258,5 +312,4 @@ No users provided.
 ```json
 Role must be either User or SuperUser!
 ```
-
 

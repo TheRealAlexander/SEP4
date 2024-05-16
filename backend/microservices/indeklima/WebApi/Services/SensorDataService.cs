@@ -14,7 +14,7 @@ namespace WebApi.Services
             _sensorDataDao = sensorDataDao;
         }
 
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<List<SensorData>> GetSensorDataAsync()
         {
             return await _sensorDataDao.GetSensorDataAsync();
         }

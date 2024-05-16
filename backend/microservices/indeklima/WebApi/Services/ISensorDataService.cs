@@ -7,7 +7,7 @@ namespace WebApi.Services
 {
     public interface ISensorDataService
     {
-        public Task<List<SensorData>> GetSensorData();
+        public Task<List<SensorData>> GetSensorDataAsync();
         public Task AddSensorDataAsync(SensorData sensorData);
         
     }

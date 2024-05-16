@@ -1,8 +1,4 @@
-using Xunit;
 using Moq;
-using Microsoft.AspNetCore.Mvc;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using MongoDB.Bson;
 using WebApi.Controllers;
 using WebApi.Models;
@@ -29,7 +25,7 @@ public class GetEnvironmentDataControllerTests
             new SensorData { Id = ObjectId.GenerateNewId().ToString(), Temperature = 26.5, Humidity = 51.0, CO2 = 900.0, Timestamp = DateTime.Now },
             new SensorData { Id = ObjectId.GenerateNewId().ToString(), Temperature = 27.5, Humidity = 52.0, CO2 = 1000.0, Timestamp = DateTime.Now }
         };
-        _mockSensorDataService.Setup(s => s.GetSensorData()).ReturnsAsync(sensorDataList);
+        _mockSensorDataService.Setup(s => s.GetSensorDataAsync()).ReturnsAsync(sensorDataList);
 
         // Act
         var result = await _controller.GetSensorData();
@@ -43,7 +39,7 @@ public class GetEnvironmentDataControllerTests
     {
         // Arrange
         var sensorDataList = new List<SensorData>();
-        _mockSensorDataService.Setup(s => s.GetSensorData()).ReturnsAsync(sensorDataList);
+        _mockSensorDataService.Setup(s => s.GetSensorDataAsync()).ReturnsAsync(sensorDataList);
 
         // Act
         var result = await _controller.GetSensorData();

@@ -1,7 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.Models;
@@ -22,6 +20,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("{username}")]
+    [Authorize(Policy = "MustBeAdmin")]
     public async Task<ActionResult<User>> GetUserAsync(string username)
     {
         try
@@ -42,6 +41,7 @@ public class UserController : ControllerBase
     }
     
     [HttpGet("/GetAllUsers")]
+    [Authorize(Policy = "MustBeAdmin")]
     public async Task<ActionResult<List<User>>> GetAllUsersAsync()
     {
         try
@@ -86,6 +86,7 @@ public class UserController : ControllerBase
     }
 
     [HttpPost("swapRoles")]
+    [Authorize(Policy = "MustBeAdmin")]
     public async Task<ActionResult<List<User>>> SwapRolesAsync([FromBody] List<User> users)
     {
         if (users.IsNullOrEmpty())

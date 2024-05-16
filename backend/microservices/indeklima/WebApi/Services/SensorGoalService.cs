@@ -14,17 +14,38 @@ namespace WebApi.Services
 
         public async Task<SensorGoal?> GetSensorGoalAsync(int hallId)
         {
-            return await _sensorGoalDAO.GetSensorGoalAsync(hallId);
+            try
+            {
+                return await _sensorGoalDAO.GetSensorGoalAsync(hallId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving sensor goal: {ex.Message}");
+            }
         }
 
         public async Task AddOrUpdateSensorGoalAsync(SensorGoal sensorGoal)
         {
-            await _sensorGoalDAO.AddOrUpdateSensorGoalAsync(sensorGoal);
+            try
+            {
+                await _sensorGoalDAO.AddOrUpdateSensorGoalAsync(sensorGoal);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error adding or updating sensor goal: {ex.Message}");
+            }
         }
 
         public async Task DeleteSensorGoalAsync(int hallId)
         {
-            await _sensorGoalDAO.DeleteSensorGoalAsync(hallId);
+            try
+            {
+                await _sensorGoalDAO.DeleteSensorGoalAsync(hallId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting sensor goal: {ex.Message}");
+            }
         }
     }
 }

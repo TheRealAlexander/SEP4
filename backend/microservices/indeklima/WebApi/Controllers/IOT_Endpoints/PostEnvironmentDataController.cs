@@ -15,27 +15,22 @@ namespace WebApi.Controllers
         private readonly ISensorDataService _sensorDataService;
         private readonly ISensorGoalService _sensorGoalService;
         private readonly IIOTControlService _iotControlService;
-        private readonly ILogger<PostEnvironmentDataController> _logger;
 
-        public PostEnvironmentDataController(ISensorDataService sensorDataService, ISensorGoalService sensorGoalService, IIOTControlService iotControlService, ILogger<PostEnvironmentDataController> logger)
+        public PostEnvironmentDataController(ISensorDataService sensorDataService, ISensorGoalService sensorGoalService, IIOTControlService iotControlService)
         {
             _sensorDataService = sensorDataService;
             _sensorGoalService = sensorGoalService;
             _iotControlService = iotControlService;
-            _logger = logger;
         }
 
         [HttpPost]
-        // [Authorize(Policy = "MustBeAdmin")]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> PostSensorData([FromBody] IOTSensorDataDto data)
         {
             try
             {
-                _logger.LogInformation("Received sensor data: {@Data}", JsonConvert.SerializeObject(data));
-                
                 // Get sensor goal for the current hallId
                 SensorGoal? sensorGoal = await _sensorGoalService.GetSensorGoalAsync(data.HallId);
-                _logger.LogInformation("Fetched sensor goal for HallId {HallId}: {@SensorGoal}", data.HallId, JsonConvert.SerializeObject(sensorGoal));
                 
                 // Process incoming sensor data
                 SensorData sensorData = new SensorData
@@ -48,7 +43,6 @@ namespace WebApi.Controllers
                 };
 
                 await _sensorDataService.AddSensorDataAsync(sensorData);
-                _logger.LogInformation("Sensor data saved: {@SensorData}", JsonConvert.SerializeObject(sensorData));
 
                 bool? shouldWindowOpen = null;
 
@@ -72,8 +66,6 @@ namespace WebApi.Controllers
                     }
                 }
                 
-                _logger.LogInformation("Should window open: {ShouldWindowOpen}", shouldWindowOpen);
-
                 return Ok(new
                 {
                     success = true,

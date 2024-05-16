@@ -14,38 +14,62 @@ namespace WebApi.DAO
 
         public async Task<SensorGoal?> GetSensorGoalAsync(int hallId)
         {
-            return await _sensorGoalCollection.Find(g => g.HallId == hallId).FirstOrDefaultAsync();
+            try
+            {
+                return await _sensorGoalCollection.Find(g => g.HallId == hallId).FirstOrDefaultAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error retrieving sensor goal: {ex.Message}");
+            }
         }
 
         public async Task AddOrUpdateSensorGoalAsync(SensorGoal sensorGoal)
         {
-            // Find the existing goal by hallId
-            var existingGoal = await _sensorGoalCollection.Find(g => g.HallId == sensorGoal.HallId).FirstOrDefaultAsync();
-
-            if (existingGoal != null)
+            try
             {
-                // Update fields while retaining the original Id
-                existingGoal.DesiredTemperature = sensorGoal.DesiredTemperature;
-                existingGoal.DesiredHumidity = sensorGoal.DesiredHumidity;
-                existingGoal.DesiredCo2 = sensorGoal.DesiredCo2;
+                // Find the existing goal by hallId
+                var existingGoal = await _sensorGoalCollection.Find(g => g.HallId == sensorGoal.HallId)
+                    .FirstOrDefaultAsync();
 
-                // Replace the existing document with the updated one
-                await _sensorGoalCollection.ReplaceOneAsync(
-                    g => g.Id == existingGoal.Id,
-                    existingGoal,
-                    new ReplaceOptions { IsUpsert = true }
-                );
+                if (existingGoal != null)
+                {
+                    // Update fields while retaining the original Id
+                    existingGoal.DesiredTemperature = sensorGoal.DesiredTemperature;
+                    existingGoal.DesiredHumidity = sensorGoal.DesiredHumidity;
+                    existingGoal.DesiredCo2 = sensorGoal.DesiredCo2;
+
+                    // Replace the existing document with the updated one
+                    await _sensorGoalCollection.ReplaceOneAsync(
+                        g => g.Id == existingGoal.Id,
+                        existingGoal,
+                        new ReplaceOptions { IsUpsert = true }
+                    );
+                }
+                else
+                {
+                    // Insert as new document if no existing document is found
+                    await _sensorGoalCollection.InsertOneAsync(sensorGoal);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                // Insert as new document if no existing document is found
-                await _sensorGoalCollection.InsertOneAsync(sensorGoal);
+                throw new Exception($"Error adding or updating sensor goal: {ex.Message}");
             }
+            
         }
         
         public async Task DeleteSensorGoalAsync(int hallId)
         {
-            await _sensorGoalCollection.DeleteOneAsync(g => g.HallId == hallId);
+            try
+            {
+                await _sensorGoalCollection.DeleteOneAsync(g => g.HallId == hallId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error deleting sensor goal: {ex.Message}");
+            }
+            
         }
     }
 }

@@ -18,7 +18,7 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        // [Authorize(Policy = "MustBeAdmin")]
+        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> PostSensorDataGoal([FromBody] SensorGoal sensorGoal)
         {
             try
