@@ -20,6 +20,11 @@ jobs:
           sudo mv ./kompose /usr/local/bin/kompose
       - name: Convert docker-compose to k8s
         run: kompose convert -f docker-compose.yml -o k8s/
+      - name: Upload k8s files
+        uses: actions/upload-artifact@v2
+        with:
+          name: k8s-files
+          path: k8s/
 
   deploy:
     runs-on: ubuntu-latest
@@ -29,11 +34,16 @@ jobs:
       - name: Set up Minikube
         id: minikube
         uses: medyagh/setup-minikube@latest
+      - name: Download k8s files
+        uses: actions/download-artifact@v2
+        with:
+          name: k8s-files
+          path: k8s/
       - name: Try the cluster
         run: kubectl get pods -A
       - name: Apply the k8s files
         run: |
-          kubectl apply -f ./k8s/
+          kubectl apply -f k8s/
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
