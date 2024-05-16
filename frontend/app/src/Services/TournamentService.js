@@ -68,10 +68,10 @@ export function AddParticipant(tournamentID, participant) {
     });
 }
 
-export function RemoveParticipant(tournamentID, participantID) {
+export function RemoveParticipant(tournamentID, participant) {
   axios
     .delete(
-      `${API_BASE_URL}/broker/tournaments/${tournamentID}/participants/${participantID}`
+      `${API_BASE_URL}/broker/tournaments/${tournamentID}/participants/${participant}`
     )
     .then((response) => {
       console.log(response);
