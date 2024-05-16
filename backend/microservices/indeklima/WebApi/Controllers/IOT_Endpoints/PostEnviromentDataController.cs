@@ -23,6 +23,7 @@ namespace WebApi.Controllers
             {
                 SensorData sensorData = new SensorData
                 {
+                    HallId = data.HallId,
                     Temperature = data.Temperature,
                     Humidity = data.Humidity,
                     Timestamp = DateTime.Now
