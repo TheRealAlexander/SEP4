@@ -24,12 +24,11 @@ export default function TournamentDialog({ open, onClose, tournament }) {
     // Update tournament.currentParticipants
     console.log("Registering:", participantName);
     setParticipantName(""); // Reset input after registering
-    //onClose();
   };
 
   const handleStartEvent = () => {
     // Handle redirect to event page
-    // Redirect to event page with tournament data
+    // Request tournament data from the backend on new page
     console.log("Starting event:", tournament.name);
     onClose();
   };
