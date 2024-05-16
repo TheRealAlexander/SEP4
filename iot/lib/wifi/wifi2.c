@@ -11,7 +11,7 @@ wifi2_state  wifi2_g_state;
 char         wifi2_g_recv_buf[WIFI2_MAX_RECV];
 int          wifi2_g_recv_len;
 
-int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortæller hvor langt response data er.
+int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortï¿½ller hvor langt response data er.
 int          wifi2_g_ipd_idx; // Index i wifi2_g_recv_buf for data efter "+IPD,1234:" prefixet.
 
 ////////////////////////////////////////////////////////////////
@@ -39,13 +39,13 @@ extern bool wifi2_async_is_done(wifi2_cmd_result *result) {
                 result->data = "";
                 result->data_len = 0;
             }
-            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til næste command
+            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til nï¿½ste command
             result->ok = true;
             return true;
         }
 
         case WIFI2_STATE_DONE_FAIL: {
-            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til næste command
+            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til nï¿½ste command
             return true;
         }
 
@@ -156,4 +156,20 @@ extern void wifi2_async_tcp_send(char *data, int data_len) {
 extern void wifi2_async_tcp_close(void) {
     char *cmd = "AT+CIPCLOSE\r\n";
     wifi2_async(cmd, false);
+}
+
+extern void wifi2_async_udp_open(char *ip, int port) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n", ip, port);
+    wifi2_async(cmd, false);
+}
+
+extern void wifi2_async_udp_send(char *data, int data_len) {
+    // Same as tcp send
+    wifi2_async_tcp_send(data, data_len);
+}
+
+extern void wifi2_async_udp_close(void) {
+    // Same as tcp close
+    wifi2_async_tcp_close();
 }

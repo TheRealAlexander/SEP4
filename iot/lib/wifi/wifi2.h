@@ -15,16 +15,16 @@
 // Types
 
 typedef enum wifi2_state {
-    WIFI2_STATE_NONE,            // Ingen igangværende command
+    WIFI2_STATE_NONE,            // Ingen igangvï¿½rende command
                                  
     WIFI2_STATE_DONE_OK,         // Fandt "OK" i respose fra ESP32
     WIFI2_STATE_DONE_FAIL,       // Fandt "ERROR" eller "FAIL" i response fra ESP32
 
-    WIFI2_STATE_WAIT,            // I gang med at læse normalt AT+XXXXX response.
-    WIFI2_STATE_WAIT_IPD,        // I gang med at læse normalt AT+XXXXX response, og forventer at "+IPD" følger.
-    WIFI2_STATE_WAIT_IPD_PREFIX, // Venter på at finde "+IPD,1234:" prefixet.
-    WIFI2_STATE_WAIT_IPD_LENGTH, // Læser tallet efter +"IPD,1234:" prefixet, som fortæller hvor langt response data er.
-    WIFI2_STATE_WAIT_IPD_DATA,   // Læser data efter "+IPD,1234:" prefixet, indtil vi har modtaget wifi2_g_ipd_len antal bytes.
+    WIFI2_STATE_WAIT,            // I gang med at lï¿½se normalt AT+XXXXX response.
+    WIFI2_STATE_WAIT_IPD,        // I gang med at lï¿½se normalt AT+XXXXX response, og forventer at "+IPD" fï¿½lger.
+    WIFI2_STATE_WAIT_IPD_PREFIX, // Venter pï¿½ at finde "+IPD,1234:" prefixet.
+    WIFI2_STATE_WAIT_IPD_LENGTH, // Lï¿½ser tallet efter +"IPD,1234:" prefixet, som fortï¿½ller hvor langt response data er.
+    WIFI2_STATE_WAIT_IPD_DATA,   // Lï¿½ser data efter "+IPD,1234:" prefixet, indtil vi har modtaget wifi2_g_ipd_len antal bytes.
 } wifi2_state;
 
 typedef struct wifi2_cmd_result {
@@ -40,7 +40,7 @@ extern wifi2_state  wifi2_g_state;
 extern char         wifi2_g_recv_buf[WIFI2_MAX_RECV];
 extern int          wifi2_g_recv_len;
 
-extern int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortæller hvor langt response data er.
+extern int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fortï¿½ller hvor langt response data er.
 extern int          wifi2_g_ipd_idx; // Index i wifi2_g_recv_buf for data efter "+IPD,1234:" prefixet.
 
 ////////////////////////////////////////////////////////////////
@@ -55,7 +55,10 @@ extern void wifi2_async_ap_join(char *ssid, char *password);
 extern void wifi2_async_tcp_open(char *ip, int port);
 extern void wifi2_async_tcp_send(char *data, int data_len);
 extern void wifi2_async_tcp_close(void);
+extern void wifi2_async_udp_open(char *ip, int port);
+extern void wifi2_async_udp_send(char *data, int data_len);
+extern void wifi2_async_udp_close(void);
 
 extern bool wifi2_can_begin_async(void); // Klar til at starte ny async command?
-extern bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command færdig eller har fejlet?
+extern bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command fï¿½rdig eller har fejlet?
 
