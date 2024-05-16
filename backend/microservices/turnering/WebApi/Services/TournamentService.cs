@@ -49,7 +49,7 @@ public class TournamentService : ITournamentService
         }
 
         Tournament tournament = new Tournament(tournamentDTO.Name, format, tournamentDTO.Players.Count,
-            tournamentDTO.NumberOfCourts, tournamentDTO.PointsPerMatch, players);
+            tournamentDTO.NumberOfCourts, tournamentDTO.PointsPerMatch, players, tournamentDTO.SkippedARound);
         
         await _tournamentDAO.AddTournamentAsync(tournament);
     }

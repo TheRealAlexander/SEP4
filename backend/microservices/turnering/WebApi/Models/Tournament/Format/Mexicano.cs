@@ -12,7 +12,7 @@ namespace WebApi.Models
     
             if (tournament.FirstRound)
             {
-                ShufflePlayers(players);
+                players = tournament.ShufflePlayers();
                 tournament.FirstRound = false;
             }
             
@@ -35,20 +35,6 @@ namespace WebApi.Models
 
             return round;
         }
-
-
-        private void ShufflePlayers(List<Player> players)
-        {
-            Random rng = new Random();
-            int n = players.Count;
-            while (n > 1)
-            {
-                n--;
-                int k = rng.Next(n + 1);
-                Player value = players[k];
-                players[k] = players[n];
-                players[n] = value;
-            }
-        }
+        
     }
 }
