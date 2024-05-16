@@ -4,31 +4,33 @@ namespace WebApi.Models
 {
     public class Court
     {
-        private Player[] teams; // Array to represent teams
-        private int[] scores; // Array to represent match scores
-        private int totalPoints; // Total points to be played in the match
+        private Player[][] teams;
+        private int[] scores;
+        private int totalPoints;
 
         public Court(int totalPoints)
         {
-            teams = new Player[2]; // 2 teams, each with 2 players
-            scores = new int[2]; // Initialize scores to 0
+            teams = new Player[2][];
+            scores = new int[2];
             this.totalPoints = totalPoints;
         }
 
         public void AddPlayer(Player player)
         {
-            // Add player to the first available slot in a team
             for (int i = 0; i < 2; i++)
             {
-                if (teams[i] == null)
+                for (int j = 0; j < 2; j++)
                 {
-                    teams[i] = player;
-                    return;
+                    if (teams[i][j] == null)
+                    {
+                        teams[i][j] = player;
+                        return;
+                    }
                 }
             }
         }
 
-        public Player[] GetTeams()
+        public Player[][] GetTeams()
         {
             return teams;
         }

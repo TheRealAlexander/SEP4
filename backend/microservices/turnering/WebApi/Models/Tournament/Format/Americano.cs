@@ -22,22 +22,31 @@ namespace WebApi.Models
         public override Round GenerateRound(List<Player> players, Tournament tournament)
         {
             var round = new Round();
-            var playersPerRound = players.Count / 2;
-            
+
             ShufflePlayers(players);
-
-            for (var j = 0; j < playersPerRound; j++)
+            
+            for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
-                var player1 = players[j];
-                var player2 = players[playersPerRound + j];
-
-                var court = new Court(tournament.PointsPerMatch);
-                court.AddPlayer(player1);
-                court.AddPlayer(player2);
-
-                round.Courts.Add(court);
+                round.Courts.Add(new Court(tournament.PointsPerMatch));
             }
 
+            foreach (Court court in round.Courts)
+            {
+                for (int i = 0; i < 2; i++)
+                {
+                    court.AddPlayer(players[0]);
+                    for (int j = 1; j < players.Count - 1; j++)
+                    {
+                        if (!((AmericanoPlayer)players[0]).PastTeammates.Contains(players[j]))
+                        {
+                            court.AddPlayer(players[j]);
+                            players.RemoveAt(j);
+                            break;
+                        }
+                    }
+                    players.RemoveAt(0);
+                }
+            }
             return round;
         }
     }

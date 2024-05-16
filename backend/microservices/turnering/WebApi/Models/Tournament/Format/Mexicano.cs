@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using WebApi.DAO;
 
 namespace WebApi.Models
 {
@@ -14,16 +15,22 @@ namespace WebApi.Models
                 ShufflePlayers(players);
                 tournament.FirstRound = false;
             }
-
-            var court = new Court(tournament.PointsPerMatch);
-            for (int i = 0; i < players.Count; i += 4)
+            
+            for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
-                court.AddPlayer(players[i]);
-                court.AddPlayer(players[i + 2]);
-                court.AddPlayer(players[i + 1]);
-                court.AddPlayer(players[i + 3]);
-                round.Courts.Add(court);
-                court = new Court(tournament.PointsPerMatch);
+                round.Courts.Add(new Court(tournament.PointsPerMatch));
+            }
+
+            foreach (Court court in round.Courts)
+            {
+                court.AddPlayer(players[0]);
+                court.AddPlayer(players[2]);
+                court.AddPlayer(players[1]);
+                court.AddPlayer(players[3]);
+                for (int i = 0; i < 4; i++)
+                {
+                    players.RemoveAt(0);
+                }
             }
 
             return round;

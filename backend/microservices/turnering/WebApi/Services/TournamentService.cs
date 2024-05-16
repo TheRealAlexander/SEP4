@@ -15,16 +15,31 @@ public class TournamentService : ITournamentService
     public async Task AddTournamentAsync(TournamentCreationDTO tournamentDTO)
     {
         TournamentFormat format;
+        List<Player> players = new List<Player>();
         switch (tournamentDTO.TournamentFormat)
         {
             case ("Americano") :
             {
                 format = new Americano();
+                foreach (var player in tournamentDTO.Players)
+                {
+                    players.Add(new AmericanoPlayer
+                    {
+                        Name = player
+                    });
+                }
                 break;
             }
             case ("Mexicano"):
             {
                 format = new Mexicano();
+                foreach (var player in tournamentDTO.Players)
+                {
+                    players.Add(new Player
+                    {
+                        Name = player
+                    });
+                }
                 break;
             }
             default:
@@ -34,7 +49,7 @@ public class TournamentService : ITournamentService
         }
 
         Tournament tournament = new Tournament(tournamentDTO.Name, format, tournamentDTO.Players.Count,
-            tournamentDTO.NumberOfCourts, tournamentDTO.PointsPerMatch, tournamentDTO.Players);
+            tournamentDTO.NumberOfCourts, tournamentDTO.PointsPerMatch, players);
         
         await _tournamentDAO.AddTournamentAsync(tournament);
     }
@@ -47,7 +62,8 @@ public class TournamentService : ITournamentService
     public async Task<Round> RequestNewRoundAsync(int tournamentID)
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
-        Round round = tournament.Format.GenerateRound(tournament.Players, tournament);
+        List<Player> players = await GetScoreboardAsync(tournamentID);
+        Round round = tournament.Format.GenerateRound(players, tournament);
         return round;
     }
 
@@ -55,9 +71,6 @@ public class TournamentService : ITournamentService
 
     public async Task<List<Player>> GetScoreboardAsync(int tournamentID)
     {
-        Tournament tournament = await GetTournamentAsync(tournamentID);
-        var players = tournament.Players;
-        players.Sort((player1, player2) => player2.Points.CompareTo(player1.Points));
-        return players;
+        return await _tournamentDAO.GetScoreboardAsync(tournamentID);
     }
 }
