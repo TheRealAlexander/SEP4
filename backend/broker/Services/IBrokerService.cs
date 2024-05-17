@@ -8,7 +8,7 @@ namespace Broker.Services
 {
     public interface IBrokerService
     {
-        public Task<List<SensorData>> GetSensorData();
+        public Task<List<SensorData>?> GetSensorData();
 
         // Corresponds to GetAllTournaments
         public Task<ActionResult<List<Tournament>>> GetTournaments();
