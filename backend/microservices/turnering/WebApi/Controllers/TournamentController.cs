@@ -23,14 +23,14 @@ public class TournamentController : ControllerBase
     }
 
     [HttpPost("/{tournamentID}/newRound")]
-    public async Task<IActionResult> RequestNewRound([FromRoute] int tournamentID)
+    public async Task<IActionResult> RequestNewRound([FromRoute] string tournamentID)
     {
         Round newRound = await _tournamentService.RequestNewRoundAsync(tournamentID);
         return Ok(newRound);
     }
 
     [HttpGet("{tournamentID}")]
-    public async Task<IActionResult> GetScoreboard([FromRoute] int tournamentID)
+    public async Task<IActionResult> GetScoreboard([FromRoute] string tournamentID)
     {
         List<Player> players = await _tournamentService.GetScoreboardAsync(tournamentID);
         return Ok(players);

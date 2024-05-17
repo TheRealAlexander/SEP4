@@ -54,12 +54,12 @@ public class TournamentService : ITournamentService
         await _tournamentDAO.AddTournamentAsync(tournament);
     }
 
-    public async Task<Tournament> GetTournamentAsync(int tournamentID)
+    public async Task<Tournament> GetTournamentAsync(string tournamentID)
     {
         return await _tournamentDAO.GetTournamentAsync(tournamentID);
     }
 
-    public async Task<Round> RequestNewRoundAsync(int tournamentID)
+    public async Task<Round> RequestNewRoundAsync(string tournamentID)
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
         List<Player> players = await GetScoreboardAsync(tournamentID);
@@ -69,7 +69,7 @@ public class TournamentService : ITournamentService
 
 
 
-    public async Task<List<Player>> GetScoreboardAsync(int tournamentID)
+    public async Task<List<Player>> GetScoreboardAsync(string tournamentID)
     {
         return await _tournamentDAO.GetScoreboardAsync(tournamentID);
     }
