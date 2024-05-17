@@ -19,13 +19,13 @@ public class TournamentDAO : ITournamentDAO
         await _tournamentMongoCollection.InsertOneAsync(tournament);
     }
 
-    public async Task<Tournament> GetTournamentAsync(int tournamentID)
+    public async Task<Tournament> GetTournamentAsync(string tournamentID)
     {
-        var filter = Builders<Tournament>.Filter.Eq(t => t.Id, tournamentID.ToString());
+        var filter = Builders<Tournament>.Filter.Eq(t => t.Id, tournamentID);
         return await _tournamentMongoCollection.Find(filter).FirstOrDefaultAsync();
     }
 
-    public async Task<List<Player>> GetScoreboardAsync(int tournamentID)
+    public async Task<List<Player>> GetScoreboardAsync(string tournamentID)
     {
         var tournament = await GetTournamentAsync(tournamentID);
         return tournament.Players.OrderBy(p => p.Points).ToList();
