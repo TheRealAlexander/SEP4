@@ -19,52 +19,56 @@ export function GetAllTournaments() {
 }
 
 export function CreateTournament(tournamentData) {
-  axios
+  return axios
     .post(`${API_BASE_URL}/broker/tournaments`, tournamentData)
     .then((response) => {
-      console.log(response);
+      return response.data;
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
 export function UpdateTournament(tournamentData) {
-  axios
+  return axios
     .put(
       `${API_BASE_URL}/broker/tournaments/${tournamentData.tournamentID}`,
       tournamentData
     )
     .then((response) => {
-      console.log(response);
+      return response.data;
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
 export function RemoveTournament(tournamentID) {
-  axios
+  return axios
     .delete(`${API_BASE_URL}/broker/tournaments/${tournamentID}`)
     .then((response) => {
-      console.log(response);
+      return response.data;
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
 export function AddParticipant(tournamentID, participant) {
-  axios
+  return axios
     .post(
       `${API_BASE_URL}/broker/tournaments/${tournamentID}/participants`,
       participant
     )
     .then((response) => {
-      console.log(response);
+      return response.data;
     })
     .catch((error) => {
       console.error(error);
+      throw error;
     });
 }
 
@@ -73,9 +77,6 @@ export function RemoveParticipant(tournamentID, participant) {
     .delete(
       `${API_BASE_URL}/broker/tournaments/${tournamentID}/participants/${participant}`
     )
-    .then((response) => {
-      console.log(response);
-    })
     .catch((error) => {
       console.error(error);
     });
