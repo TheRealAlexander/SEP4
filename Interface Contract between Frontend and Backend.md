@@ -189,12 +189,15 @@ specific hall
 
 **Method:** POST
 
+- URL: /PostEnvironmentDataGoal
+- Port : 5200
+
 **Parameters:**
 
 - Integer: 'HallID'
-- Double: 'Temperature'
-- Double: 'Humidity'
-- Integer: 'CO2_Concentration'
+- Double: 'desiredTemperature'
+- Double: 'desiredHumidity'
+- Integer: 'desiredCO2'
 
 **Response:**
 
@@ -205,16 +208,12 @@ specific hall
 **Example Reponse:**
 
 ```json
-{
-  "hall1" [
     {
       "HallID" : 1,
-      "Temperature" : 21,
-      "Humidity" : 40,
-      "CO2_Concentration" : 800
+      "desiredTemperature" : 21,
+      "desiredHumidity" : 40,
+      "desiredCO2" : 800
     }
-  ]
-}
 ```
 
 ## Request: User Login
