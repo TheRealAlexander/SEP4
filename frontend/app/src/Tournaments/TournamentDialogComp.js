@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit"; // MUI Edit Icon
 import TournamentEditForm from "./TournamentEditFormComp";
@@ -18,6 +19,8 @@ export default function TournamentDialog({ open, onClose, tournament }) {
   const [participantName, setParticipantName] = useState("");
   const [editOpen, setEditOpen] = useState(false);
 
+  const navigate = useNavigate();
+
   const handleRegister = () => {
     // Handle registering for tournament
     // Add participantName to tournament.participants
@@ -32,6 +35,14 @@ export default function TournamentDialog({ open, onClose, tournament }) {
     console.log("Starting event:", tournament.name);
     onClose();
   };
+  
+  const handleStartEvent = () => { 
+     // Handle redirect to event page
+     // Redirect to event page with tournament data
+     console.log("Starting event:", tournament.name);
+     navigate('/TournamentLiveOverview', { state: { tournament } });
+     onClose();
+  }
 
   const handleDeleteTournament = (tournamentId) => {
     // Implement deletion logic.
