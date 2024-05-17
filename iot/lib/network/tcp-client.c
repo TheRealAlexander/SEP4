@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
+<<<<<<< HEAD
+#include <ws2tcpip.h>
+=======
+>>>>>>> parent of f074678 (Update test klassen)
 
 #pragma comment(lib, "ws2_32.lib") // Link against the Winsock library
 
@@ -23,8 +27,8 @@ int main() {
     }
 
     serv_addr.sin_family = AF_INET;
-    serv_addr.sin_port = htons(8080);
-    inet_pton(AF_INET, "127.0.0.1", &serv_addr.sin_addr);
+    serv_addr.sin_port = htons(80);
+    inet_pton(AF_INET, "216.58.207.238", &serv_addr.sin_addr);
 
     // Connect to the server
     if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
