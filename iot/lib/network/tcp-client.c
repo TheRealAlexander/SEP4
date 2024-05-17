@@ -1,10 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
-<<<<<<< HEAD
 #include <ws2tcpip.h>
-=======
->>>>>>> parent of f074678 (Update test klassen)
+
+
 
 #pragma comment(lib, "ws2_32.lib") // Link against the Winsock library
 
@@ -13,7 +12,10 @@ int main() {
     SOCKET sock;
     struct sockaddr_in serv_addr;
     char buffer[1024] = {0};
-    char *message = "Hello from client";
+    char *message ="GET / HTTP/1.0\r\n"
+    "Host: localhost\r\n"
+    "Connection: Close\r\n"
+    "\r\n";
 
     // Initialize Winsock
     WSAStartup(MAKEWORD(2,2), &wsaData);
