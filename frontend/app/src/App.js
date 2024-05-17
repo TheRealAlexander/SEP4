@@ -13,6 +13,7 @@ import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
 import ControlsPage from './Controls/ControlsPage.js';
 import TournamentPage from './Tournaments/TournamentPage.js';
+import TournamentLiveOverview from './Tournaments/TournamentLiveOverview.js';
 
 import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
 import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
@@ -75,6 +76,7 @@ function AppContent() {
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
             <Route path="/users" element={<UserPermissionPage />} />
+            <Route path="/tournamentLiveOverview" element={<TournamentLiveOverview />} />
           </Routes>
         </div>
       </Box>
@@ -91,6 +93,7 @@ function ResponsiveAppBar() {
     Home: "/",
     Controls: "/controlsPage",
     Tournaments: "/tournamentPage",
+    TournamentLiveOverview: "/tournamentLiveOverview",
   };
 
   const handleOpenNavMenu = (event) => {

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { 
      Dialog, 
@@ -15,6 +16,8 @@ import {
 function TournamentDialog({ open, onClose, tournament }) {
   const [participantName, setParticipantName] = useState('');
 
+  const navigate = useNavigate();
+
   const handleRegister = () => {
      // Handle registering for tournament
      // Add participantName to tournament.participants
@@ -28,6 +31,7 @@ function TournamentDialog({ open, onClose, tournament }) {
      // Handle redirect to event page
      // Redirect to event page with tournament data
      console.log("Starting event:", tournament.name);
+     navigate('/TournamentLiveOverview', { state: { tournament } });
      onClose();
   }
 
