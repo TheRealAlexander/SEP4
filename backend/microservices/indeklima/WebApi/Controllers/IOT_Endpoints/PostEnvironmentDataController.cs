@@ -24,7 +24,6 @@ namespace WebApi.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "MustBeAdmin")]
         public async Task<IActionResult> PostSensorData([FromBody] IOTSensorDataDto data)
         {
             try
