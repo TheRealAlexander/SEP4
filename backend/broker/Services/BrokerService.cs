@@ -17,11 +17,11 @@ namespace Broker.Services
             _httpClient = httpClient;
         }
 
-        public async Task<List<SensorData>?> GetSensorData()
+        public async Task<List<SensorData>?> GetSensorData(int hallId)
         {
             try
             {
-                return await _httpClient.GetFromJsonAsync<List<SensorData>>("http://indeklima_webapi:5200/GetEnvironmentData");
+                return await _httpClient.GetFromJsonAsync<List<SensorData>>("http://indeklima_webapi:5200/GetEnvironmentData/" + hallId);
             }
             catch (HttpRequestException ex)
             {

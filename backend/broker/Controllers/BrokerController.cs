@@ -18,16 +18,16 @@ namespace Broker.Controllers
         }
 
         [HttpGet("GetSensorData")]
-        public async Task<ActionResult<List<SensorData>>> GetSensorData()
+        public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId)
         {
-            var result = await _brokerService.GetSensorData();
+            var result = await _brokerService.GetSensorData(hallId);
             if (result == null)
             {
                 return NoContent();
             }
             return Ok(result);
         }
-        
+
         [HttpGet("tournaments")]
         public async Task<IActionResult> GetTournaments()
         {
