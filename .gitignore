@@ -267,3 +267,6 @@ FakesAssemblies/
 *.opt
 .vscode/launch.json
 .vscode/tasks.json
+
+!appsettings*.json
+!launchSettings.json

@@ -23,13 +23,13 @@ static bool wifi2_async_is_done(wifi2_cmd_result *result) {
                 result->data = "";
                 result->data_len = 0;
             }
-            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til næste command
+            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til nï¿½ste command
             result->ok = true;
             return true;
         }
 
         case WIFI2_STATE_DONE_FAIL: {
-            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til næste command
+            wifi2_g_state = WIFI2_STATE_NONE; // NOTE(rune): Marker at vi er klar til nï¿½ste command
             return true;
         }
 
@@ -37,6 +37,10 @@ static bool wifi2_async_is_done(wifi2_cmd_result *result) {
             return false;
         }
     }
+}
+
+static void wifi2_canel_async(void) {
+    wifi2_g_state = WIFI2_STATE_NONE;
 }
 
 static void wifi2_async(char *cmd, bool ipd) {
@@ -55,7 +59,7 @@ static void wifi2_async(char *cmd, bool ipd) {
 }
 
 static void wifi2_uart_callback(uint8_t byte) {
-    if (wifi2_g_recv_len < (int)sizeof(wifi2_g_recv_buf)) {
+    if (wifi2_g_recv_len < isizeof(wifi2_g_recv_buf)) {
         wifi2_g_recv_buf[wifi2_g_recv_len++] = byte;
     }
 
@@ -66,7 +70,7 @@ static void wifi2_uart_callback(uint8_t byte) {
                 "OK", "FAIL", "ERROR"
             };
 
-            for (int i = 0; i < (int)countof(look_for); i++) {
+            for (int i = 0; i < countof(look_for); i++) {
                 int look_for_len = strlen(look_for[i]);
                 if (memmem(wifi2_g_recv_buf, wifi2_g_recv_len, look_for[i], look_for_len)) {
                     if (i > 0) {

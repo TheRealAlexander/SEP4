@@ -8,30 +8,28 @@
 
 // TODO(rune): Define udfra build-script?
 
-//#define SERVER_IP       "172.20.10.8"
-//#define SERVER_PORT     8080
-
-//#define SERVER_IP       "159.89.140.122"
-//#define SERVER_IP       "216.58.211.14"
-//#define SERVER_IP       "172.20.10.6" // Alexander
 #define SERVER_IP       "172.20.10.3" // Rune
 #define SERVER_PORT     5200
-//#define SERVER_PORT      5038
 
 #define WIFI_SSID       "Rune - iPhone"
 #define WIFI_PASSWORD   "123456789"
+
+#define HALL_ID          37
 
 ////////////////////////////////////////////////////////////////
 // Measurements
 
 typedef struct measurements {
-    uint8_t humidity_integral;     // NOTE(rune): Før komma
-    uint8_t humidity_decimal;      // NOTE(rune): Efter komma
-    uint8_t temperature_integral;  // NOTE(rune): Før komma
-    uint8_t temperature_decimal;   // NOTE(rune): Efter komma
-
+    // NOTE(rune): From sensors
+    uint8_t humidity_integral;    // Før komma
+    uint8_t humidity_decimal;     // Efter komma
+    uint8_t temperature_integral; // Før komma
+    uint8_t temperature_decimal;  // Efter komma
     uint16_t co2;
+
+    // NOTE(rune): From backend
     bool open_window;
+    int want_next_measurement_delay;
 } measurements;
 
 static measurements g_measurements;
@@ -60,11 +58,13 @@ static int build_http_request(char *http_buf, int http_cap) {
         "{"
         "\"temperature\": %d.%d, "
         "\"humidity\": %d.%d, "
-        "\"co2\": %d"
+        "\"co2\": %d, "
+        "\"hallId\": %d"
         "}",
         g_measurements.temperature_integral, g_measurements.temperature_decimal,
         g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2
+        g_measurements.co2,
+        HALL_ID
     );
 
     int http_len = snprintf(
@@ -82,6 +82,49 @@ static int build_http_request(char *http_buf, int http_cap) {
     );
 
     return http_len;
+}
+
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_bool_from_http_response(char *response, char *property, bool *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        char *value_ptr = needle_ptr + needle_len;
+        if (strstr(value_ptr, "true") == value_ptr) {
+            *value = true;
+            return true;
+        }
+
+        if (strstr(value_ptr, "false") == value_ptr) {
+            *value = false;
+            return true;
+        }
+    }
+
+    return false;
+}
+
+// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
+// Returns false if the property is not found, and in that case does not touch *value.
+static bool read_int_from_http_response(char *response, char *property, int *value) {
+    char needle[128];
+    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
+    char *needle_ptr = strstr(response, needle);
+    if (needle_ptr) {
+        *value = 0;
+        char *value_ptr = needle_ptr + needle_len;
+        while (*value_ptr >= '0' && *value_ptr <= '9') {
+            int digit = *value_ptr - '0';
+            *value *= 10;
+            *value += digit;
+
+            value_ptr++;
+        }
+    }
+
+    return false;
 }
 
 static void process_http_response(char *http_buf, int http_len) {
@@ -119,8 +162,8 @@ static void process_http_response(char *http_buf, int http_len) {
     send_to_pc("\n");
     send_to_pc(ANSI_RESET);
 
-    if (strstr(trim_buf, "\"openWindow\":false")) { g_measurements.open_window = false; }
-    if (strstr(trim_buf, "\"openWindow\":true"))  { g_measurements.open_window = true; }
+    read_bool_from_http_response(trim_buf, "openWindow", &g_measurements.open_window);
+    read_int_from_http_response(trim_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
 
     send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
     send_to_pc_fmt("window: %d\n", g_measurements.open_window);
@@ -143,9 +186,17 @@ static void do_wifi(void) {
     static wifi_step curr_wifi_step = WIFI_STEP_RESET;
     static wifi_step next_wifi_step = WIFI_STEP_RESET;
 
+    // TODO(rune): Burde dette command timeout være en del af driveren, eller er det mere fleksibelt at lade user-koden bestemme?
+    // NOTE(rune): Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
+    static timestamp wifi_cmd_timestamp = 0;
+
+    // NOTE(rune): Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
+    // Skal være større end packet_timeout. Er meget høj, da det kan tage langt tid at join et access point.
+    static timestamp wifi_cmd_timeout = 20000;
+
     static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
-    static timestamp packet_interval = 5000; // NOTE(rune): Hvor ofte sendes ny packet?
     static timestamp packet_timeout = 1000;
+    timestamp packet_interval = g_measurements.want_next_measurement_delay;
 
     ////////////////////////////////////////////////////////////////
     // Tjek om vi skal starte en ny command
@@ -160,11 +211,13 @@ static void do_wifi(void) {
                 wifi2_init();
                 wifi2_async_reset();
                 next_wifi_step = WIFI_STEP_AP_JOIN;
+                wifi_cmd_timestamp = g_timestamp;
             } break;
 
             case WIFI_STEP_AP_JOIN: {
                 wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
+                wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi ap join\n");
             } break;
@@ -175,6 +228,7 @@ static void do_wifi(void) {
 
                     wifi2_async_tcp_open(SERVER_IP, SERVER_PORT);
                     next_wifi_step = WIFI_STEP_TCP_SEND;
+                    wifi_cmd_timestamp = g_timestamp;
 
                     send_to_pc_fmt("📡 wifi tcp open\n");
                 }
@@ -186,6 +240,7 @@ static void do_wifi(void) {
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
+                wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi tcp send\n");
                 send_to_pc(ANSI_FG_MAGENTA);
@@ -200,6 +255,8 @@ static void do_wifi(void) {
                     wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
+                    wifi_cmd_timestamp = g_timestamp;
+
                     send_to_pc_fmt("📡 wifi tcp close\n");
                 }
             } break;
@@ -207,8 +264,9 @@ static void do_wifi(void) {
     }
 
     ////////////////////////////////////////////////////////////////
-    // Tjek om nuværende command er færdig
+    // Tjek om nuværende command er timeout eller færdig
 
+    bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
 
@@ -227,13 +285,24 @@ static void do_wifi(void) {
             // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
             // hvilket den vil være er, hvis transaction blev færdig uden fejl, så vi ignorerer bare at ok == false.
         } else {
-            // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
-            next_wifi_step = WIFI_STEP_RESET;
+            timeout_or_error = true;
 
             send_to_pc(ANSI_FG_RED);
             send_to_pc("cmd_result.ok == false\n");
             send_to_pc(ANSI_RESET);
         }
+    } else if (wifi_cmd_timestamp + wifi_cmd_timeout <= g_timestamp) {
+        timeout_or_error = true;
+
+        send_to_pc(ANSI_FG_RED);
+        send_to_pc("wifi cmd timeout\n");
+        send_to_pc(ANSI_RESET);
+    }
+
+    if (timeout_or_error) {
+        // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
+        next_wifi_step = WIFI_STEP_RESET;
+        wifi2_canel_async();
     }
 }
 
@@ -297,18 +366,60 @@ static void do_servo() {
 }
 
 ////////////////////////////////////////////////////////////////
+// Infrared sensor and lights
+
+static void do_pir() {
+    static timestamp motion_timestamp = 0;
+    static timestamp motion_delay = 10*1000; // Bestemmer hvor langt tid skal der gå før lyset slukker igen.
+
+    if (pir_motion()) {
+        motion_timestamp = g_timestamp;
+    }
+
+    if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
+        DDRB = 0xff;
+        PORTB = 0x00;
+    } else {
+        DDRB = 0xff;
+        PORTB = 0xff;
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// Buttons and display
+
+static void do_buttons_and_display() {
+    static timestamp button_timestamp = 0;
+    static timestamp button_interval = 2000; // Hver 2 sekunder
+
+    if (button_timestamp + button_interval <= g_timestamp) {
+        button_timestamp = g_timestamp;
+
+        handle_buttons();
+    }
+}
+
+////////////////////////////////////////////////////////////////
 // Main loop
 
 int main() {
+    g_measurements.want_next_measurement_delay = 5000;
+
     uart_init(USART_0, 9600, 0);            // USB
     uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
+    tone_init();
+    buttons_init();
+    display_init();
+    pir_init();
 
     while (1) {
         do_wifi();
         do_co2();
         do_dht11();
         do_servo();
+        do_buttons_and_display();
+        do_pir();
 
         _delay_ms(100);
     }

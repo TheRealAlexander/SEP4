@@ -1,8 +1,9 @@
 ////////////////////////////////////////////////////////////////
 // Macros
 
-#define countof(a)          (sizeof(a) / sizeof(*(a)))
-#define UNUSED(a)           ((void)a) // NOTE(rune): To supress unused variable warnings
+#define countof(a)          ((int)(sizeof(a) / sizeof(*(a))))
+#define isizeof(a)          ((int)(sizeof(a)))
+#define UNUSED(a)           ((void)(a)) // NOTE(rune): To supress unused variable warnings
 
 ////////////////////////////////////////////////////////////////
 // Include standard library
@@ -68,6 +69,16 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "wifi/wifi2.c"
 #include "servo/servo.h"
 #include "servo/servo.c"
+#include "tone/tone.h"
+#include "tone/tone.c"
+#include "buttons/buttons.h"
+#include "buttons/buttons.c"
+#include "display/display.h"
+#include "display/display.c"
+#include "display_button/display_button.h"
+#include "display_button/display_button.c"
+#include "pir/pir.h"
+#include "pir/pir.c"
 
 ////////////////////////////////////////////////////////////////
 // Include testing framework

@@ -13,10 +13,13 @@ namespace WebApi.Services
         {
             _sensorDataDao = sensorDataDao;
         }
-
-        public async Task<List<SensorData>> GetSensorDataAsync()
+        public async Task<List<SensorData>> GetSensorData(int hallId)
         {
-            return await _sensorDataDao.GetSensorDataAsync();
+            if (hallId == null)
+            {
+                throw new ArgumentNullException(nameof(hallId));
+            }
+            return await _sensorDataDao.GetSensorDataAsync(hallId);
         }
 
         public async Task AddSensorDataAsync(SensorData sensorData)
@@ -27,6 +30,22 @@ namespace WebApi.Services
             }
             await _sensorDataDao.AddSensorDataAsync(sensorData);
         }
-        
+        public async Task<List<SensorData>> GetSensorData(int hallId, int limit)
+        {
+            return await _sensorDataDao.GetSensorDataAsync(hallId, limit);
+        }
+        public async Task<List<SensorData>> GetSensorData(int hallId, DateTime startDate, DateTime endDate)
+        {
+            if (hallId == null)
+            {
+                throw new ArgumentNullException(nameof(hallId));
+            }
+            if (startDate == null || endDate == null)
+            {
+                throw new ArgumentNullException(nameof(startDate));
+            }
+
+            return await _sensorDataDao.GetSensorDataAsync(hallId, startDate, endDate);
+        }
     }
 }
