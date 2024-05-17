@@ -618,6 +618,7 @@ Role must be either User or SuperUser!
 ## Remove Participant from Tournament
 
 **Method:** DELETE
+
 **URL:** http://turnering_webapi:5101/tournaments/{tournamentID}/participants/{participant}
 
 **Description:** Removes a participant from an existing tournament.
