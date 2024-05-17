@@ -9,12 +9,19 @@
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.18" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10"/>
+        <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.6.0" />
         <PackageReference Include="MongoDB.Driver" Version="2.25.0" />
         <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0"/>
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="WebApi\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="unittest_turnering\obj\project.assets.json" />
+      <_ContentIncludedByDefault Remove="unittest_turnering\obj\project.packagespec.json" />
+      <_ContentIncludedByDefault Remove="unittest_turnering\obj\unittest_turnering.csproj.nuget.dgspec.json" />
     </ItemGroup>
 
 </Project>
