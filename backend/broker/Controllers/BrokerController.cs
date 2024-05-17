@@ -53,7 +53,7 @@ namespace Broker.Controllers
 
         // Corresponds to AddParticipant
         [HttpPost("tournaments/{tournamentID}/participants")]
-        public async Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant)
+        public async Task<ActionResult<string>> AddParticipant(string tournamentID, string participant)
         {
             return await _brokerService.AddParticipant(tournamentID, participant);
         }

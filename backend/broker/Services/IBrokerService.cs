@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SharedObjects.Models;
+using System.Collections.Generic;
 
 
 namespace Broker.Services
@@ -22,7 +23,7 @@ namespace Broker.Services
         public Task<ActionResult> DeleteTournament(string tournamentID);
 
         // Corresponds to AddParticipant
-        public Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant);
+        public Task<ActionResult<string>> AddParticipant(string tournamentID, string participant);
 
         // Corresponds to RemoveParticipant
         public Task<ActionResult> RemoveParticipant(string tournamentID, string participant);

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SharedObjects.Models;
+using System.Collections.Generic;
 
 namespace Broker.Services
 {
@@ -38,7 +39,7 @@ namespace Broker.Services
             return await _httpClient.DeleteAsync($"http://turnering_webapi:5100/tournaments/{tournamentID}");
         }
 
-        public async Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant)
+        public async Task<ActionResult<string>> AddParticipant(string tournamentID, string participant)
         {
             return await _httpClient.PostAsJsonAsync<ActionResult<Participant>>($"http://turnering_webapi:5100/tournaments/{tournamentID}/participants", participant);
         }
