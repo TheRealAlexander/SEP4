@@ -36,6 +36,5 @@ namespace WebApi.Models
 
             return round;
         }
-        
     }
 }

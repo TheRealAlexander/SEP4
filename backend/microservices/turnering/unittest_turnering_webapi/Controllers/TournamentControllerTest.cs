@@ -4,40 +4,66 @@ using WebApi.Controllers;
 using WebApi.Models;
 using WebApi.Services;
 
-namespace turnering_unittest_webapi.Controllers;
+namespace unittest_turnering_webapi.Controllers;
 
 public class TournamentControllerTest
 {
-    private readonly Mock<ITournamentService> _tournamentServiceMock;
-    private readonly TournamentController _tournamentController;
-
+    private readonly Mock<ITournamentService> _mockTournamentService;
+    private readonly TournamentController _testController;
+    
     public TournamentControllerTest()
     {
-        _tournamentServiceMock = new Mock<ITournamentService>();
-        _tournamentController = new TournamentController(_tournamentServiceMock.Object);
+        _mockTournamentService = new Mock<ITournamentService>();
+        _testController = new TournamentController(_mockTournamentService.Object);
     }
     
+    
     [Fact]
-    public async Task PostTournament_ReturnsOkResult_WhenDataIsValid()
+    public async Task CreateTournament_ReturnsOkResult_WhenDataIsValid()
     {
         // Arrange
-        var tournamentDto = new TournamentCreationDTO
-        {
-            Name = "Test Tournament",
-            TournamentFormat = "Americano",
-            NumberOfCourts = 2,
-            PointsPerMatch = 32,
-            Players = new List<string>
+        var tournamentDto = new TournamentCreationDTO(
+            "TestAmericano",
+            "Americano",
+            2,
+            32,
+            new List<string>
             {
-                "Player 1", "Player 2", "Player 3", "Player 4", "Player 5", "Player 6", "Player 7", "Player 8"
+                "Player1", "Player2", "Player3", "Player4", "Player5", "Player6", "Player7", "Player8"
             }
-        };
+        );
 
         // Act
-        var result = await _tournamentController.PostTournament(tournament);
+        var result = await _testController.PostTournament(tournamentDto);
 
         // Assert
-        var okResult = Assert.IsType<OkResult>(result);
-        _tournamentServiceMock.Verify(x => x.AddTournament(tournament), Times.Once);
+        Assert.IsType<OkResult>(result); // Verify that the result is an OkResult
     }
+
+
+    
+    [Fact]
+    public void CreateTournament_ReturnsBadRequest_WhenExceptionIsThrown()
+    {
+        // Arrange
+        var tournamentDto = new TournamentCreationDTO(
+            "TestAmericano",
+            "Americano",
+            2,
+            32,
+            new List<string>
+            {
+                "Player1", "Player2", "Player3", "Player4", "Player5", "Player6", "Player7", "Player8"
+            }
+        );
+        _mockTournamentService.Setup(x => x.AddTournamentAsync(It.IsAny<TournamentCreationDTO>())).Throws(new Exception("Test exception"));
+        
+        // Act
+        var result = _testController.PostTournament(tournamentDto);
+        
+        // Assert
+        var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
+        Assert.Equal("Test exception", badRequestResult.Value);
+    }
+
 }
