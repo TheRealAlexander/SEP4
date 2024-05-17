@@ -1,6 +1,6 @@
 namespace WebApi.Models;
 
-public abstract class TournamentFormat
+public interface TournamentFormat
 {
-    public abstract Round GenerateRound(List<Player> players, Tournament tournament);
+    public Round GenerateRound(List<Player> players, Tournament tournament);
 }
