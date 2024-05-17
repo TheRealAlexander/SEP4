@@ -30,7 +30,7 @@ const RegistrationPage = () => {
             return;
         }
 
-        AuthService.register({ username, password, email, age })
+        AuthService.register(username, password, email, age)
         .then(data => {
             console.log(data);
             navigate('/login');
@@ -39,6 +39,20 @@ const RegistrationPage = () => {
             console.error('Registration failed', err);
             // Here you can handle errors, for example show a notification to the user
         });
+    };
+
+    const handleAgeChange = (e) => {
+        const value = e.target.value;
+        if (/^\d*$/.test(value)) { // Only allows digits
+            setAge(value);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        // Prevent non-numeric and special characters (e.g., 'e', '-', '+', etc.)
+        if (!/^\d$/.test(e.key) && e.key !== 'Backspace' && e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') {
+            e.preventDefault();
+        }
     };
 
     return (
@@ -87,9 +101,11 @@ const RegistrationPage = () => {
                         type='number' 
                         fullWidth required 
                         value={age} 
-                        onChange={(e) => setAge(e.target.value)}
+                        onChange={handleAgeChange}
+                        onKeyDown={handleKeyDown}
                         error={error.age}
                         helperText={error.age ? "Age is required" : ""}
+                        inputProps={{ inputMode: 'numeric', pattern: '[0-9]*', min: 1 }}
                         sx={{ marginBottom: 2 }}
                     />
                     <Button 
