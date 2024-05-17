@@ -6,15 +6,27 @@
 ////////////////////////////////////////////////////////////////
 // Macros
 
-// TODO(rune): Define udfra build-script?
 
-#define SERVER_IP       "172.20.10.3" // Rune
-#define SERVER_PORT     5200
 
-#define WIFI_SSID       "Rune - iPhone"
-#define WIFI_PASSWORD   "123456789"
+#ifndef SERVER_IP
+#error "SERVER_IP not defined"
+#endif
 
-#define HALL_ID          37
+#ifndef SERVER_PORT
+#error "SERVER_PORT not defined"
+#endif
+
+#ifndef WIFI_SSID
+#error "WIFI_SSID not defined"
+#endif
+
+#ifndef WIFI_PASSWORD
+#error "WIFI_PASSWORD not defined"
+#endif
+
+#ifndef HALL_ID
+#error "HALL_ID not defined"
+#endif
 
 ////////////////////////////////////////////////////////////////
 // Measurements
