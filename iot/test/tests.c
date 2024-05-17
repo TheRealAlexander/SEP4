@@ -158,7 +158,10 @@ void test_resetScores(void) {
     assert_int(0, teamscore_a);
     assert_int(0, teamscore_b);
 }
-//tilføj mock funktioner 
+
+#if 0 
+//tilføj mock funktioner
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
@@ -212,6 +215,7 @@ void set_mock_recv(int result, const char *data) {
         _mock_recv_buffer_len = 0;
     }
 }
+#endif
 
 
 
