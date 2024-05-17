@@ -1,31 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import TournamentRound from './TournamentRound';
 import { Paper, Typography, Box, Button, Grid } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
+import useNextRound from '../Hooks/Tournament/useNextRound';
 
-const TournamentLiveOverview = () => {
+const TournamentLiveOverview = ({ tournamentID }) => {
+    const { nextRound, loading, error } = useNextRound(tournamentID);
     const [currentRound, setCurrentRound] = useState(0);
     const [dialogOpen, setDialogOpen] = useState({});
 
-    const [tournamentData, setTournamentData] = useState({
-        rounds: [
-            {
-                id: 1,
-                matches: [
-                    { id: 1, team1: 'Alice', team2: 'Bob', score1: 0, score2: 0 },
-                    { id: 2, team1: 'Charlie', team2: 'Dave', score1: 0, score2: 0 }
-                ]
-            },
-            {
-                id: 2,
-                matches: [
-                    { id: 3, team1: 'Winner of Match 1', team2: 'Winner of Match 2', score1: 0, score2: 0 }
-                ]
-            }
-        ]
-    });
+    const [tournamentData, setTournamentData] = useState(null);
+
+    // Update tournamentData when nextRound changes
+    useEffect(() => {
+        if (nextRound) {
+            setTournamentData(nextRound);
+        }
+    }, [nextRound]);
 
     const handleNavigation = (direction) => {
         setCurrentRound(prevRound => {
@@ -59,6 +52,18 @@ const TournamentLiveOverview = () => {
         console.log('close ' + matchId);
     };
 
+    if (loading) {
+        return <Typography>Loading...</Typography>;
+    }
+
+    if (error) {
+        return <Typography>Error: {error.message}</Typography>;
+    }
+
+    if (!tournamentData) {
+        return null;
+    }
+
     return (
         <Paper elevation={3} sx={{ p: 3, margin: 'auto', maxWidth: 1200 }}>
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
@@ -88,17 +93,9 @@ const TournamentLiveOverview = () => {
                         handleClose={handleClose}
                     />
                 </Grid>
+
                 <Grid item xs={12} md={4} sx={{ padding: 2 }}>
                     <Scoreboard />
-                </Grid>
-                <Grid item xs={12} md={4} sx={{ padding: 2 }}>
-                    <TournamentRound
-                        round={tournamentData.rounds[currentRound]}
-                        onUpdate={handleUpdate}
-                        dialogOpen={dialogOpen}
-                        handleClick={handleClick}
-                        handleClose={handleClose}
-                    />
                 </Grid>
             </Grid>
         </Paper>

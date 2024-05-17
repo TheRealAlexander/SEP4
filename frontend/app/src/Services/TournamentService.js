@@ -81,3 +81,16 @@ export function RemoveParticipant(tournamentID, participant) {
       console.error(error);
     });
 }
+
+export function NextRound(tournamentID) {
+  const [nextRound, setNextRound] = useState(0);
+  axios
+    .get(`${API_BASE_URL}/broker/tournaments/${tournamentID}/nextRound`)
+    .then((response) => {
+      setNextRound(response.data);
+    })
+    .catch((error) => {
+      console.error(error);
+    });
+  return nextRound;
+}
