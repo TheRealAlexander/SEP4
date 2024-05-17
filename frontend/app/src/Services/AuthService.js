@@ -1,4 +1,4 @@
-const API_URL = "http://localhost:8000/api/auth/" //Placeholder for the API URL
+const API_URL = "http://localhost:5001/" //Placeholder for the API URL
 
 const register = (username, password) => {
     return fetch(API_URL + "register", {
