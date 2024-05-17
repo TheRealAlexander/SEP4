@@ -216,6 +216,54 @@ specific hall
     }
 ```
 
+## Request: User registration
+
+**Description:**
+
+This section of the interface contract describes the user-registration 
+functionality provided by the Frontend system. It allows users to register
+a new account on the platform, which can be used to login to the system.
+
+**Method:** POST
+
+- URL: Register
+- Port: 5001
+
+**Parameters:**
+
+Body: A JSON object containing user information.
+
+- username: The user's username.
+- password: The user's password.
+- e-mail: The user's e-mail.
+- age: the user's age.
+
+**Request Example:**
+
+```json
+{
+    "username": "user",
+    "password": "pass",
+    "e-mail": "email@domain.com",
+    "age": 00
+}
+```
+**Successful Response:**
+
+- Status Code: 200 OK
+
+**Error Response Example:**
+
+```json
+HTTP/1.1 400 Bad Request
+Content-Type: text/plain; charset=utf-8
+Date: Wed, 08 May 2024 09:25:58 GMT
+Server: Kestrel
+Transfer-Encoding: chunked
+
+"Something went wrong"
+```
+
 ## Request: User Login
 
 **Description:**
