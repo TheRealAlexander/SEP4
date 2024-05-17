@@ -5,8 +5,8 @@ namespace WebApi.Services;
 public interface ITournamentService
 {
     Task AddTournamentAsync(TournamentCreationDTO tournamentDTO);
-    Task<Tournament> GetTournamentAsync(int tournamentID);
-    Task<Round> RequestNewRoundAsync(int tournamentID);
-    Task<List<Player>> GetScoreboardAsync(int tournamentID);
+    Task<Tournament> GetTournamentAsync(string tournamentID);
+    Task<Round> RequestNewRoundAsync(string tournamentID);
+    Task<List<Player>> GetScoreboardAsync(string tournamentID);
     Task<List<Tournament>> GetTournamentHistoryAsync();
 }
