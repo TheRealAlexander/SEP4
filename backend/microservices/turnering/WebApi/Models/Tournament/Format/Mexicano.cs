@@ -16,8 +16,6 @@ namespace WebApi.Models
                 tournament.FirstRound = false;
             }
             
-            players = tournament.SkipPlayers();
-            
             for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
                 round.Courts.Add(new Court(tournament.PointsPerMatch));
