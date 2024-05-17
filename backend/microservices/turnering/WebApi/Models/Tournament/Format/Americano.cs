@@ -5,12 +5,12 @@ namespace WebApi.Models
 {
     public class Americano : TournamentFormat
     {
-
         public override Round GenerateRound(List<Player> players, Tournament tournament)
         {
-            var round = new Round();
+            var round = new Round(tournament.NextRoundNumber++);
 
             players = tournament.ShufflePlayers();
+            players = tournament.SkipPlayers();
             
             for (int i = 0; i < tournament.NumberOfCourts; i++)
             {

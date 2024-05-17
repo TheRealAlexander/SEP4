@@ -14,11 +14,11 @@ public class Tournament
     public int NumberOfCourts { get; set; }
     public int PointsPerMatch { get; set; }
     public List<Player> Players { get; set; }
-    public bool FirstRound { get; set; } = true;
+    public int NextRoundNumber { get; set; } = 1;
     public List<Player> SkippedARound { get; set; } = new List<Player>();
     public List<Player> SkippedLastRound { get; set; } = new List<Player>();
 
-    public Tournament(string name, TournamentFormat format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players, List<Player> skippedARound)
+    public Tournament(string name, TournamentFormat format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players)
     {
         Name = name;
         Format = format;
@@ -26,7 +26,6 @@ public class Tournament
         NumberOfCourts = numberOfCourts;
         PointsPerMatch = pointsPerMatch;
         Players = players;
-        SkippedARound = skippedARound;
     }
     
     public List<Player> ShufflePlayers()
@@ -47,15 +46,16 @@ public class Tournament
     public List<Player> SkipPlayers()
     {
         int i = 0;
-        List<Player> playingThisRound = Players;
+        List<Player> playingThisRound = new List<Player>(Players);
         List<Player> skippingThisRound = new List<Player>();
         while (playingThisRound.Count > NumberOfCourts * 4)
         {
-            if (!SkippedARound.Contains(playingThisRound[i]) && !SkippedLastRound.Contains(playingThisRound[i]))
+            if (!SkippedARound.Contains(playingThisRound[i]) && (Players.Count >= NumberOfCourts * 8 || !SkippedLastRound.Contains(playingThisRound[i])))
             {
                 SkippedARound.Add(playingThisRound[i]);
                 skippingThisRound.Add(playingThisRound[i]);
                 playingThisRound.RemoveAt(i);
+                i--;
             }
 
             i++;
@@ -70,5 +70,3 @@ public class Tournament
         return playingThisRound;
     }
 }
-
-//TODO: Hvad hvis der er 10 spillere på 1 bane?

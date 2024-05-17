@@ -8,13 +8,14 @@ namespace WebApi.Models
     {
         public override Round GenerateRound(List<Player> players, Tournament tournament)
         {
-            var round = new Round();
+            var round = new Round(tournament.NextRoundNumber++);
     
-            if (tournament.FirstRound)
+            if (tournament.NextRoundNumber == 1)
             {
                 players = tournament.ShufflePlayers();
-                tournament.FirstRound = false;
             }
+            
+            players = tournament.SkipPlayers();
             
             for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
