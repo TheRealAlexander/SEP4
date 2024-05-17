@@ -457,3 +457,173 @@ No users provided.
 ```json
 Role must be either User or SuperUser!
 ```
+
+
+
+### Tournaments
+
+## Get All Tournaments
+
+**Method***: GET
+
+**URL:** http://turnering_webapi:5101/tournaments
+
+**Description:** Retrieves a list of all tournaments.
+
+**Response:** 200 OK, returns a list of Tournament objects.
+
+**Response example:**
+
+```json
+[
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f32",
+    "State": 1,
+    "TimeAndDate": "2022-12-12T14:30:00Z",
+    "Description": "Tournament 1",
+    "FieldCount": 5,
+    "Format": "Single Elimination",
+    "Participants": ["Participant1", "Participant2"]
+  },
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f33",
+    "State": 2,
+    "TimeAndDate": "2023-01-01T09:00:00Z",
+    "Description": "Tournament 2",
+    "FieldCount": 8,
+    "Format": "Double Elimination",
+    "Participants": ["Participant3", "Participant4"]
+  }
+]
+```
+
+## Create Tournament
+
+**Method:** POST
+
+**URL:** http://turnering_webapi:5101/tournaments
+
+**Description:** Creates a new tournament.
+
+**Parameters:** A JSON object representing the tournament to be created in the request body.
+
+**Request Example:**
+
+```json
+{
+  "State": 1,
+  "TimeAndDate": "2022-12-12T14:30:00Z",
+  "Description": "New Tournament",
+  "FieldCount": 5,
+  "Format": "Americano",
+  "Participants": []
+}
+```
+
+**Response:** 200 OK, returns the created Tournament object.
+
+**Response Example:**
+
+```json
+{
+  "TournamentID": "60d5ecb1747a80a41c8e6f34",
+  "State": 1,
+  "TimeAndDate": "2022-12-12T14:30:00Z",
+  "Description": "New Tournament",
+  "FieldCount": 5,
+  "Format": "Americano",
+  "Participants": []
+}
+```
+
+## Update Tournament
+
+**Method:** PUT
+
+**URL:** http://turnering_webapi:5101/tournaments/{tournamentID}
+
+**Description:** Updates an existing tournament.
+
+**Parameters:** tournamentID in the path. A JSON object representing the updated tournament data in the request body.
+
+**Request Example:**
+
+```json
+{
+  "State": 2,
+  "TimeAndDate": "2023-01-01T09:00:00Z",
+  "Description": "Updated Tournament",
+  "FieldCount": 8,
+  "Format": "Mexicano"
+}
+```
+
+**Response:** 200 OK, returns the updated Tournament object.
+
+**Response Example:**
+
+```json
+{
+  "TournamentID": "60d5ecb1747a80a41c8e6f34",
+  "State": 2,
+  "TimeAndDate": "2023-01-01T09:00:00Z",
+  "Description": "Updated Tournament",
+  "FieldCount": 8,
+  "Format": "Mexicano",
+  "Participants": ["Participant1", "Participant2"]
+}
+```
+
+## Delete Tournament
+
+**Method: DELETE**
+
+**URL:** http://turnering_webapi:5101/tournaments/{tournamentID}
+
+**Description:** Deletes an existing tournament.
+
+**Parameters:** tournamentID in the path.
+
+**Response:** 200 OK.
+
+### Participants
+
+## Add Participant to Tournament
+
+**Method:** POST
+
+**URL:** http://turnering_webapi:5101/tournaments/{tournamentID}/participants
+
+**Description:** Adds a participant to an existing tournament.
+
+**Parameters:** tournamentID in the path. A JSON object representing the participant to be added in the request body.
+
+**Request Example:**
+
+```json
+{
+  "name": "New Participant"
+}
+```
+
+**Response:** 200 OK, returns the added Participant object.
+
+**Response Example:**
+
+```json
+{
+  "id": "60d5ecb1747a80a41c8e6f35",
+  "name": "New Participant"
+}
+```
+
+## Remove Participant from Tournament
+
+**Method:** DELETE
+**URL:** http://turnering_webapi:5101/tournaments/{tournamentID}/participants/{participant}
+
+**Description:** Removes a participant from an existing tournament.
+
+**Parameters:** tournamentID and participant in the path.
+
+**Response:** 200 OK.
