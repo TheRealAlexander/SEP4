@@ -73,4 +73,9 @@ public class TournamentService : ITournamentService
     {
         return await _tournamentDAO.GetScoreboardAsync(tournamentID);
     }
+
+    public async Task<List<Tournament>> GetTournamentHistoryAsync()
+    {
+        return await _tournamentDAO.GetTournamentHistoryAsync();
+    }
 }

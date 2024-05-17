@@ -20,7 +20,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
     )
 );
 builder.Services.AddScoped<ITournamentService, TournamentService>();
-builder.Services.AddScoped<TournamentDAO>();
+builder.Services.AddScoped<ITournamentDAO, TournamentDAO>();
 
 var app = builder.Build();
 

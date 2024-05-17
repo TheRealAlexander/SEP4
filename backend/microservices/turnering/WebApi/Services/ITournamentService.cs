@@ -8,4 +8,5 @@ public interface ITournamentService
     Task<Tournament> GetTournamentAsync(int tournamentID);
     Task<Round> RequestNewRoundAsync(int tournamentID);
     Task<List<Player>> GetScoreboardAsync(int tournamentID);
+    Task<List<Tournament>> GetTournamentHistoryAsync();
 }

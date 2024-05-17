@@ -35,4 +35,11 @@ public class TournamentController : ControllerBase
         List<Player> players = await _tournamentService.GetScoreboardAsync(tournamentID);
         return Ok(players);
     }
+
+    [HttpGet("history")]
+    public async Task<IActionResult> GetTournamentHistory()
+    {
+        List<Tournament> tournaments = await _tournamentService.GetTournamentHistoryAsync();
+        return Ok(tournaments);
+    }
 }

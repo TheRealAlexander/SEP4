@@ -30,4 +30,10 @@ public class TournamentDAO : ITournamentDAO
         var tournament = await GetTournamentAsync(tournamentID);
         return tournament.Players.OrderBy(p => p.Points).ToList();
     }
+
+    public async Task<List<Tournament>> GetTournamentHistoryAsync()
+    {
+        var filter = Builders<Tournament>.Filter.Empty;
+        return await _tournamentMongoCollection.Find(filter).ToListAsync();
+    }
 }
