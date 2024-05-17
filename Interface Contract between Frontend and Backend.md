@@ -612,7 +612,6 @@ Role must be either User or SuperUser!
 
 ```json
 {
-  "id": "60d5ecb1747a80a41c8e6f35",
   "name": "New Participant"
 }
 ```
