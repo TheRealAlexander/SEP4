@@ -47,20 +47,29 @@ public class Tournament
     public List<Player> SkipPlayers()
     {
         int i = 0;
-        List<Player> playingThisRound = Players;
+        List<Player> playingThisRound = new List<Player>(Players);
         List<Player> skippingThisRound = new List<Player>();
         while (playingThisRound.Count > NumberOfCourts * 4)
         {
+            if (i >= playingThisRound.Count)
+            {
+                break;
+            }
+        
             if (!SkippedARound.Contains(playingThisRound[i]) && !SkippedLastRound.Contains(playingThisRound[i]))
             {
                 SkippedARound.Add(playingThisRound[i]);
                 skippingThisRound.Add(playingThisRound[i]);
-                playingThisRound.RemoveAt(i);
+                i++;
             }
-
-            i++;
-
-            if (SkippedARound.Count == Players.Count)
+            else
+            {
+                Player skippedPlayer = playingThisRound[i];
+                playingThisRound.RemoveAt(i);
+                playingThisRound.Add(skippedPlayer);
+            }
+            
+            if (i >= playingThisRound.Count)
             {
                 SkippedARound.Clear();
                 i = 0;
@@ -69,6 +78,5 @@ public class Tournament
         SkippedLastRound = skippingThisRound;
         return playingThisRound;
     }
-}
 
-//TODO: Hvad hvis der er 10 spillere på 1 bane?
+}

@@ -11,6 +11,7 @@ namespace WebApi.Models
             var round = new Round();
 
             players = tournament.ShufflePlayers();
+            players = tournament.SkipPlayers();
             
             for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
