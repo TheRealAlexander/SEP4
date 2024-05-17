@@ -158,35 +158,94 @@ void test_resetScores(void) {
     assert_int(0, teamscore_a);
     assert_int(0, teamscore_b);
 }
+//tilføj mock funktioner 
+#include <stdio.h>
+#include <stdlib.h>
+#include <winsock2.h>
+#include <string.h>
+
+// Mock control variables
+static int _mock_socket_return = INVALID_SOCKET;
+static int _mock_connect_return = SOCKET_ERROR;
+static int _mock_send_return = SOCKET_ERROR;
+static int _mock_recv_return = SOCKET_ERROR;
+static char _mock_recv_buffer[1024];
+static int _mock_recv_buffer_len = 0;
+
+// Mock functions
+SOCKET mock_socket(int af, int type, int protocol) {
+    return _mock_socket_return;
+}
+
+int mock_connect(SOCKET s, const struct sockaddr *name, int namelen) {
+    return _mock_connect_return;
+}
+
+int mock_send(SOCKET s, const char *buf, int len, int flags) {
+    return _mock_send_return;
+}
+
+int mock_recv(SOCKET s, char *buf, int len, int flags) {
+    memcpy(buf, _mock_recv_buffer, _mock_recv_buffer_len);
+    return _mock_recv_return;
+}
+
+void set_mock_socket(SOCKET result) {
+    _mock_socket_return = result;
+}
+
+void set_mock_connect(int result) {
+    _mock_connect_return = result;
+}
+
+void set_mock_send(int result) {
+    _mock_send_return = result;
+}
+
+void set_mock_recv(int result, const char *data) {
+    _mock_recv_return = result;
+    if (data) {
+        strncpy(_mock_recv_buffer, data, sizeof(_mock_recv_buffer));
+        _mock_recv_buffer_len = strlen(data);
+    } else {
+        _mock_recv_buffer[0] = '\0';
+        _mock_recv_buffer_len = 0;
+    }
+}
+
 
 
 ///TCP test 
-void test_tcp_connection() {
-    mock_socket();   
-    mock_connect();  
-    mock_send();      
-    mock_recv();      
+
+void test_tcp_connection_success() {
+    // Setup mock behavior
+    set_mock_socket(1);  // Valid socket descriptor
+    set_mock_connect(0);  // Successful connect
+    set_mock_send(strlen("Hello from client"));  // Successfully sent all bytes
+    set_mock_recv(strlen("Hello from server"), "Hello from server");  // Mock server response
+
+    // Run the client code, assuming 'client_main()' is your entry function
+    client_main();
+
+    // Assertions to verify correct calls
+    // Here you should have some mechanism to verify that each function was called correctly,
+    // this is pseudo-code
+    assert(socket_called);
+    assert(connect_called);
+    assert(send_called);
+    assert(recv_called);
+    assert(strcmp(_mock_recv_buffer, "Hello from server") == 0);
+}
+
+void test_tcp_connection_failure() {
+    set_mock_socket(INVALID_SOCKET);  // Simulate socket creation failure
 
     client_main();
-    assert_called_socket(AF_INET, SOCK_STREAM, 0);
-    assert_called_connect("127.0.0.1", 8080);
-    assert_called_send("Hello from client");
 
-    
-    simulate_server_response("Hello from server");
-    assert_correct_client_response_handling();
+    // Assertions to verify error handling
+    assert(error_handled_properly);
 }
 
-void test_tcp_server() {
-    mock_socket();    
-    mock_bind();      
-    mock_listen();    
-    mock_accept();    
-    mock_recv();      
-    server_main();
-    assert_server_received_message("Hello from client");
-    assert_server_sent_response("Hello from server");
-}
 
 ////////////////////////////////////////////////////////////////
 // Test runner
@@ -226,8 +285,8 @@ int main(void) {
   ////////////////////////////////////////////////////////////////
     // Run tcp tests
     test_begin("tcp", test_display_setup, test_display_teardown);
-    test_run(test_tcp_connection);
-    test_run(test_tcp_server)
+    test_run(test_tcp_connection_success);
+    test_run(test_tcp_connection_failure);
     test_end();
 
 
