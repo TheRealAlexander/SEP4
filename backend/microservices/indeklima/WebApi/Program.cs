@@ -1,4 +1,3 @@
-
 using WebApi.DAO;
 using WebApi.Services;
 
@@ -20,9 +19,11 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
         "indeklima_db"
     )
 );
-builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
+builder.Services.AddScoped<ISensorGoalService, SensorGoalService>();
+builder.Services.AddScoped<ISensorGoalDAO, SensorGoalDAO>();
+builder.Services.AddScoped<IIOTControlService, IOTControlService>();
 
 var app = builder.Build();
 

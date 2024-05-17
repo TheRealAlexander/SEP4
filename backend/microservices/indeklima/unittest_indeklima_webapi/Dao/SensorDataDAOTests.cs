@@ -1,18 +1,15 @@
-﻿using Xunit;
-using MongoDB.Driver;
-using System;
-using System.Threading.Tasks;
+﻿using MongoDB.Driver;
 using WebApi.Models;
 using WebApi.DAO;
 
-public class SensorDataDaoTests : IAsyncLifetime
+public class SensorDataDAOTests : IAsyncLifetime
 {
     //Preconditions: Database must be running on localhost:27017
 
     private readonly SensorDataDAO _dao;
     private readonly IMongoDatabase _database;
 
-    public SensorDataDaoTests()
+    public SensorDataDAOTests()
     {
         var conn = "mongodb://localhost:27017";
         var client = new MongoClient(conn);
