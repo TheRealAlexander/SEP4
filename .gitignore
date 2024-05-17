@@ -5,7 +5,9 @@
 /iot/.pio
 *.json
 *.ini
-
+!appsettings.json
+!appsettings.Development.json
+!launchSettings.json
 ###################
 # compiled source #
 ###################
