@@ -1,4 +1,4 @@
-
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
 using WebApi.Services;
@@ -16,7 +16,9 @@ public class GetEnvironmentDataController : ControllerBase
         _sensorDataService = sensorDataService;
     }
 
+    
     [HttpGet("{hallId}")]
+    [Authorize(Policy = "MustBeAdmin")]
     public async Task<List<SensorData>> GetSensorData(int hallId)
     {
         return await _sensorDataService.GetSensorData(hallId);
@@ -33,5 +35,4 @@ public class GetEnvironmentDataController : ControllerBase
     {
         return await _sensorDataService.GetSensorData(hallId, startDate, endDate);
     }
-
 }
