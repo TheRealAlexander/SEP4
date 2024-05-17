@@ -32,9 +32,28 @@ for %%x in (%*) do (
 )
 
 rem ////////////////////////////////////////////////////////////////
+rem // Set configuration variables
+
+if not defined SERVER_IP        set SERVER_IP=172.20.10.3
+if not defined SERVER_PORT      set SERVER_PORT=5200
+if not defined WIFI_SSID        set WIFI_SSID=Rune - iPhone
+if not defined WIFI_PASSWORD    set WIFI_PASSWORD=123456789
+if not defined HALL_ID          set HALL_ID=37
+
+rem ////////////////////////////////////////////////////////////////
 rem // Determine file to compile and determine compiler flags
 
-set avr_flags=-mmcu=atmega2560 -O2 -D F_CPU=16000000 -D BAUD=9600 -Wall -Wextra
+set avr_flags=%avr_flags% -mmcu=atmega2560
+set avr_flags=%avr_flags% -O2
+set avr_flags=%avr_flags% -Wall -Wextra
+set avr_flags=%avr_flags% -D F_CPU=16000000 -D BAUD=9600
+
+set avr_flags=%avr_flags% -D SERVER_IP="\"%SERVER_IP%\""
+set avr_flags=%avr_flags% -D SERVER_PORT="%SERVER_PORT%"
+set avr_flags=%avr_flags% -D WIFI_SSID="\"%WIFI_SSID%\""
+set avr_flags=%avr_flags% -D WIFI_PASSWORD="\"%WIFI_PASSWORD%\""
+set avr_flags=%avr_flags% -D HALL_ID="%HALL_ID%"
+
 set avr_file=src\main.c
 
 if %test% == 1 (
