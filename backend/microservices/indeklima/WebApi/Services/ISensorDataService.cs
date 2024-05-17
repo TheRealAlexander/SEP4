@@ -11,6 +11,6 @@ namespace WebApi.Services
         public Task<List<SensorData>> GetSensorData(int hallId, int limit);
 
         public Task<List<SensorData>> GetSensorData(int hallId, DateTime startDate, DateTime endDate);
-        public Task AddSensorData(SensorData sensorData);
+        public Task AddSensorDataAsync(SensorData sensorData);
     }
 }

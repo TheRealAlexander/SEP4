@@ -21,14 +21,14 @@ namespace WebApi.Services
             }
             return await _sensorDataDao.GetSensorDataAsync(hallId);
         }
-        public Task AddSensorData(SensorData sensorData)
+
+        public async Task AddSensorDataAsync(SensorData sensorData)
         {
             if (sensorData == null)
             {
                 throw new ArgumentNullException(nameof(sensorData));
             }
-
-            return _sensorDataDao.AddSensorDataAsync(sensorData);
+            await _sensorDataDao.AddSensorDataAsync(sensorData);
         }
         public async Task<List<SensorData>> GetSensorData(int hallId, int limit)
         {
