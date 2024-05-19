@@ -1,25 +1,26 @@
 import React from 'react';
-import TournamentMatch from './TournamentMatch';
-import { Box, Typography } from '@mui/material';
+import TournamentCourt from './TournamentCourt';
+import { Box, Typography, Grid } from '@mui/material';
 
-const TournamentRound = ({ round, onUpdate, dialogOpen, handleClick, handleClose }) => {
+const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClose }) => {
     return (
         <Box sx={{ margin: 2 }}>
             <Typography variant="h5" gutterBottom component="div" sx={{ textAlign: 'center' }}>
-                Round {round.id}
+                Courts
             </Typography>
-            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2 }}>
-                {round.matches.map(match => (
-                    <TournamentMatch
-                        key={match.id}
-                        match={match}
-                        onUpdate={onUpdate}
-                        open={dialogOpen[match.id] || false}
-                        handleClose={() => handleClose(match.id)}
-                        handleClick={() => handleClick(match.id)}
-                    />
+            <Grid container spacing={2}>
+                {courts.map(court => (
+                    <Grid item xs={12} sm={6} md={3} key={court.id}>
+                        <TournamentCourt
+                            court={court}
+                            onUpdate={onUpdate}
+                            open={dialogOpen[court.id] || false}
+                            handleClose={() => handleClose(court.id)}
+                            handleClick={() => handleClick(court.id)}
+                        />
+                    </Grid>
                 ))}
-            </Box>
+            </Grid>
         </Box>
     );
 };
