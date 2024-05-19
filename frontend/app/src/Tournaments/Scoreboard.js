@@ -1,24 +1,54 @@
-import React from 'react';
-import { Paper, Typography, Box } from '@mui/material';
+import React, { useState } from 'react';
+import { Paper, Typography, Box, Grid, Button } from '@mui/material';
 
-const Scoreboard = () => {
-  const scores = [
-    { name: 'Team 1', score: 32 },
-    { name: 'Team 2', score: 28 }
-    
-  ];
+const scoresPerPage = 32; // 2 columns * 16 rows
+
+const Scoreboard = ({ scores }) => {
+  const [currentPage, setCurrentPage] = useState(0);
+  const pageCount = Math.ceil(scores.length / scoresPerPage);
+
+  const handlePreviousPage = () => {
+    if (currentPage > 0) {
+      setCurrentPage(currentPage - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (currentPage < pageCount - 1) {
+      setCurrentPage(currentPage + 1);
+    }
+  };
+
+  const startIndex = currentPage * scoresPerPage;
+  const endIndex = startIndex + scoresPerPage;
+  const currentScores = scores.slice(startIndex, endIndex);
 
   return (
-    <Paper elevation={3} sx={{ padding: 2 }}>
-      <Typography variant="h4" gutterBottom>
-        Scoreboard
-      </Typography>
-      <Box>
-        {scores.map(({ name, score }) => (
-          <Typography key={name} variant="h6">
-            {name}: {score}
+    <Paper elevation={3} sx={{ padding: 3, margin: 2 }}>
+      <Box sx={{ padding: 2 }}>
+        <Typography variant="h4" gutterBottom sx={{ overflowWrap: 'break-word' }}>
+          Scoreboard
+        </Typography>
+        <Grid container spacing={2}>
+          {currentScores.map(({ id, name, score }) => (
+            <Grid item xs={12} sm={6} key={id}>
+              <Typography variant="h6" sx={{ overflowWrap: 'break-word' }}>
+                {name}: {score}
+              </Typography>
+            </Grid>
+          ))}
+        </Grid>
+        <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 2 }}>
+          <Button variant="contained" onClick={handlePreviousPage} disabled={currentPage === 0}>
+            Previous
+          </Button>
+          <Typography variant="body1" sx={{ mx: 2, alignSelf: 'center' }}>
+            Page {currentPage + 1} of {pageCount}
           </Typography>
-        ))}
+          <Button variant="contained" onClick={handleNextPage} disabled={currentPage === pageCount - 1}>
+            Next
+          </Button>
+        </Box>
       </Box>
     </Paper>
   );

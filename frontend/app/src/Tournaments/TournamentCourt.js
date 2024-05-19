@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { styled } from "@mui/system";
 
-const MatchScore = styled(Box)(({ theme }) => ({
+const CourtScore = styled(Box)(({ theme }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "center",
@@ -22,17 +22,26 @@ const MatchScore = styled(Box)(({ theme }) => ({
   margin: theme.spacing(1),
 }));
 
-const TournamentMatch = ({
-  match,
+const TeamColumn = styled(Box)(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  margin: theme.spacing(1),
+  width: "100px"
+}));
+
+const TournamentCourt = ({
+  court,
   onUpdate,
   open,
   handleClose,
   handleClick,
 }) => {
-  const [tempScore, setTempScore] = useState([match.score1, match.score2]);
+  const [tempScore, setTempScore] = useState([court.score1, court.score2]);
 
   const handleUpdate = () => {
-    onUpdate(match.id, tempScore);
+    onUpdate(court.id, tempScore);
     handleClose();
   };
 
@@ -45,12 +54,22 @@ const TournamentMatch = ({
   return (
     <Card variant="outlined" sx={{ width: "100%" }} onClick={handleClick}>
       <CardContent sx={{ textAlign: "center" }}>
-        <Typography variant="h6">
-          {match.team1} vs {match.team2}
-        </Typography>
-        <MatchScore>
-          {match.score1} - {match.score2}
-        </MatchScore>
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <TeamColumn>
+          <Typography variant="body1" fontWeight="bold">{court.players[0][0].name}</Typography>
+            <Typography variant="body1" fontWeight="bold">&</Typography>
+            <Typography variant="body1" fontWeight="bold">{court.players[0][1].name}</Typography>
+          </TeamColumn>
+          <Typography variant="h6">vs</Typography>
+          <TeamColumn>
+            <Typography variant="body1" fontWeight="bold">{court.players[1][0].name}</Typography>
+            <Typography variant="body1" fontWeight="bold">&</Typography>
+            <Typography variant="body1" fontWeight="bold">{court.players[1][1].name}</Typography>
+          </TeamColumn>
+        </Box>
+        <CourtScore>
+          {court.score1} - {court.score2}
+        </CourtScore>
       </CardContent>
 
       <Dialog open={open} onClose={handleClose}>
@@ -62,7 +81,7 @@ const TournamentMatch = ({
             autoFocus
             margin="dense"
             id="score1"
-            label={match.team1}
+            label={`${court.players[0][0].name} & ${court.players[0][1].name}`}
             type="number"
             fullWidth
             variant="outlined"
@@ -72,7 +91,7 @@ const TournamentMatch = ({
           <TextField
             margin="dense"
             id="score2"
-            label={match.team2}
+            label={`${court.players[1][0].name} & ${court.players[1][1].name}`}
             type="number"
             fullWidth
             variant="outlined"
@@ -103,4 +122,4 @@ const TournamentMatch = ({
   );
 };
 
-export default TournamentMatch;
+export default TournamentCourt;
