@@ -7,16 +7,15 @@ import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from
 import React from 'react';
 
 // Component Imports
-import ClimatePage from './Components/ClimatePage/ClimatePage';
+import ClimatePage from './Data/DataPage.js';
 import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
 import LoginPage from './Profile/Login/LoginPage.js';
 import Registration from './Profile/Registration/Registration.js';
 import ControlsPage from './Controls/ControlsPage.js';
 import TournamentPage from './Tournaments/TournamentPage.js';
 import TournamentLiveOverview from './Tournaments/TournamentLiveOverview.js';
-
-import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
-import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
+import LiveScorePage from './Components/LiveScore/LiveScorePage.js';
+import HomePage from './HomePage/HomePage.js';
 
 // MUI Imports
 import {
@@ -34,7 +33,7 @@ import {
   MenuItem
 } from './MUI_imports';
 
-const pages = ["Home", "Controls", "Data", "Tournaments"];
+const pages = ["Home", "Controls", "Data", "Tournaments", "Live score"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function App() {
@@ -61,22 +60,21 @@ function AppContent() {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: '100vh',
-        mt: '-5vh',
-        width: (location.pathname === '/login' || location.pathname === '/registration') ? '100%' : `calc(100% - 240px)` }}>
+        height: 1,
+        mt: '-5vh'}}>
         <Toolbar />
 
         <div className="App">
           <Routes>
-            <Route path="/" element={<ClimatePage data={data} />} />
-            <Route path="/thermostat" element={<ThermostatDataWrapper />} />
-            <Route path="/humidity" element={<HumidityDataWrapper />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/climatePage" element={<ClimatePage />} />
             <Route path="/controlsPage" element={<ControlsPage />} />
             <Route path="/tournamentPage" element={<TournamentPage />} />
             <Route path="/login" element={<LoginPage />} /> 
             <Route path="/registration" element={<Registration />} /> 
             <Route path="/users" element={<UserPermissionPage />} />
             <Route path="/tournamentLiveOverview" element={<TournamentLiveOverview />} />
+            <Route path="/liveScore" element={<LiveScorePage />} />
           </Routes>
         </div>
       </Box>
@@ -94,6 +92,8 @@ function ResponsiveAppBar() {
     Controls: "/controlsPage",
     Tournaments: "/tournamentPage",
     TournamentLiveOverview: "/tournamentLiveOverview",
+    LiveScore: "/liveScore",
+    Data: "/DataPage"
   };
 
   const handleOpenNavMenu = (event) => {
@@ -230,14 +230,6 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
-
-let data = {
-  time: "12:00",
-  location: "Living Room",
-  temperature: 19,
-  humidity: 50,
-  co2_concentration: 800,
-};
 
 export default App;
 export { ResponsiveAppBar };
