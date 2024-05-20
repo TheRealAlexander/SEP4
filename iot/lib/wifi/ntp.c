@@ -14,6 +14,13 @@ void construct_ntp_request(ntp_request_packet* packet) {
     packet->li_vn_mode = (LI_NO_LEAP_SECOND << 6) | (VN_NTP_VERSION << 3) | MODE_CLIENT;
 }
 
+uint32_t ntohl(uint32_t netlong) {
+    return ((netlong>>24)&0xff) | // move byte 3 to byte 0
+           ((netlong<<8)&0xff0000) | // move byte 1 to byte 2
+           ((netlong>>8)&0xff00) | // move byte 2 to byte 1
+           ((netlong<<24)&0xff000000); // byte 0 to byte 3
+}
+
 void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet) {
     memcpy(packet, buffer, sizeof(ntp_response_packet));
 

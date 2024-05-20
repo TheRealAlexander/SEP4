@@ -10,13 +10,15 @@
 
 //#define SERVER_IP       "159.89.140.122"
 //#define SERVER_IP       "216.58.211.14"
-//#define SERVER_IP       "172.20.10.6" // Alexander
-#define SERVER_IP       "172.20.10.3" // Rune 
+#define SERVER_IP       "172.20.10.6" // Alexander
+//#define SERVER_IP       "172.20.10.3" // Rune 
 #define SERVER_PORT     5200
 //#define SERVER_PORT      5038
 
-#define WIFI_SSID       "Rune - iPhone"
-#define WIFI_PASSWORD   "123456789"
+//#define WIFI_SSID       "Rune - iPhone"
+//#define WIFI_PASSWORD   "123456789"
+#define WIFI_SSID       "The Hotspot"
+#define WIFI_PASSWORD   "pfea1111"
 
 ////////////////////////////////////////////////////////////////
 // Debugging
@@ -50,6 +52,8 @@ void send_to_pc_fmt(char *fmt, ...);
 #   include "../lib/dht11/dht11.c"
 #   include "../lib/wifi/wifi2.h"
 #   include "../lib/wifi/wifi2.c"
+#   include "../lib/wifi/ntp.h"
+#   include "../lib/wifi/ntp.c"
 #   include "../lib/servo/servo.h"
 #   include "../lib/servo/servo.c"
 #else
@@ -58,6 +62,7 @@ void send_to_pc_fmt(char *fmt, ...);
 #   include "uart.h"
 #   include "driverMHZ19B.h"
 #   include <periodic_task.h>
+#   include "../wifi/ntp.h"
 #endif
 
 void callback(uint8_t byte) {
@@ -115,7 +120,7 @@ typedef struct measurements {
     uint8_t temperature_decimal;   // NOTE(rune): Efter komma
 
     uint16_t co2;
-    bool open_window;
+    bool open_window;   
 } measurements;
 
 static measurements g_measurements;
@@ -210,6 +215,67 @@ static void process_http_response(char *http_buf, int http_len) {
     send_to_pc(ANSI_RESET);
 }
 
+void print_raw_bytes(void* ptr, size_t size) {
+    char* byte_ptr = (char*)ptr;
+    for(size_t i = 0; i < size; i++) {
+        send_to_pc_fmt("%02X ", byte_ptr[i]);
+    }
+    send_to_pc_fmt("\n");
+}
+
+void start_ntp_sync() {
+    send_to_pc_fmt("📡 wifi begin NTP sync\n");
+
+    ntp_request_packet ntp_request;
+    construct_ntp_request(&ntp_request);
+
+    wifi2_async_udp_open("216.239.35.0", 123);
+    send_to_pc_fmt("📡 wifi udp open\n");
+
+    send_to_pc_fmt("📡 wifi udp send\n");
+    send_to_pc_fmt(ANSI_FG_MAGENTA);
+
+    // Print raw bytes of ntp_request
+    print_raw_bytes(&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt(ANSI_RESET);
+
+    wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
+
+    // Wait for NTP response with timeout
+    send_to_pc_fmt("📡 wifi wait ntp\n");
+    unsigned long start_time = g_timestamp;
+    unsigned long timeout = 10000; // 10 seconds timeout
+
+    while (g_timestamp - start_time < timeout) {
+        wifi2_cmd_result cmd_result = { 0 };
+        if (wifi2_async_is_done(&cmd_result)) {
+            send_to_pc_fmt("📡 wifi wait ntp done\n");
+            if (cmd_result.ok && is_ntp_response_packet(wifi2_g_recv_buf, wifi2_g_recv_len)) {
+                ntp_response_packet ntp_response;
+                decode_ntp_response(wifi2_g_recv_buf, &ntp_response);
+
+                print_raw_bytes(&ntp_response, sizeof(ntp_response));
+                send_to_pc_fmt("==================\n");
+
+                // TODO: Actually do the calculations and set g_timestamp
+                return;
+            } else {
+                send_to_pc_fmt("📡 NTP sync failed\n");
+                return;
+            }
+            // Print command result
+            send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
+        }
+        _delay_ms(100); // Small delay to prevent busy-waiting
+    }
+    send_to_pc_fmt("📡 NTP sync timeout\n");
+
+    // Ensure UDP connection is closed after timeout
+    wifi2_async_udp_close();
+    send_to_pc_fmt("📡 wifi udp close after timeout\n");
+}
+
+
 static void do_wifi(void) {
     ////////////////////////////////////////////////////////////////
     // Holder styr på hvilken async command vi er i gang med,
@@ -251,6 +317,8 @@ static void do_wifi(void) {
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
 
                 send_to_pc_fmt("📡 wifi ap join\n"); // TODO(rune): Conditional debug print
+                start_ntp_sync(); // Start NTP sync
+
             } break;
 
             case WIFI_STEP_TCP_OPEN: {
@@ -295,6 +363,7 @@ static void do_wifi(void) {
 
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
+        send_to_pc_fmt("Async command done: %d\n", curr_wifi_step);
 
         send_to_pc(ANSI_FG_YELLOW);
         uart_send_array_blocking(USART_0, wifi2_g_recv_buf, wifi2_g_recv_len);
