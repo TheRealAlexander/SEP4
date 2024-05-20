@@ -1,3 +1,4 @@
+using turnering.Models.Tournament;
 using WebApi.DAO;
 using WebApi.Models;
 
@@ -74,7 +75,7 @@ public class TournamentService : ITournamentService
         return await _tournamentDAO.GetScoreboardAsync(tournamentID);
     }
 
-    public async Task<List<Tournament>> GetTournamentHistoryAsync()
+    public async Task<List<TournamentWithFormatAsStringDto>> GetTournamentHistoryAsync()
     {
         return await _tournamentDAO.GetTournamentHistoryAsync();
     }

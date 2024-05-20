@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using turnering.Models.Tournament;
 
 namespace WebApi.Models
 {
     public class Americano : TournamentFormat
     {
+        public string TournamentFormat { get; } = "Americano";
         public Round GenerateRound(List<Player> players, Tournament tournament)
         {
             var round = new Round(tournament.NextRoundNumber++);

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using turnering.Models.Tournament;
 using WebApi.Models;
 using WebApi.Services;
 
@@ -39,7 +40,7 @@ public class TournamentController : ControllerBase
     [HttpGet("history")]
     public async Task<IActionResult> GetTournamentHistory()
     {
-        List<Tournament> tournaments = await _tournamentService.GetTournamentHistoryAsync();
+        List<TournamentWithFormatAsStringDto> tournaments = await _tournamentService.GetTournamentHistoryAsync();
         return Ok(tournaments);
     }
 }

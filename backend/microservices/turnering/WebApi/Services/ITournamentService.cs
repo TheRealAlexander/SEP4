@@ -1,3 +1,4 @@
+using turnering.Models.Tournament;
 using WebApi.Models;
 
 namespace WebApi.Services;
@@ -8,5 +9,5 @@ public interface ITournamentService
     Task<Tournament> GetTournamentAsync(string tournamentID);
     Task<Round> RequestNewRoundAsync(string tournamentID);
     Task<List<Player>> GetScoreboardAsync(string tournamentID);
-    Task<List<Tournament>> GetTournamentHistoryAsync();
+    Task<List<TournamentWithFormatAsStringDto>> GetTournamentHistoryAsync();
 }
