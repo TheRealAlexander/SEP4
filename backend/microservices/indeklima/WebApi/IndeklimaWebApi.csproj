@@ -6,8 +6,12 @@
         <UserSecretsId>9dc10bf0-f65f-43db-b08d-9b8a631e3ec6</UserSecretsId>
     </PropertyGroup>
     <ItemGroup>
-        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets"
-            Version="1.19.4" />
+        <Compile Include="../../../SharedObjects/Auth/*.cs" />
+
+        <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="7.0.13" />
+        <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="7.0.13" />
+
+        <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.19.4" />
         <PackageReference Include="MongoDB.Driver" Version="2.21.0" />
         <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="7.0.18" />
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="7.0.10" />
