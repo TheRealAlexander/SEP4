@@ -32,10 +32,8 @@ public class UserController : ControllerBase
         {
             if (ex.InnerException is KeyNotFoundException)
             {
-                // Console.WriteLine($"KeyNotFoundException caught: {ex.InnerException.ToString()}");
                 return NotFound(ex.InnerException.Message);
             }
-            // Console.WriteLine($"An error occurred: {ex.ToString()}");  // Log full exception stack trace
             return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
         }
     }
