@@ -1,3 +1,0 @@
-[submodule "iot/avr-toolchain"]
-	path = iot/avr-toolchain
-	url = https://github.com/runelauridsen/avr-toolchain.git
