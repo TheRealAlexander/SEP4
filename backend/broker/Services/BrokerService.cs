@@ -116,5 +116,38 @@ namespace Broker.Services
             var response = await _httpClient.DeleteAsync($"http://turnering_webapi:5101/tournaments/{tournamentID}/participants/{participant}");
             return response.IsSuccessStatusCode ? new OkResult() : null as ActionResult;
         }
+
+        public async Task<string> Login(string user)
+        {
+            var content = new StringContent(user, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://auth_webapi/login", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error logging in");
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+
+        public async Task<string> FetchSuperUsers()
+        {
+            var response = await _httpClient.GetAsync("http://backend-url/api/superUsers");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> FetchNonAdminUsers()
+        {
+            var response = await _httpClient.GetAsync("http://backend-url/api/nonSuperUsers");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> AdjustUserPermissions(string usersToChange)
+        {
+            var content = new StringContent(usersToChange, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"http://backend-url/api/users/adjustUserPermissions/{usersToChange}", content);
+            return await response.Content.ReadAsStringAsync();
+        }
     }
 }
