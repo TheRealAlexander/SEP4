@@ -1,8 +1,12 @@
 import { useNavigate } from 'react-router-dom';
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit"; // MUI Edit Icon
+
 import TournamentEditForm from "./TournamentEditFormComp";
 import { AddParticipant, RemoveTournament, UpdateTournament } from "../Services/TournamentService";
+import { isAdmin } from "../RouteProtection/PrivateAdminRoute";
+import { isAuthenticated } from "../RouteProtection/PrivateSuperUserRoute";
+
 import {
   Dialog,
   DialogTitle,
@@ -31,76 +35,77 @@ export default function TournamentDialog({ open, onClose, tournament }) {
     setSnackbarOpen(false);
   };
 
+  const showSnackbar = (message, severity) => {
+    setSnackbarMessage(message);
+    setSnackbarSeverity(severity);
+    setSnackbarOpen(true);
+  };
+
   const handleRegister = async () => {
     try {
-      const response = AddParticipant(tournament.id, participantName);
-
+      const response = await AddParticipant(tournament.id, participantName);
+  
       if (response.status === 200) {
-        setSnackbarMessage("Participant added successfully!");
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
-      }
-      else {
-        setSnackbarMessage("Failed to add participant. Status code: " + response.status);
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+        showSnackbar("Participant added successfully!", 'success');
+      } else {
+        showSnackbar("Failed to add participant. Status code: " + response.status, 'error');
       }
     } catch (error) {
-      setSnackbarMessage("Failed to add participant. Error: " + error);
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      showSnackbar("Failed to add participant. Error: " + error, 'error');
     }
   };
   
-  const handleStartEvent = () => { 
-     // Handle redirect to event page
-     // Redirect to event page with tournament data
-     console.log("Starting event:", tournament.name);
-     navigate('/TournamentLiveOverview', { state: { tournament } });
-     onClose();
-  }
-
+  const handleStartEvent = async () => { 
+    try {
+      if (isAuthenticated || isAdmin) {
+        const updatedTournament = { ...tournament, EventStarted: 2 };
+        const response = await UpdateTournament(updatedTournament);
+  
+        if (response.status === 200) {
+          showSnackbar("Success, navigating to event page shortly!", 'success');
+          
+          setTimeout(() => {
+            // MAKE SURE THIS IS THE CORRECT PATH!!!!!!!!
+            navigate(`/event/${tournament.tournamentID}`);
+          }, 5000);
+        } else {
+          showSnackbar("Failed to start event. Status code: " + response.status, 'error');
+        }
+      } else {
+        showSnackbar("You are not authorized to start the event.", 'error');
+      }
+    } catch (error) {
+      showSnackbar("Failed to start event. Error: " + error, 'error');
+    }
+  };
+  
   const handleDeleteTournament = async (tournamentID) => {
     try {
       const response = await RemoveTournament(tournamentID);
-
+  
       if (response.status === 200) {
-        setSnackbarMessage("Tournament deleted successfully!");
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar("Tournament deleted successfully!", 'success');
         onClose();
-      }
-      else {
-        setSnackbarMessage("Failed to delete tournament. Status code: " + response.status);
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+      } else {
+        showSnackbar("Failed to delete tournament. Status code: " + response.status, 'error');
       }
     } catch (error) {
-      setSnackbarMessage("Failed to delete tournament. Error: " + error);
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      showSnackbar("Failed to delete tournament. Error: " + error, 'error');
     }
   };
-
+  
   const handleSaveEdits = async (updatedTournament) => {
     try {
       const response = await UpdateTournament(updatedTournament);
-
+  
       if (response.status === 200) {
-        setSnackbarMessage("Tournament updated successfully!");
-        setSnackbarSeverity('success');
-        setSnackbarOpen(true);
+        showSnackbar("Tournament updated successfully!", 'success');
         onClose();
-      }
-      else {
-        setSnackbarMessage("Failed to update tournament. Status code: " + response.status);
-        setSnackbarSeverity('error');
-        setSnackbarOpen(true);
+      } else {
+        showSnackbar("Failed to update tournament. Status code: " + response.status, 'error');
       }
     } catch (error) {
-      setSnackbarMessage("Failed to update tournament. Error: " + error);
-      setSnackbarSeverity('error');
-      setSnackbarOpen(true);
+      showSnackbar("Failed to update tournament. Error: " + error, 'error');
     }
   };
 
@@ -146,7 +151,7 @@ export default function TournamentDialog({ open, onClose, tournament }) {
             marginBottom: 2,
           }}
         >
-          {tournament.participants.map((participant, index) => (
+          {tournament.Participants.map((participant, index) => (
             <Box
               key={index}
               sx={{ padding: 1, border: "1px solid #ccc", borderRadius: "4px" }}
