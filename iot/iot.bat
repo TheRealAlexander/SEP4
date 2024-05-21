@@ -9,9 +9,8 @@ if not exist build mkdir build
 rem ////////////////////////////////////////////////////////////////
 rem // Use toolchain which is checked in to the repo
 
-set path=%path%;%cd%\avr-toolchain\toolchain\windows\avr8-gnu-toolchain-win32_x86_64\bin
-set path=%path%;%cd%\avr-toolchain\toolchain\windows\avrdude-v7.3-windows-x64
-set path=%path%;%cd%\avr-toolchain\toolchain\windows\putty
+set path=%path%;%cd%\toolchain\windows\avr8-gnu-toolchain-win32_x86_64\bin
+set path=%path%;%cd%\toolchain\windows\avrdude-v7.3-windows-x64
 
 rem ////////////////////////////////////////////////////////////////
 rem // Unpack arguments
@@ -82,7 +81,7 @@ rem ////////////////////////////////////////////////////////////////
 rem // Serial monitor
 
 if %listen% == 1 (
-    plink -serial %port% -sercfg 9600,8,n,1,N || goto done
+    toolchain\windows\putty\plink.exe -serial %port% -sercfg 9600,8,n,1,N || goto done
 )
 
 rem ////////////////////////////////////////////////////////////////
