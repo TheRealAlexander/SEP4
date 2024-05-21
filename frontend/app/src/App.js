@@ -1,21 +1,27 @@
 // app.js
 // CSS Imports
-import './App.css';
+import "./App.css";
 
 // React Imports
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import React from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import React from "react";
 
 // Component Imports
-import ClimatePage from './Data/DataPage.js';
-import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
-import LoginPage from './Profile/Login/LoginPage.js';
-import Registration from './Profile/Registration/Registration.js';
-import ControlsPage from './Controls/ControlsPage.js';
-import TournamentPage from './Tournaments/TournamentPage.js';
-import TournamentLiveOverview from './Tournaments/TournamentLiveOverview.js';
-import LiveScorePage from './Components/LiveScore/LiveScorePage.js';
-import HomePage from './HomePage/HomePage.js';
+import DataPage from "./Data/DataPage.js";
+import { UserPermissionPage } from "./Users/UserPermission/UserPermission.js";
+import LoginPage from "./Profile/Login/LoginPage.js";
+import Registration from "./Profile/Registration/Registration.js";
+import ControlsPage from "./Controls/ControlsPage.js";
+import TournamentPage from "./Tournaments/TournamentPage.js";
+import TournamentLiveOverview from "./Tournaments/TournamentLiveOverview.js";
+import LiveScorePage from "./LiveScore/LiveScorePage.js";
+import HomePage from "./HomePage/HomePage.js";
 
 // MUI Imports
 import {
@@ -30,10 +36,10 @@ import {
   Avatar,
   Button,
   Tooltip,
-  MenuItem
-} from './MUI_imports';
+  MenuItem,
+} from "./MUI_imports";
 
-const pages = ["Home", "Controls", "Data", "Tournaments", "Live score"];
+const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function App() {
@@ -51,30 +57,38 @@ function AppContent() {
 
   return (
     <>
-         {(location.pathname !== '/login' && location.pathname !== '/registration') && <ResponsiveAppBar />}
+      {location.pathname !== "/login" &&
+        location.pathname !== "/registration" && <ResponsiveAppBar />}
 
-      <Box component="main" sx={{
-        flexGrow: 1,
-        p: 3,
-        display: "flex",
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 1,
-        mt: '-5vh'}}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 1,
+          mt: "-5vh",
+        }}
+      >
         <Toolbar />
 
         <div className="App">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path="/climatePage" element={<ClimatePage />} />
+            <Route path="/dataPage" element={<DataPage />} />
             <Route path="/controlsPage" element={<ControlsPage />} />
             <Route path="/tournamentPage" element={<TournamentPage />} />
-            <Route path="/login" element={<LoginPage />} /> 
-            <Route path="/registration" element={<Registration />} /> 
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registration" element={<Registration />} />
             <Route path="/users" element={<UserPermissionPage />} />
-            <Route path="/tournamentLiveOverview" element={<TournamentLiveOverview />} />
-            <Route path="/liveScore" element={<LiveScorePage />} />
+            <Route
+              path="/tournamentLiveOverview"
+              element={<TournamentLiveOverview />}
+            />
+            <Route path="/liveScores" element={<LiveScorePage />} />
           </Routes>
         </div>
       </Box>
@@ -92,8 +106,8 @@ function ResponsiveAppBar() {
     Controls: "/controlsPage",
     Tournaments: "/tournamentPage",
     TournamentLiveOverview: "/tournamentLiveOverview",
-    LiveScore: "/liveScore",
-    Data: "/DataPage"
+    "Live Scores": "/liveScores",
+    Data: "/DataPage",
   };
 
   const handleOpenNavMenu = (event) => {
