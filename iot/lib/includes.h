@@ -78,6 +78,8 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "servo/servo.c"
 #include "tone/tone.h"
 #include "tone/tone.c"
+#include "led/led.h"
+#include "led/led.c"
 #include "buttons/buttons.h"
 #include "buttons/buttons.c"
 #include "display/display.h"
