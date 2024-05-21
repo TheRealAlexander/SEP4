@@ -12,7 +12,7 @@ import {
      DialogActions,
      Snackbar 
 } from '../MUI_imports';
-import TounamentService from '../Services/TournamentService';
+import { CreateTournament } from '../Services/TournamentService';
 
 export default function TournamentFormDialog({ open, onClose }) {
      const [nameOfTournament, setNameOfTournament] = useState('');
@@ -50,9 +50,9 @@ export default function TournamentFormDialog({ open, onClose }) {
             State: 1,
             tournamentID: null // This should be assigned by the backend
         };
-        // Handle send data to backend here
+        
         try {
-            const response = await TounamentService.CreateTournament(tournamentData);
+            const response = await CreateTournament(tournamentData);
 
             if (response.status === 200) {
                 setSnackbarMessage("Tournament created successfully!");

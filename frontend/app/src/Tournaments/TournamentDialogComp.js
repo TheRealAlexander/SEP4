@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import React, { useState } from "react";
 import EditIcon from "@mui/icons-material/Edit"; // MUI Edit Icon
 import TournamentEditForm from "./TournamentEditFormComp";
+import { AddParticipant, RemoveTournament, UpdateTournament } from "../Services/TournamentService";
 import {
   Dialog,
   DialogTitle,
@@ -13,20 +14,42 @@ import {
   Box,
   IconButton,
   Tooltip,
+  Snackbar,
+  Alert,
 } from "../MUI_imports";
 
 export default function TournamentDialog({ open, onClose, tournament }) {
   const [participantName, setParticipantName] = useState("");
   const [editOpen, setEditOpen] = useState(false);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  const [snackbarSeverity, setSnackbarSeverity] = useState('success');
 
   const navigate = useNavigate();
 
-  const handleRegister = () => {
-    // Handle registering for tournament
-    // Add participantName to tournament.participants
-    // Update tournament.currentParticipants
-    console.log("Registering:", participantName);
-    setParticipantName(""); // Reset input after registering
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
+  const handleRegister = async () => {
+    try {
+      const response = AddParticipant(tournament.id, participantName);
+
+      if (response.status === 200) {
+        setSnackbarMessage("Participant added successfully!");
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+      }
+      else {
+        setSnackbarMessage("Failed to add participant. Status code: " + response.status);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage("Failed to add participant. Error: " + error);
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
   };
   
   const handleStartEvent = () => { 
@@ -37,18 +60,48 @@ export default function TournamentDialog({ open, onClose, tournament }) {
      onClose();
   }
 
-  const handleDeleteTournament = (tournamentId) => {
-    // Implement deletion logic.
-    // Send a DELETE request to the backend to delete the tournament with id=tournament.id
-    console.log("Deleting tournament:", tournament.id);
-    onClose();
+  const handleDeleteTournament = async (tournamentID) => {
+    try {
+      const response = await RemoveTournament(tournamentID);
+
+      if (response.status === 200) {
+        setSnackbarMessage("Tournament deleted successfully!");
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+        onClose();
+      }
+      else {
+        setSnackbarMessage("Failed to delete tournament. Status code: " + response.status);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage("Failed to delete tournament. Error: " + error);
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
   };
 
-  const handleSaveEdits = (updatedTournament) => {
-    // Implement save edits logic.
-    // Update the tournament data with the updatedTournament data.
-    console.log("Saving edits:", updatedTournament);
-    // Send updated tournament data to the backend
+  const handleSaveEdits = async (updatedTournament) => {
+    try {
+      const response = await UpdateTournament(updatedTournament);
+
+      if (response.status === 200) {
+        setSnackbarMessage("Tournament updated successfully!");
+        setSnackbarSeverity('success');
+        setSnackbarOpen(true);
+        onClose();
+      }
+      else {
+        setSnackbarMessage("Failed to update tournament. Status code: " + response.status);
+        setSnackbarSeverity('error');
+        setSnackbarOpen(true);
+      }
+    } catch (error) {
+      setSnackbarMessage("Failed to update tournament. Error: " + error);
+      setSnackbarSeverity('error');
+      setSnackbarOpen(true);
+    }
   };
 
   return (
@@ -71,23 +124,19 @@ export default function TournamentDialog({ open, onClose, tournament }) {
               </IconButton>
             </Tooltip>
           </Box>
-          <Button
-            color="primary"
-            variant="contained"
-            onClick={handleStartEvent}
-          >
+          <Button color="primary" variant="contained" onClick={handleStartEvent}>
             Start Event
           </Button>
         </Box>
       </DialogTitle>
       <DialogContent>
-        <Typography>Date: {tournament.date}</Typography>
+        <Typography>Date: {tournament.DateAndTime}</Typography>
         <Typography>
-          Current Participants: {tournament.currentParticipants}
+          Current Participants: {tournament.Participants}
         </Typography>
-        <Typography>Event Description: {tournament.description}</Typography>
-        <Typography>Format: {tournament.format}</Typography>
-        <Typography>Game Fields: {tournament.baneAntal}</Typography>
+        <Typography>Event Description: {tournament.Description}</Typography>
+        <Typography>Format: {tournament.Format}</Typography>
+        <Typography>Game Fields: {tournament.FieldCount}</Typography>
         <Typography>Participants:</Typography>
         <Box
           sx={{
@@ -123,6 +172,11 @@ export default function TournamentDialog({ open, onClose, tournament }) {
         onDelete={handleDeleteTournament}
         tournament={tournament}
       />
+      <Snackbar open={snackbarOpen} autoHideDuration={6000} onClose={handleSnackbarClose}>
+        <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
     </Dialog>
   );
 }
