@@ -1,6 +1,6 @@
 ﻿import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import LiveScoreService from "../../Services/LiveScoreService";
+import LiveScoreService from "../Services/LiveScoreService";
 import { Card, CardContent, Typography, CircularProgress } from "@mui/material";
 
 const LiveScorePage = () => {
