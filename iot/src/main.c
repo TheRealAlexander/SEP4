@@ -220,11 +220,9 @@ static void do_pir() {
     }
 
     if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
-        DDRB = 0xff;
-        PORTB = 0x00;
+        led_set(0x00);
     } else {
-        DDRB = 0xff;
-        PORTB = 0xff;
+        led_set(0xff);
     }
 }
 
@@ -256,6 +254,7 @@ int main() {
     display_init();
     pir_init();
     dht11_init();
+    led_init();
 
     while (1) {
         do_wifi();
