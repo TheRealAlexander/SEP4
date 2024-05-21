@@ -68,7 +68,7 @@ public class UserController : ControllerBase
         {
             await _userService.RegisterUserAsync(userCreationDTO);
             // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
-            return CreatedAtAction(nameof(GetUserAsync), new { username = userCreationDTO.Username }, userCreationDTO);
+            return CreatedAtAction("GetUser", new { username = userCreationDTO.Username }, userCreationDTO);
         }
         catch (DuplicateNameException ex)
         {
