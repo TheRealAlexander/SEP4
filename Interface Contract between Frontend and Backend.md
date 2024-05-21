@@ -525,6 +525,7 @@ Role must be either User or SuperUser!
 [
   {
     "TournamentID": "60d5ecb1747a80a41c8e6f32",
+    "Name": "NameOfTournament",
     "State": 1,
     "TimeAndDate": "2022-12-12T14:30:00Z",
     "Description": "Tournament 1",
@@ -534,6 +535,7 @@ Role must be either User or SuperUser!
   },
   {
     "TournamentID": "60d5ecb1747a80a41c8e6f33",
+    "Name": "NameOfTournament",
     "State": 2,
     "TimeAndDate": "2023-01-01T09:00:00Z",
     "Description": "Tournament 2",
@@ -559,6 +561,7 @@ Role must be either User or SuperUser!
 ```json
 {
   "State": 1,
+  "Name": "NameOfTournament",
   "TimeAndDate": "2022-12-12T14:30:00Z",
   "Description": "New Tournament",
   "FieldCount": 5,
@@ -574,6 +577,7 @@ Role must be either User or SuperUser!
 ```json
 {
   "TournamentID": "60d5ecb1747a80a41c8e6f34",
+  "Name": "NameOfTournament",
   "State": 1,
   "TimeAndDate": "2022-12-12T14:30:00Z",
   "Description": "New Tournament",
@@ -597,7 +601,8 @@ Role must be either User or SuperUser!
 
 ```json
 {
-  "State": 2,
+  "TournamentID": "60d5ecb1747a80a41c8e6f34",
+  "Name": "NameOfTournament",
   "TimeAndDate": "2023-01-01T09:00:00Z",
   "Description": "Updated Tournament",
   "FieldCount": 8,
@@ -612,7 +617,8 @@ Role must be either User or SuperUser!
 ```json
 {
   "TournamentID": "60d5ecb1747a80a41c8e6f34",
-  "State": 2,
+  "State": 1,
+  "Name": "NameOfTournament",
   "TimeAndDate": "2023-01-01T09:00:00Z",
   "Description": "Updated Tournament",
   "FieldCount": 8,
@@ -649,6 +655,7 @@ Role must be either User or SuperUser!
 
 ```json
 {
+  "TournamentID": "60d5ecb1747a80a41c8e6f34",  
   "name": "New Participant"
 }
 ```
@@ -659,6 +666,7 @@ Role must be either User or SuperUser!
 
 ```json
 {
+  "TournamentID": "60d5ecb1747a80a41c8e6f34",
   "name": "New Participant"
 }
 ```
