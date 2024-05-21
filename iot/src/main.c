@@ -17,7 +17,7 @@
 
 //#define WIFI_SSID       "Rune - iPhone"
 //#define WIFI_PASSWORD   "123456789"
-#define WIFI_SSID       "The Hotspot"
+#define WIFI_SSID       "TheHotspot"
 #define WIFI_PASSWORD   "pfea1111"
 
 ////////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ static void process_http_response(char *http_buf, int http_len) {
 void print_raw_bytes(void* ptr, size_t size) {
     char* byte_ptr = (char*)ptr;
     for(size_t i = 0; i < size; i++) {
-        send_to_pc_fmt("%02X ", byte_ptr[i]);
+        send_to_pc_fmt("%02X ", (unsigned char)byte_ptr[i]);
     }
     send_to_pc_fmt("\n");
 }
@@ -226,53 +226,50 @@ void print_raw_bytes(void* ptr, size_t size) {
 void start_ntp_sync() {
     send_to_pc_fmt("📡 wifi begin NTP sync\n");
 
-    ntp_request_packet ntp_request;
-    construct_ntp_request(&ntp_request);
-
     wifi2_async_udp_open("216.239.35.0", 123);
     send_to_pc_fmt("📡 wifi udp open\n");
 
-    send_to_pc_fmt("📡 wifi udp send\n");
-    send_to_pc_fmt(ANSI_FG_MAGENTA);
+    _delay_ms(3000);
 
-    // Print raw bytes of ntp_request
+    ntp_request_packet ntp_request;
+    construct_ntp_request(&ntp_request);
+    send_to_pc_fmt(ANSI_FG_MAGENTA);
     print_raw_bytes(&ntp_request, sizeof(ntp_request));
     send_to_pc_fmt(ANSI_RESET);
 
+    // Record t1 just before sending the NTP request
+    unsigned long long t1 = g_timestamp + NTP_TIMESTAMP_DELTA;
+
     wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt("📡 wifi udp send\n");
+    _delay_ms(3000);
 
-    // Wait for NTP response with timeout
-    send_to_pc_fmt("📡 wifi wait ntp\n");
-    unsigned long start_time = g_timestamp;
-    unsigned long timeout = 10000; // 10 seconds timeout
+    // Record t4 immediately after receiving the NTP response
+    unsigned long long t4 = g_timestamp + NTP_TIMESTAMP_DELTA;
+    // Subtract the artificial delay to get the correct t4
+    t4 -= 3000;
 
-    while (g_timestamp - start_time < timeout) {
-        wifi2_cmd_result cmd_result = { 0 };
-        if (wifi2_async_is_done(&cmd_result)) {
-            send_to_pc_fmt("📡 wifi wait ntp done\n");
-            if (cmd_result.ok && is_ntp_response_packet(wifi2_g_recv_buf, wifi2_g_recv_len)) {
-                ntp_response_packet ntp_response;
-                decode_ntp_response(wifi2_g_recv_buf, &ntp_response);
+    // Set ntp_response to the last 48 bytes of the wifi recv buffer
+    ntp_response_packet ntp_response;
+    uint8_t *start = wifi2_g_recv_buf + wifi2_g_recv_len - 48;
+    memcpy(&ntp_response, start, 48);
 
-                print_raw_bytes(&ntp_response, sizeof(ntp_response));
-                send_to_pc_fmt("==================\n");
-
-                // TODO: Actually do the calculations and set g_timestamp
-                return;
-            } else {
-                send_to_pc_fmt("📡 NTP sync failed\n");
-                return;
-            }
-            // Print command result
-            send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
-        }
-        _delay_ms(100); // Small delay to prevent busy-waiting
+    if (!is_ntp_response_packet((uint8_t*)&ntp_response, sizeof(ntp_response))) {
+        send_to_pc_fmt("📡 wifi ntp response not valid\n");
+        return;
     }
-    send_to_pc_fmt("📡 NTP sync timeout\n");
+    send_to_pc_fmt("📡 wifi ntp response valid\n");
+    print_raw_bytes(&ntp_response, sizeof(ntp_response));
+
+    // Decode the NTP response
+    decode_ntp_response((uint8_t*)&ntp_response, &ntp_response);
+
+    // Calculate the correct UNIX time
+    uint32_t unix_time = calculate_corrected_time(&ntp_response, t1, t4);
+    send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
 
     // Ensure UDP connection is closed after timeout
     wifi2_async_udp_close();
-    send_to_pc_fmt("📡 wifi udp close after timeout\n");
 }
 
 
@@ -316,8 +313,7 @@ static void do_wifi(void) {
                 wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
 
-                send_to_pc_fmt("📡 wifi ap join\n"); // TODO(rune): Conditional debug print
-                start_ntp_sync(); // Start NTP sync
+                send_to_pc_fmt("📡 wifi ap join\n"); // TODO(rune): Conditional debug print           
 
             } break;
 
@@ -373,6 +369,9 @@ static void do_wifi(void) {
         if (cmd_result.ok) {
             if (curr_wifi_step == WIFI_STEP_TCP_SEND) {
                 //process_http_response(cmd_result.data, cmd_result.data_len);
+            }
+            if (curr_wifi_step == WIFI_STEP_AP_JOIN) {
+                start_ntp_sync(); // Start NTP sync after joining AP
             }
 
             // TODO(rune): Conditional debug print

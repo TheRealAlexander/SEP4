@@ -3,6 +3,8 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define NTP_TIMESTAMP_DELTA 2208988800ull
+
 typedef struct {
     uint8_t li_vn_mode;       // Eight bits. li, vn, and mode.
     uint8_t stratum;          // Eight bits. Stratum level of the local clock.
@@ -33,3 +35,4 @@ typedef ntp_packet ntp_response_packet;
 void construct_ntp_request(ntp_request_packet* packet);
 void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet);
 bool is_ntp_packet_valid(const uint8_t* buffer, size_t size);
+uint32_t calculate_corrected_time(ntp_response_packet* packet, uint32_t t1, uint32_t t4);

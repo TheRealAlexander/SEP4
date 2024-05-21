@@ -21,6 +21,24 @@ uint32_t ntohl(uint32_t netlong) {
            ((netlong<<24)&0xff000000); // byte 0 to byte 3
 }
 
+void print_ntp_packet(ntp_packet* packet) {
+    send_to_pc_fmt("li_vn_mode: %u\n", packet->li_vn_mode);
+    send_to_pc_fmt("stratum: %u\n", packet->stratum);
+    send_to_pc_fmt("poll: %u\n", packet->poll);
+    send_to_pc_fmt("precision: %u\n", packet->precision);
+    send_to_pc_fmt("rootDelay: %u\n", packet->rootDelay);
+    send_to_pc_fmt("rootDispersion: %u\n", packet->rootDispersion);
+    send_to_pc_fmt("refId: %u\n", packet->refId);
+    send_to_pc_fmt("refTm_s: %u\n", packet->refTm_s);
+    send_to_pc_fmt("refTm_f: %u\n", packet->refTm_f);
+    send_to_pc_fmt("origTm_s: %u\n", packet->origTm_s);
+    send_to_pc_fmt("origTm_f: %u\n", packet->origTm_f);
+    send_to_pc_fmt("rxTm_s: %u\n", packet->rxTm_s);
+    send_to_pc_fmt("rxTm_f: %u\n", packet->rxTm_f);
+    send_to_pc_fmt("txTm_s: %u\n", packet->txTm_s);
+    send_to_pc_fmt("txTm_f: %u\n", packet->txTm_f);
+}
+
 void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet) {
     memcpy(packet, buffer, sizeof(ntp_response_packet));
 
@@ -33,6 +51,9 @@ void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet) {
     packet->rxTm_f = ntohl(packet->rxTm_f);
     packet->txTm_s = ntohl(packet->txTm_s);
     packet->txTm_f = ntohl(packet->txTm_f);
+
+    // Print the decoded packet
+    print_ntp_packet(packet);
 }
 
 bool is_ntp_response_packet(const uint8_t* buffer, size_t size) {
@@ -62,4 +83,30 @@ bool is_ntp_response_packet(const uint8_t* buffer, size_t size) {
     // Maybe add more checks here... probably not necessary.
 
     return true;
+}
+
+uint32_t calculate_corrected_time(ntp_response_packet* packet, unsigned long long t1, unsigned long long t4) {
+    uint32_t t2_seconds = packet->txTm_s;
+    uint32_t t2_fraction = packet->txTm_f;
+    uint32_t t3_seconds = packet->rxTm_s;
+    uint32_t t3_fraction = packet->rxTm_f;
+
+    unsigned long long t2 = ((unsigned long long)t2_seconds << 32) | t2_fraction;
+    unsigned long long t3 = ((unsigned long long)t3_seconds << 32) | t3_fraction;
+
+    int64_t delta_t2_t1 = t2 - t1;
+    int64_t delta_t3_t4 = t3 - t4;
+    int64_t theta = (delta_t2_t1 + delta_t3_t4) / 2;
+
+    uint32_t server_time = t3_seconds;
+    server_time += (uint32_t)(theta >> 32);
+
+    // Convert NTP timestamp to UNIX timestamp
+    if (server_time > NTP_TIMESTAMP_DELTA) {
+        server_time -= NTP_TIMESTAMP_DELTA;
+    } else {
+        server_time = 0;
+    }
+
+    return server_time;
 }

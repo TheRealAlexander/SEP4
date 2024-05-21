@@ -165,8 +165,11 @@ extern void wifi2_async_udp_open(char *ip, int port) {
 }
 
 extern void wifi2_async_udp_send(char *data, int data_len) {
-    // Same as tcp send
-    wifi2_async_tcp_send(data, data_len);
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d\r\n", data_len);
+    wifi2_async(cmd, false);
+    _delay_ms(20);
+    uart_send_array_blocking(WIFI2_USART, data, data_len);
 }
 
 extern void wifi2_async_udp_close(void) {
