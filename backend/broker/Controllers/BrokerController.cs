@@ -73,5 +73,33 @@ namespace Broker.Controllers
         {
             return await _brokerService.RemoveParticipant(tournamentID, participant);
         }
+
+        [HttpPost("auth/login")]
+        public async Task<IActionResult> Login([FromBody] string user)
+        {
+            var result = await _brokerService.Login(user);
+            return Content(result, "application/json");
+        }
+
+        [HttpGet("superUsers")]
+        public async Task<IActionResult> FetchSuperUsers()
+        {
+            var result = await _brokerService.FetchSuperUsers();
+            return Content(result, "application/json");
+        }
+
+        [HttpGet("nonSuperUsers")]
+        public async Task<IActionResult> FetchNonAdminUsers()
+        {
+            var result = await _brokerService.FetchNonAdminUsers();
+            return Content(result, "application/json");
+        }
+
+        [HttpPut("users/adjustUserPermissions/{usersToChange}")]
+        public async Task<IActionResult> AdjustUserPermissions(string usersToChange)
+        {
+            var result = await _brokerService.AdjustUserPermissions(usersToChange);
+            return Content(result, "application/json");
+        }
     }
 }
