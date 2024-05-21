@@ -1,35 +1,35 @@
-const API_URL = "http://localhost:8000/api/auth/" //Placeholder for the API URL
+import axios from 'axios';
 
-const register = (username, password) => {
-    return fetch(API_URL + "register", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+const API_URL = "http://localhost:5001/";
+
+const register = (username, password, email, age) => {
+    return axios.post(API_URL + "register", {
         username,
         password,
-      }),
-    }).then(response => response.json());
+        email,
+        age
+    })
+    .then(response => response.data)
+    .catch(error => {
+        throw error.response ? error.response.data : error;
+    });
 };
 
 const login = (username, password) => {
-    return fetch(API_URL + "login", {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
+    return axios.post(API_URL + "login", {
         username,
-        password,
-      }),
-    }).then(response => response.json())
-      .then(data => {
+        password
+    })
+    .then(response => {
+        const data = response.data;
         if (data.accessToken) {
-          localStorage.setItem("user", JSON.stringify(data));
+            localStorage.setItem("user", JSON.stringify(data));
         }
         return data;
-      });
+    })
+    .catch(error => {
+        throw error.response ? error.response.data : error;
+    });
 };
 
 const logout = () => {
