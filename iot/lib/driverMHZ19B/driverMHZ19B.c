@@ -1,5 +1,3 @@
-#include <avr/io.h>
-
 #define Co2SensorRead 0x86
 #define ZERO_POINT_CALIBRATION 0x87
 #define SPAN_POINT_CALIBRATION 0x88
