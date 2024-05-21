@@ -5,26 +5,14 @@ import TournamentDialog from './TournamentDialogComp';
 import TournamentFormDialog from './TournamentFormDialog';
 
 import { Button } from '../MUI_imports';
+import { GetAllTournaments } from '../Services/TournamentService';
 
 export default function TournamentPage() {
      const [open, setOpen] = useState(false);
      const [selectedTournament, setSelectedTournament] = useState(null);
      const [formOpen, setFormOpen] = useState(false);
 
-     //Dummy data for tournaments
-     const Participants = ["Alice", "Bob", "Charlie", "Dave", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy", "Kevin", "Linda", "Mallory", "Nia", "Oscar", "Peggy", "Quinn", "Rene", "Sue", "Trent", "Ursula", "Victor", "Wendy", "Xander", "Yvonne", "Zane"];
-     const tournaments = [
-       { 
-          id: 1, 
-          name: "Tournament A", 
-          date: "2024-06-01", 
-          currentParticipants: Participants.length, 
-          description: "This is a sample tournament A.", 
-          participants: Participants 
-       },
-       { id: 2, name: "Tournament B", date: "2024-07-15", currentParticipants: 8, description: "This is a sample tournament B.", participants: ["Charlie", "Dave"] },
-     ];
-     //End of dummy data for tournaments
+     let tournaments = GetAllTournaments();
    
      const handleTournamentClick = (tournament) => {
        setSelectedTournament(tournament);
@@ -41,7 +29,7 @@ export default function TournamentPage() {
           {formOpen && <TournamentFormDialog open={formOpen} onClose={() => setFormOpen(false)} />}
        <div>
          {tournaments.map(tournament => (
-           <TournamentItem key={tournament.id} tournament={tournament} onClick={handleTournamentClick} />
+           <TournamentItem key={tournament.TournamentID} tournament={tournament} onClick={handleTournamentClick} />
          ))}
          {selectedTournament && (
            <TournamentDialog
