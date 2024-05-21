@@ -14,6 +14,12 @@ function TournamentItem({ tournament, onClick }) {
             Date: {tournament.date}
           </Typography>
           <Typography variant="body2" color="text.secondary">
+            Format: {tournament.format}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Game Fields: {tournament.baneAntal}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
             Participants: {tournament.currentParticipants}
           </Typography>
         </CardContent>
