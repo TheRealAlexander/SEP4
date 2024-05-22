@@ -1,0 +1,46 @@
+name: Run tests and deploy report to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: "3.1"
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build
+        working-directory: backend\microservices\TestProjects
+        run: dotnet build --no-restore
+
+      - name: Test
+        working-directory: backend\microservices\TestProjects
+        run:
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true
+          /p:CoverletOutputFormat=cobertura
+
+      - name: Install ReportGenerator tool
+        working-directory: backend\microservices\TestProjects
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name: Generate report
+        working-directory: backend\microservices\TestProjects
+        run:
+          reportgenerator "-reports:**/coverage.cobertura.xml"
+          "-targetdir:coverage" -reporttypes:Html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: coverage
