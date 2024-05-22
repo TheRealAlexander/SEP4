@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Xunit;
 using Broker.Controllers;
+using System;
 
 namespace BrokerTest
 {
@@ -25,7 +26,12 @@ namespace BrokerTest
         {
             // Arrange
             var hallId = 1;
-            var sensorDataList = new List<SensorData> { new SensorData { /* initialize properties here */ } };
+            var sensorDataList = new List<SensorData> { new SensorData {
+                 Temperature = 1.0,
+                    Humidity = 1.0,
+                    CO2 = 1.0,
+                    Timestamp = DateTime.Now
+                 } };
             _mockBrokerService.Setup(x => x.GetSensorData(hallId)).ReturnsAsync(sensorDataList);
 
             // Act
@@ -41,8 +47,23 @@ namespace BrokerTest
         {
             // Arrange
             var tournamentId = "1";
-            var tournamentData = new Tournament { /* initialize properties here */ };
-            var updatedTournament = new Tournament { /* initialize properties here */ };
+            var tournamentData = new Tournament { 
+                State = 1,
+                TimeAndDate = DateTime.Now,
+                Description = "description",
+                FieldCount = 1,
+                Format = "format",
+                Participants = new List<string?> { "participant1", "participant2" } 
+                };
+            var updatedTournament = new Tournament { 
+                TournamentID = tournamentId,
+                State = 2,
+                TimeAndDate = tournamentData.TimeAndDate,
+                Description = "updated description",
+                FieldCount = 1,
+                Format = "format",
+                Participants = new List<string?> { "participant1", "participant2" }
+            };
             _mockBrokerService.Setup(x => x.UpdateTournament(tournamentId, tournamentData)).ReturnsAsync(updatedTournament);
 
             // Act
