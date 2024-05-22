@@ -26,9 +26,9 @@
 
 typedef struct measurements {
     // NOTE(rune): From sensors
-    uint8_t humidity_integral;    // Før komma
+    uint8_t humidity_integral;    // Fï¿½r komma
     uint8_t humidity_decimal;     // Efter komma
-    uint8_t temperature_integral; // Før komma
+    uint8_t temperature_integral; // Fï¿½r komma
     uint8_t temperature_decimal;  // Efter komma
     uint16_t co2;
 
