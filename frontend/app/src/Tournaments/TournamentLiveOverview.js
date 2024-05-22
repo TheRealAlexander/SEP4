@@ -1,58 +1,38 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import TournamentRound from './TournamentRound';
 import { Paper, Typography, Box, Button, Grid } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
-import useNextRound from '../Hooks/Tournament/useNextRound';
+import useTournamentData from '../Hooks/Tournament/useTournamentData'; // Import the new hook
 
 const TournamentLiveOverview = ({ tournamentID }) => {
-    const { nextRound, scores, loading, error } = useNextRound(tournamentID);
-    const [currentRound, setCurrentRound] = useState(0);
-    const [dialogOpen, setDialogOpen] = useState({});
-    const [tournamentData, setTournamentData] = useState(null);
+    const {
+        tournamentData,
+        currentRoundIndex,
+        updateScores,
+        navigateRound,
+        loading,
+        error
+    } = useTournamentData(tournamentID);
 
-    useEffect(() => {
-        if (nextRound) {
-            setTournamentData(nextRound);
-        }
-    }, [nextRound]);
+    const [dialogOpen, setDialogOpen] = useState({});
 
     const handleNavigation = (direction) => {
-        setCurrentRound(prevRound => {
-            const nextRound = direction === 'next' ? prevRound + 1 : prevRound - 1;
-            return Math.max(0, Math.min(nextRound, tournamentData?.rounds.length - 1));
-        });
+        navigateRound(direction); // Simplify navigation handling
     };
 
     const handleUpdate = (courtId, newScores) => {
-        const updatedCourts = tournamentData.rounds[currentRound].courts.map(court => {
-            if (court.id === courtId) {
-                return {
-                    ...court,
-                    score1: newScores[0],
-                    score2: newScores[1]
-                };
-            }
-            return court;
-        });
-        const updatedRounds = tournamentData.rounds.map((round, index) => {
-            if (index === currentRound) {
-                return { ...round, courts: updatedCourts };
-            }
-            return round;
-        });
-        setTournamentData({ ...tournamentData, rounds: updatedRounds });
+        // Simplify score updates
+        updateScores(tournamentData.rounds[currentRoundIndex].id, courtId, newScores);
     };
 
     const handleClick = (courtId) => {
         setDialogOpen(prevState => ({ ...prevState, [courtId]: true }));
-        console.log('open ' + courtId);
     };
 
     const handleClose = (courtId) => {
         setDialogOpen(prevState => ({ ...prevState, [courtId]: false }));
-        console.log('close ' + courtId);
     };
 
     if (loading) {
@@ -75,21 +55,21 @@ const TournamentLiveOverview = ({ tournamentID }) => {
                         <Button
                             variant="contained"
                             onClick={() => handleNavigation('previous')}
-                            disabled={currentRound === 0}
+                            disabled={currentRoundIndex === 0}
                             startIcon={<ArrowBackIosIcon />}
                         />
                         <Typography variant="h6" sx={{ mx: 2 }}>
-                            Round {tournamentData.rounds[currentRound].id}
+                            Round {tournamentData.rounds[currentRoundIndex].id}
                         </Typography>
                         <Button
                             variant="contained"
                             onClick={() => handleNavigation('next')}
-                            disabled={currentRound === tournamentData.rounds.length - 1}
+                            disabled={currentRoundIndex === tournamentData.rounds.length - 1}
                             endIcon={<ArrowForwardIosIcon />}
                         />
                     </Box>
                     <TournamentRound
-                        courts={tournamentData.rounds[currentRound].courts}
+                        courts={tournamentData.rounds[currentRoundIndex].courts}
                         onUpdate={handleUpdate}
                         dialogOpen={dialogOpen}
                         handleClick={handleClick}
@@ -98,7 +78,7 @@ const TournamentLiveOverview = ({ tournamentID }) => {
                 </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
-                <Scoreboard scores={scores} />
+                <Scoreboard scores={tournamentData.scoreboard} />
             </Grid>
         </Grid>
     );
