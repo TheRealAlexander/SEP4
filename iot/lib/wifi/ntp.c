@@ -99,14 +99,20 @@ uint32_t calculate_corrected_time(ntp_response_packet* packet, unsigned long lon
     int64_t theta = (delta_t2_t1 + delta_t3_t4) / 2;
 
     uint32_t server_time = t3_seconds;
-    server_time += (uint32_t)(theta >> 32);
+    server_time += theta;
 
     // Convert NTP timestamp to UNIX timestamp
-    if (server_time > NTP_TIMESTAMP_DELTA) {
-        server_time -= NTP_TIMESTAMP_DELTA;
-    } else {
-        server_time = 0;
-    }
+    server_time -= NTP_TIMESTAMP_DELTA;
+
+    // Print all variables and values
+    send_to_pc_fmt("t1: %lX\n", t1);
+    send_to_pc_fmt("t2: %lX\n", t2);
+    send_to_pc_fmt("t3: %lX\n", t3);
+    send_to_pc_fmt("t4: %lX\n", t4);
+    send_to_pc_fmt("delta_t2_t1: %lX\n", delta_t2_t1);
+    send_to_pc_fmt("delta_t3_t4: %lX\n", delta_t3_t4);
+    send_to_pc_fmt("theta: %lX\n", theta);
+    send_to_pc_fmt("server_time: %lX\n", server_time);
 
     return server_time;
 }

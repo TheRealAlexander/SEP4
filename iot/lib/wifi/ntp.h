@@ -35,4 +35,4 @@ typedef ntp_packet ntp_response_packet;
 void construct_ntp_request(ntp_request_packet* packet);
 void decode_ntp_response(const uint8_t* buffer, ntp_response_packet* packet);
 bool is_ntp_packet_valid(const uint8_t* buffer, size_t size);
-uint32_t calculate_corrected_time(ntp_response_packet* packet, uint32_t t1, uint32_t t4);
+uint32_t calculate_corrected_time(ntp_response_packet* packet, unsigned long long t1, unsigned long long t4);
