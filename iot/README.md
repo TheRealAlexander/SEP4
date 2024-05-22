@@ -10,6 +10,9 @@
 5. Skriv `upload COM5` (husk at ændr COM5 til den rigtige port) (hvis du bruger powershell, skal du skrive `./upload.bat COM5` i stedet).
 6. Serial monitor starter automatisk når upload er færdig. For at stoppe tryk `Ctrl+C` to gange.
 
+WiFi, server ip osv. bliver læst fra enviroment variabler, dvs. for eksempelvis at sætte wifi navn skal du køre `set WIFI_SSID=My wifi name`.
+Se `iot/lib/globals.h` for en oversigt over hvilke variabler kan sættes. 
+
 ### For at køre test:
 - Test på Arduino: Kør `test-avr COM5` fra `iot` mappen (trin 1-4 ligesom ovenfor).
 - Test på egen PC: Kør `test-local` fra `iot` mappen.
