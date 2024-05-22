@@ -1,44 +1,62 @@
-import React, { useState} from 'react';
+import React, { useState } from "react";
 
-import TournamentItem from './TournamentItemComp';
-import TournamentDialog from './TournamentDialogComp';
-import TournamentFormDialog from './TournamentFormDialog';
+import TournamentItem from "./TournamentItemComp";
+import TournamentDialog from "./TournamentDialogComp";
+import TournamentFormDialog from "./TournamentFormDialog";
+import { isAdmin } from "../RouteProtection/PrivateAdminRoute";
+import { isAuthenticated } from "../RouteProtection/PrivateSuperUserRoute";
 
-import { Button } from '../MUI_imports';
-import { GetAllTournaments } from '../Services/TournamentService';
+import { Button } from "../MUI_imports";
+import { GetAllTournaments } from "../Services/TournamentService";
 
 export default function TournamentPage() {
-     const [open, setOpen] = useState(false);
-     const [selectedTournament, setSelectedTournament] = useState(null);
-     const [formOpen, setFormOpen] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [selectedTournament, setSelectedTournament] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
 
-     let tournaments = GetAllTournaments();
-   
-     const handleTournamentClick = (tournament) => {
-       setSelectedTournament(tournament);
-       setOpen(true);
-     };
-   
-     const handleClose = () => {
-       setOpen(false);
-     };
-   
-     return (
+  let tournaments = GetAllTournaments();
+
+  const handleTournamentClick = (tournament) => {
+    setSelectedTournament(tournament);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  return (
+    <div>
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => setFormOpen(true)}
+        disabled={!isAuthenticated() && !isAdmin()}
+      >
+        Create New Tournament
+      </Button>
+      {formOpen && (
+        <TournamentFormDialog
+          open={formOpen}
+          onClose={() => setFormOpen(false)}
+        />
+      )}
       <div>
-          <Button variant="contained" color="primary" onClick={() => setFormOpen(true)}>Create New Tournament</Button>
-          {formOpen && <TournamentFormDialog open={formOpen} onClose={() => setFormOpen(false)} />}
-       <div>
-         {tournaments.map(tournament => (
-           <TournamentItem key={tournament.TournamentID} tournament={tournament} onClick={handleTournamentClick} />
-         ))}
-         {selectedTournament && (
-           <TournamentDialog
-             open={open}
-             onClose={handleClose}
-             tournament={selectedTournament}
-           />
-         )}
-       </div>
+        {tournaments.map((tournament) => (
+          <TournamentItem
+            key={tournament.TournamentID}
+            tournament={tournament}
+            onClick={handleTournamentClick}
+          />
+        ))}
+        {selectedTournament && (
+          <TournamentDialog
+            open={open}
+            onClose={handleClose}
+            tournament={selectedTournament}
+          />
+        )}
       </div>
-     );
+    </div>
+  );
 }
