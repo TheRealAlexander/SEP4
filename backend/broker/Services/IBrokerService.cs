@@ -28,12 +28,14 @@ namespace Broker.Services
         // Corresponds to RemoveParticipant
         public Task<ActionResult> RemoveParticipant(string tournamentID, string participant);
 
-        public async Task<string> Login(string user);
+        public Task<string> Login(string user);
 
-        public async Task<string> FetchSuperUsers();
+        public Task<string> FetchSuperUsers();
 
-        public async Task<string> FetchNonAdminUsers();
+        public Task<string> FetchNonAdminUsers();
 
-        public async Task<string> AdjustUserPermissions(string usersToChange);
+        public Task<string> AdjustUserPermissions(string usersToChange);
+
+        public Task<string> RegisterUser(string user);
     }
 }
