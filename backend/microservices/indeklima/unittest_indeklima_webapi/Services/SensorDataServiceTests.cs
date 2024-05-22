@@ -21,10 +21,10 @@ public class SensorDataServiceTests
     {
         // Arrange
         var expectedData = new List<SensorData> { new SensorData(), new SensorData() };
-        _mockSensorDataDao.Setup(dao => dao.GetSensorDataAsync()).ReturnsAsync(expectedData);
+        _mockSensorDataDao.Setup(dao => dao.GetSensorDataAsync(1)).ReturnsAsync(expectedData);
 
         // Act
-        var result = await _service.GetSensorData();
+        var result = await _service.GetSensorData(1);
 
         // Assert
         Assert.Equal(expectedData, result);
@@ -37,7 +37,7 @@ public class SensorDataServiceTests
         SensorData sensorData = null;
 
         // Act & Assert
-        Assert.ThrowsAsync<ArgumentNullException>(() => _service.AddSensorData(sensorData));
+        Assert.ThrowsAsync<ArgumentNullException>(() => _service.AddSensorDataAsync(sensorData));
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public class SensorDataServiceTests
         var sensorData = new SensorData();
 
         // Act
-        await _service.AddSensorData(sensorData);
+        await _service.AddSensorDataAsync(sensorData);
 
         // Assert
         _mockSensorDataDao.Verify(dao => dao.AddSensorDataAsync(sensorData), Times.Once);

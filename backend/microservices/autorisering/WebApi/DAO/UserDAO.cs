@@ -102,6 +102,55 @@ public class UserDAO : IUserDAO
         }
     }
 
+    public async Task<List<User>> GetAllUsersAsync()
+    {
+        try
+        {
+            // Define a sort by 'Role' in ascending order
+            var sortByRole = Builders<User>.Sort.Ascending(u => u.Role);
+        
+            // Retrieve all users from the collection and sort them by 'Role'
+            return await _userMongoCollection.Find(new BsonDocument()).Sort(sortByRole).ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            // Handle or log the exception as needed
+            throw new Exception($"Failed to retrieve all users sorted by role: {ex.Message}", ex);
+        }
+        
+    }
+    
+    public async Task<User> UpdateUserAsync(User user)
+	{
+   		try
+    	{
+        	// Create a filter to match the user by username (which remains unchanged)
+        	var filter = Builders<User>.Filter.Eq(userData => userData.Username, user.Username);
 
+        	// Create an update definition to set new values for all updatable fields
+        	var updateDefinition = Builders<User>.Update
+            	.Set(userData => userData.Password, user.Password)
+            	.Set(userData => userData.Email, user.Email)
+            	.Set(userData => userData.Role, user.Role)
+            	.Set(userData => userData.Age, user.Age);  // Add more fields as necessary
 
+        	// Perform the update operation
+        	var result = await _userMongoCollection.UpdateOneAsync(filter, updateDefinition);
+
+        	// Check if the update was successful, if not, handle it appropriately
+        	if (result.MatchedCount == 0)
+            	throw new KeyNotFoundException($"No user found with username {user.Username}");
+        	if (result.ModifiedCount == 0)
+            	throw new Exception("No changes were made during the update operation.");
+
+        	// Return the updated user data - consider fetching the user again if accurate data is needed
+        	return user;
+    	}
+    	catch (Exception ex)
+    	{
+        	throw new Exception($"Failed to update user: {ex.Message}", ex);
+    	}
+	}
+
+    
 }

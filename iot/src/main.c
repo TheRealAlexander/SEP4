@@ -1,138 +1,10 @@
 ﻿////////////////////////////////////////////////////////////////
-// Macros
+// Includ dependencies
 
-#define countof(a)          (sizeof(a) / sizeof(*(a)))
-
-// TODO(rune): Define udfra build-script?
-
-//#define SERVER_IP       "172.20.10.8"
-//#define SERVER_PORT     8080
-
-//#define SERVER_IP       "159.89.140.122"
-//#define SERVER_IP       "216.58.211.14"
-#define SERVER_IP       "192.168.200.96" // Alexander
-//#define SERVER_IP       "172.20.10.3" // Rune 
-#define SERVER_PORT     8888
-//#define SERVER_PORT      5038
-
-//#define WIFI_SSID       "Rune - iPhone"
-//#define WIFI_PASSWORD   "123456789"
-#define WIFI_SSID       "TheHotspot"
-#define WIFI_PASSWORD   "pfea1111"
+#include "../lib/includes.h"
 
 ////////////////////////////////////////////////////////////////
-// Debugging
-
-void send_to_pc(char *str);
-void send_to_pc_fmt(char *fmt, ...);
-
-////////////////////////////////////////////////////////////////
-// Depedencies
-
-// NOTE(rune): Når vi compiler udenom Platform IO, compiler vi bare det hele
-// i en translation unit, så vi kan have et meget simpelt build script.
-// Platform IO gør nogle mærkelige ting med stier, f.eks. #include'er wifi.h
-// uart.h uden at sige "../uart/uart.h", selvom wifi.h og uart.h ligger i
-// forskellige mapper. Vi bruger #if NOT_PLATFORMIO til at arbejde rundt om 
-// forskellene mellem Platform IO og ikke-Platform IO.
-
-#if NOT_PLATFORMIO
-#   include <stdio.h>
-#   include <string.h>
-#   include <util/delay.h>
-#   include <avr/io.h>
-#   include <avr/interrupt.h>
-#   include "../lib/uart/uart.h"
-#   include "../lib/uart/uart.c"
-#   include "../lib/driverMHZ19B/driverMHZ19B.h"
-#   include "../lib/driverMHZ19B/driverMHZ19B.c"
-#   include "../lib/Periodic/periodic_task.h"
-#   include "../lib/Periodic/periodic_task.c"
-#   include "../lib/dht11/dht11.h"
-#   include "../lib/dht11/dht11.c"
-#   include "../lib/wifi/wifi2.h"
-#   include "../lib/wifi/wifi2.c"
-#   include "../lib/wifi/ntp.h"
-#   include "../lib/wifi/ntp.c"
-#   include "../lib/servo/servo.h"
-#   include "../lib/servo/servo.c"
-#else
-#   include <stdio.h>
-#   include <string.h>
-#   include "uart.h"
-#   include "driverMHZ19B.h"
-#   include <periodic_task.h>
-#   include "../wifi/ntp.h"
-#endif
-
-void callback(uint8_t byte) {
-    usart3_co2_rx_handler(byte);
-}
-
-void send_to_pc_fmt(char *fmt, ...) {
-    va_list args;
-    va_start(args, fmt);
-    char temp[1024];
-    vsnprintf(temp, sizeof(temp), fmt, args);
-    va_end(args);
-    send_to_pc(temp);
-}
-
-////////////////////////////////////////////////////////////////
-// ANSI console escape codes
-
-#define ANSI_HOME                   "\x1b[H"
-#define ANSI_ERASE_SCREEN           "\x1b[2J"
-
-#define ANSI_RESET                  "\x1b[0m"
-#define ANSI_BOLD                   "\x1b[1m"
-#define ANSI_FAINT                  "\x1b[2m"
-#define ANSI_ITALIC                 "\x1b[3m"
-#define ANSI_UNDERLINE              "\x1b[4m"
-#define ANSI_BLINKING               "\x1b[5m"
-#define ANSI_STRIKETHROUGH          "\x1b[9m"
-
-#define ANSI_FG_DEFAULT             "\x1b[39m"
-#define ANSI_FG_BLACK               "\x1b[30m"
-#define ANSI_FG_WHITE               "\x1b[97m"
-#define ANSI_FG_RED                 "\x1b[31m"
-#define ANSI_FG_GREEN               "\x1b[32m"
-#define ANSI_FG_YELLOW              "\x1b[33m"
-#define ANSI_FG_BLUE                "\x1b[34m"
-#define ANSI_FG_MAGENTA             "\x1b[35m"
-#define ANSI_FG_CYAN                "\x1b[36m"
-#define ANSI_FG_GRAY                "\x1b[90m"
-#define ANSI_FG_BRIGHT_GRAY         "\x1b[37m"
-#define ANSI_FG_BRIGHT_RED          "\x1b[91m"
-#define ANSI_FG_BRIGHT_GREEN        "\x1b[92m"
-#define ANSI_FG_BRIGHT_YELLOW       "\x1b[93m"
-#define ANSI_FG_BRIGHT_BLUE         "\x1b[94m"
-#define ANSI_FG_BRIGHT_MAGENTA      "\x1b[95m"
-#define ANSI_FG_BRIGHT_CYAN         "\x1b[96m"
-
-////////////////////////////////////////////////////////////////
-// Time keeping
-
-typedef uint64_t timestamp;
-
-static timestamp g_timestamp;
-
-////////////////////////////////////////////////////////////////
-// Measurements
-
-typedef struct measurements {
-    uint8_t humidity_integral;     
-    uint8_t humidity_decimal;      
-    uint8_t temperature_integral;  
-    uint8_t temperature_decimal;   
-    uint16_t co2;
-    bool open_window;
-    timestamp humidity_timestamp;
-    timestamp temperature_timestamp;
-    timestamp co2_timestamp;
-} measurements;
-
-static measurements g_measurements;
+// Timekeeper
 
 static void timekeeper() {
     g_timestamp += 1;
@@ -140,95 +12,6 @@ static void timekeeper() {
 
 ////////////////////////////////////////////////////////////////
 // Networking
-
-static int build_http_request(char *http_buf, int http_cap) {
-    // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
-    // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
-    // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
-    char json_buf[512];
-    char temp_ts_str[21], humid_ts_str[21], co2_ts_str[21];
-
-    // Convert timestamps to strings (assuming simple conversion here, adjust as necessary)
-    sprintf(temp_ts_str, "%lu", g_measurements.temperature_timestamp);
-    sprintf(humid_ts_str, "%lu", g_measurements.humidity_timestamp);
-    sprintf(co2_ts_str, "%lu", g_measurements.co2_timestamp);
-
-    // JSON string with timestamps as strings
-    int json_len = snprintf(
-        json_buf, sizeof(json_buf),
-        "{"
-        "\"temperature\": %d.%d, "
-        "\"humidity\": %d.%d, "
-        "\"co2\": %d, "
-        "\"temperature_ts\": \"%s\", "
-        "\"humidity_ts\": \"%s\", "
-        "\"co2_ts\": \"%s\""
-        "}",
-        g_measurements.temperature_integral, g_measurements.temperature_decimal,
-        g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2,
-        temp_ts_str, humid_ts_str, co2_ts_str
-    );
-
-    // Include the JSON string in the HTTP POST request
-    int http_len = snprintf(
-        http_buf, http_cap,
-        "POST /data HTTP/1.0\r\n"
-        "Host: indeklima\r\n"
-        "Connection: Close\r\n"
-        "Accept: application/json\r\n"
-        "Accept-Encoding: identity\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %d\r\n"
-        "\r\n"
-        "%s",
-        json_len, json_buf
-    );
-
-    return http_len;
-}
-
-static void process_http_response(char *http_buf, int http_len) {
-
-    send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, http_buf, http_len);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-    send_to_pc("========================\n");
-
-    // NOTE(rune): Fjern whitespace så vi kan lave string comparison, 
-    // uden at bekymre os om formatting fra serveren.
-    char trim_buf[WIFI2_MAX_RECV];
-    int read = 0;
-    int write = 0;
-    while (read < http_len) {
-        if (http_buf[read] == ' ' ||
-            http_buf[read] == '\n' ||
-            http_buf[read] == '\r' ||
-            http_buf[read] == '\t') {
-
-            read++;
-        } else {
-            trim_buf[write] = http_buf[read];
-            read++;
-            write++;
-        }
-    }
-
-    int trim_len = write;
-    send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, trim_buf, trim_len);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-
-    trim_buf[trim_len] = '\0';
-    if (strstr(trim_buf, "\"openWindow\":false")) { g_measurements.open_window = false; } 
-    if (strstr(trim_buf, "\"openWindow\":true"))  { g_measurements.open_window = true; }
-
-    send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
-    send_to_pc_fmt("window: %d\n", g_measurements.open_window);
-    send_to_pc(ANSI_RESET);
-}
 
 void print_raw_bytes(void* ptr, size_t size) {
     char* byte_ptr = (char*)ptr;
@@ -283,7 +66,6 @@ void start_ntp_sync() {
     wifi2_async_udp_close();
 }
 
-
 static void do_wifi(void) {
     ////////////////////////////////////////////////////////////////
     // Holder styr på hvilken async command vi er i gang med,
@@ -300,10 +82,17 @@ static void do_wifi(void) {
     static wifi_step curr_wifi_step = WIFI_STEP_RESET;
     static wifi_step next_wifi_step = WIFI_STEP_RESET;
 
-    static bool      packet_proccesed = true;
+    // TODO(rune): Burde dette command timeout være en del af driveren, eller er det mere fleksibelt at lade user-koden bestemme?
+    // NOTE(rune): Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
+    static timestamp wifi_cmd_timestamp = 0;
+
+    // NOTE(rune): Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
+    // Skal være større end packet_timeout. Er meget høj, da det kan tage langt tid at join et access point.
+    static timestamp wifi_cmd_timeout = 20000;
+
     static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
-    static timestamp packet_interval = 5000; // NOTE(rune): Hvor ofte sendes ny packet? 
-    static timestamp packet_timeout = 1000;  
+    static timestamp packet_timeout = 1000;
+    timestamp packet_interval = g_measurements.want_next_measurement_delay;
 
     ////////////////////////////////////////////////////////////////
     // Tjek om vi skal starte en ny command
@@ -313,79 +102,83 @@ static void do_wifi(void) {
 
         switch (next_wifi_step) {
             case WIFI_STEP_RESET: {
-                send_to_pc_fmt("📡 wifi reset\n"); // TODO(rune): Conditional debug print
+                send_to_pc_fmt("📡 wifi reset\n");
 
                 wifi2_init();
                 wifi2_async_reset();
                 next_wifi_step = WIFI_STEP_AP_JOIN;
+                wifi_cmd_timestamp = g_timestamp;
             } break;
 
             case WIFI_STEP_AP_JOIN: {
                 wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
+                wifi_cmd_timestamp = g_timestamp;
 
-                send_to_pc_fmt("📡 wifi ap join\n"); // TODO(rune): Conditional debug print           
+                send_to_pc_fmt("📡 wifi ap join\n");
 
             } break;
 
             case WIFI_STEP_TCP_OPEN: {
                 if (packet_timestamp + packet_interval <= g_timestamp) { // Er der gået mere end packet_interval siden vi sendte sidste pakke?
                     packet_timestamp = g_timestamp;
-                    packet_proccesed = false;
 
                     wifi2_async_tcp_open(SERVER_IP, SERVER_PORT);
                     next_wifi_step = WIFI_STEP_TCP_SEND;
+                    wifi_cmd_timestamp = g_timestamp;
 
-                    send_to_pc_fmt("📡 wifi tcp open\n"); // TODO(rune): Conditional debug print
+                    send_to_pc_fmt("📡 wifi tcp open\n");
                 }
             } break;
 
             case WIFI_STEP_TCP_SEND: {
                 char http_buf[512];
-                int  http_len = build_http_request(http_buf, sizeof(http_buf));
+                int  http_len = http_build_request(http_buf, sizeof(http_buf));
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
+                wifi_cmd_timestamp = g_timestamp;
 
-                send_to_pc_fmt("📡 wifi tcp send\n"); // TODO(rune): Conditional debug print
+                send_to_pc_fmt("📡 wifi tcp send\n");
                 send_to_pc(ANSI_FG_MAGENTA);
-                uart_send_array_blocking(USART_0, http_buf, http_len);
+                uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
                 send_to_pc("\n");
                 send_to_pc(ANSI_RESET);
             } break;
 
             case WIFI_STEP_TCP_CLOSE: {
                 if (packet_timestamp + packet_timeout <= g_timestamp) {
-                    process_http_response(wifi2_g_recv_buf, wifi2_g_recv_len);
+                    http_process_response(wifi2_g_recv_buf, wifi2_g_recv_len);
+                    wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
-                    send_to_pc_fmt("📡 wifi tcp close\n"); // TODO(rune): Conditional debug print
+                    wifi_cmd_timestamp = g_timestamp;
+
+                    send_to_pc_fmt("📡 wifi tcp close\n");
                 }
             } break;
         }
     }
 
     ////////////////////////////////////////////////////////////////
-    // Tjek om nuværende command er færdig
+    // Tjek om nuværende command er timeout eller færdig
 
+    bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
         send_to_pc_fmt("Async command done: %d\n", curr_wifi_step);
 
         send_to_pc(ANSI_FG_YELLOW);
-        uart_send_array_blocking(USART_0, wifi2_g_recv_buf, wifi2_g_recv_len);
+        uart_send_array_blocking(USART_0, (uint8_t *)wifi2_g_recv_buf, wifi2_g_recv_len);
         send_to_pc("\n");
         send_to_pc(ANSI_RESET);
 
         if (cmd_result.ok) {
             send_to_pc_fmt("next_wifi_step = %d\n", next_wifi_step);
 
-            if (curr_wifi_step == WIFI_STEP_TCP_SEND) {
-                //process_http_response(cmd_result.data, cmd_result.data_len);
-            }
             if (curr_wifi_step == WIFI_STEP_AP_JOIN) {
                 start_ntp_sync(); // Start NTP sync after joining AP
-                wifi2_cancel_async(); 
+                wifi2_cancel_async();
             }
 
             // TODO(rune): Conditional debug print
@@ -395,29 +188,48 @@ static void do_wifi(void) {
             send_to_pc("\n");
             send_to_pc(ANSI_RESET);
         } else if (curr_wifi_step == WIFI_STEP_TCP_CLOSE) {
-            // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket, så vi ignorerer bare fejlen.
+            // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
+            // hvilket den vil være er, hvis transaction blev færdig uden fejl, så vi ignorerer bare at ok == false.
         } else {
-            // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
-            next_wifi_step = WIFI_STEP_RESET;
+            timeout_or_error = true;
 
             send_to_pc(ANSI_FG_RED);
             send_to_pc("cmd_result.ok == false\n");
             send_to_pc(ANSI_RESET);
         }
+    } else if (wifi_cmd_timestamp + wifi_cmd_timeout <= g_timestamp) {
+        timeout_or_error = true;
+
+        send_to_pc(ANSI_FG_RED);
+        send_to_pc("wifi cmd timeout\n");
+        send_to_pc(ANSI_RESET);
+    }
+
+    if (timeout_or_error) {
+        // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
+        next_wifi_step = WIFI_STEP_RESET;
+        wifi2_cancel_async();
     }
 }
 
 ////////////////////////////////////////////////////////////////
 // CO2
 
+static void co2_callback(uint8_t byte) {
+    usart3_co2_rx_handler(byte);
+}
+
 static void do_co2(void) {
     static timestamp co2_timestamp = 0;
     static timestamp co2_interval = 5000; // Adjust the interval as needed
 
     if (co2_timestamp + co2_interval <= g_timestamp) {
-        co2_timestamp = g_timestamp; // Update last measurement time
-        send_to_pc("⚡ Send CO2 command\n"); // Debug print, conditional
+        co2_timestamp = g_timestamp;
+        send_to_pc("⚡ Send CO2 command\n");
         send_co2_command(Co2SensorRead);  // Trigger CO2 reading
+
+        g_measurements.co2           = 0;
+        g_measurements.co2_timestamp = 0;
     }
 
     // Check global variable, which may have been updated by the CO2 driver.
@@ -454,6 +266,13 @@ static void do_dht11() {
             send_to_pc("🌡️ DHT11 OK\n");
         } else {
             send_to_pc("🌡️ DHT11 not OK\n");
+
+            g_measurements.humidity_integral     = 0;
+            g_measurements.humidity_decimal      = 0;
+            g_measurements.temperature_integral  = 0;
+            g_measurements.temperature_decimal   = 0;
+            g_measurements.humidity_timestamp    = 0;
+            g_measurements.temperature_timestamp = 0;
         }
     }
 }
@@ -462,7 +281,6 @@ static void do_dht11() {
 // Servo Control
 
 static void do_servo() {
-    // Control servo based on the 'open window' command
     if (g_measurements.open_window) {
         servo(0); // Assume 0 degrees is the position to open the window
     } else {
@@ -471,18 +289,60 @@ static void do_servo() {
 }
 
 ////////////////////////////////////////////////////////////////
+// Infrared sensor and lights
+
+static void do_pir() {
+    static timestamp motion_timestamp = 0;
+    static timestamp motion_delay = 10*1000; // Bestemmer hvor langt tid skal der gå før lyset slukker igen.
+
+    if (pir_motion()) {
+        motion_timestamp = g_timestamp;
+    }
+
+    if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
+        led_set(0x00);
+    } else {
+        led_set(0xff);
+    }
+}
+
+////////////////////////////////////////////////////////////////
+// Buttons and display
+
+static void do_buttons_and_display() {
+    static timestamp button_timestamp = 0;
+    static timestamp button_interval = 2000; // Hver 2 sekunder
+
+    if (button_timestamp + button_interval <= g_timestamp) {
+        button_timestamp = g_timestamp;
+
+        handle_buttons();
+    }
+}
+
+////////////////////////////////////////////////////////////////
 // Main loop
 
 int main() {
-    uart_init(USART_0, 9600, 0);        // USB
-    uart_init(USART_3, 9600, callback); // CO2
+    g_measurements.want_next_measurement_delay = 5000;
+
+    uart_init(USART_0, 9600, 0);            // USB
+    uart_init(USART_3, 9600, co2_callback); // CO2
     periodic_task_init_a(timekeeper, 1);
+    tone_init();
+    buttons_init();
+    display_init();
+    pir_init();
+    dht11_init();
+    led_init();
 
     while (1) {
         do_wifi();
         do_co2();
         do_dht11();
-        //do_servo();
+        do_servo();
+        do_buttons_and_display();
+        do_pir();
 
         _delay_ms(100);
     }

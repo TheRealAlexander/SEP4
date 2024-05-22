@@ -12,11 +12,34 @@ namespace WebApi.DAO
             _sensorDataMongoCollection = context.Database.GetCollection<SensorData>("SensorData");
         }
 
-        public async Task<List<SensorData>> GetSensorDataAsync()
+        public async Task<List<SensorData>> GetSensorDataAsync(int hallId)
         {
             try
             {
-                return await _sensorDataMongoCollection.Find(s => true).ToListAsync();
+                return await _sensorDataMongoCollection.Find(s => s.HallId == hallId).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NullReferenceException(ex.Message);
+            }
+        }
+        public async Task<List<SensorData>> GetSensorDataAsync(int hallId, int limit)
+        {
+            try
+            {
+                return await _sensorDataMongoCollection.Find(s => s.HallId == hallId).Limit(limit).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new NullReferenceException(ex.Message);
+            }
+        }
+
+        public async Task<List<SensorData>> GetSensorDataAsync(int hallId, DateTime startDate, DateTime endDate)
+        {
+            try
+            {
+                return await _sensorDataMongoCollection.Find(s => s.HallId == hallId && s.Timestamp >= startDate && s.Timestamp <= endDate).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -51,5 +74,6 @@ namespace WebApi.DAO
                 throw new Exception(ex.Message);
             }
         }
+        
     }
 }
