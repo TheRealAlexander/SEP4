@@ -2,7 +2,9 @@ name: Run tests and deploy report to GitHub Pages
 
 on:
   push:
-    branches: [master]
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_test_deploy_github_pages.yml"
 
 jobs:
   build:
