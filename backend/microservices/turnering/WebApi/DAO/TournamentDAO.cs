@@ -31,6 +31,16 @@ public class TournamentDAO : ITournamentDAO
         return tournament.Players.OrderBy(p => p.Points).ToList();
     }
 
+    public async Task SaveChangesAsync(Tournament updatedTournament)
+    {
+        var filter = Builders<Tournament>.Filter.Eq(t => t.Id, updatedTournament.Id);
+        var update = Builders<Tournament>.Update
+            .Set(t => t.Name, updatedTournament.Name)
+            .Set(t => t.Rounds, updatedTournament.Rounds);
+
+            await _tournamentMongoCollection.UpdateOneAsync(filter, update);
+    }
+    
     public async Task<List<Tournament>> GetTournamentHistoryAsync()
     {
         var filter = Builders<Tournament>.Filter.Empty;

@@ -14,13 +14,13 @@ public class TournamentService : ITournamentService
 
     public async Task AddTournamentAsync(TournamentCreationDTO tournamentDTO)
     {
-        TournamentFormat format;
+        string format;
         List<Player> players = new List<Player>();
-        switch (tournamentDTO.TournamentFormat)
+        switch (tournamentDTO.TournamentFormat.ToUpper())
         {
-            case ("Americano") :
+            case ("AMERICANO") :
             {
-                format = new Americano();
+                format = "Americano";
                 foreach (var player in tournamentDTO.Players)
                 {
                     players.Add(new AmericanoPlayer
@@ -30,9 +30,9 @@ public class TournamentService : ITournamentService
                 }
                 break;
             }
-            case ("Mexicano"):
+            case ("MEXICANO"):
             {
-                format = new Mexicano();
+                format = "Mexicano";
                 foreach (var player in tournamentDTO.Players)
                 {
                     players.Add(new Player
@@ -44,7 +44,7 @@ public class TournamentService : ITournamentService
             }
             default:
             {
-                throw new ArgumentException("Invalid tournament type");
+                throw new ArgumentException("Invalid tournament format");
             }
         }
 
@@ -63,7 +63,9 @@ public class TournamentService : ITournamentService
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
         List<Player> players = await GetScoreboardAsync(tournamentID);
-        Round round = tournament.Format.GenerateRound(players, tournament);
+        Round round = tournament.GenerateRound(players);
+        tournament.Rounds.Add(round);
+        await _tournamentDAO.SaveChangesAsync(tournament);
         return round;
     }
 

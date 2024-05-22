@@ -9,16 +9,17 @@ public class Tournament
     [BsonRepresentation(MongoDB.Bson.BsonType.ObjectId)]
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
     public string Name { get; set; }
-    public TournamentFormat Format { get; set; }
+    public string Format { get; set; }
     public int NumberOfPlayers { get; set; }
     public int NumberOfCourts { get; set; }
     public int PointsPerMatch { get; set; }
     public List<Player> Players { get; set; }
+    public List<Round> Rounds { get; set; }
     public int NextRoundNumber { get; set; } = 1;
     public List<Player> SkippedARound { get; set; } = new List<Player>();
     public List<Player> SkippedLastRound { get; set; } = new List<Player>();
 
-    public Tournament(string name, TournamentFormat format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players)
+    public Tournament(string name, string format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players)
     {
         Name = name;
         Format = format;
@@ -26,6 +27,17 @@ public class Tournament
         NumberOfCourts = numberOfCourts;
         PointsPerMatch = pointsPerMatch;
         Players = players;
+    }
+
+    public Round GenerateRound(List<Player> players)
+    {
+        switch (Format)
+        {
+            case "Americano" : return Americano.GenerateRound(players, this);
+            case "Mexicano" : return Mexicano.GenerateRound(players, this);
+        }
+
+        throw new ArgumentException("Invalid tournament format");
     }
     
     public List<Player> ShufflePlayers()

@@ -8,4 +8,5 @@ public interface ITournamentDAO
     Task<Tournament> GetTournamentAsync(string tournamentID);
     Task<List<Player>> GetScoreboardAsync(string tournamentID);
     Task<List<Tournament>> GetTournamentHistoryAsync();
+    Task SaveChangesAsync(Tournament tournament);
 }
