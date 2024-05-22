@@ -1,25 +1,37 @@
 static int http_build_request(char *http_buf, int http_cap) {
+
     // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
     // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
     // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
-    char json_buf[256];
+    char json_buf[512];
+    char temp_ts_str[21], humid_ts_str[21], co2_ts_str[21];
+
+    // Convert timestamps to strings (assuming simple conversion here, adjust as necessary)
+    sprintf(temp_ts_str, "%lu", g_measurements.temperature_timestamp);
+    sprintf(humid_ts_str, "%lu", g_measurements.humidity_timestamp);
+    sprintf(co2_ts_str, "%lu", g_measurements.co2_timestamp);
+
+    // JSON string with timestamps as strings
     int json_len = snprintf(
         json_buf, sizeof(json_buf),
         "{"
         "\"temperature\": %d.%d, "
         "\"humidity\": %d.%d, "
         "\"co2\": %d, "
-        "\"hallId\": %d"
+        "\"temperature_ts\": \"%s\", "
+        "\"humidity_ts\": \"%s\", "
+        "\"co2_ts\": \"%s\""
         "}",
         g_measurements.temperature_integral, g_measurements.temperature_decimal,
         g_measurements.humidity_integral, g_measurements.humidity_decimal,
         g_measurements.co2,
-        HALL_ID
+        temp_ts_str, humid_ts_str, co2_ts_str
     );
 
+    // Include the JSON string in the HTTP POST request
     int http_len = snprintf(
         http_buf, http_cap,
-        "POST /PostEnvironmentData HTTP/1.0\r\n"
+        "POST /data HTTP/1.0\r\n"
         "Host: indeklima\r\n"
         "Connection: Close\r\n"
         "Accept: application/json\r\n"
