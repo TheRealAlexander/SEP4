@@ -13,6 +13,59 @@ static void timekeeper() {
 ////////////////////////////////////////////////////////////////
 // Networking
 
+void print_raw_bytes(void* ptr, size_t size) {
+    char* byte_ptr = (char*)ptr;
+    for(size_t i = 0; i < size; i++) {
+        send_to_pc_fmt("%02X ", (unsigned char)byte_ptr[i]);
+    }
+    send_to_pc_fmt("\n");
+}
+
+void start_ntp_sync() {
+    uint16_t delay = 3000;
+
+    send_to_pc_fmt("📡 wifi begin NTP sync\n");
+
+    wifi2_async_udp_open("216.239.35.0", 123);
+    send_to_pc_fmt("📡 wifi udp open\n");
+
+    _delay_ms(delay);
+
+    ntp_request_packet ntp_request;
+    construct_ntp_request(&ntp_request);
+    send_to_pc_fmt(ANSI_FG_MAGENTA);
+    print_raw_bytes(&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt(ANSI_RESET);
+
+    wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt("📡 wifi udp send\n");
+    _delay_ms(delay);
+
+    // Set ntp_response to the last 48 bytes of the wifi recv buffer
+    ntp_response_packet ntp_response;
+    uint8_t *start = wifi2_g_recv_buf + wifi2_g_recv_len - 48;
+    memcpy(&ntp_response, start, 48);
+
+    if (!is_ntp_response_packet((uint8_t*)&ntp_response, sizeof(ntp_response))) {
+        send_to_pc_fmt("📡 wifi ntp response not valid\n");
+        return;
+    }
+    send_to_pc_fmt("📡 wifi ntp response valid\n");
+    print_raw_bytes(&ntp_response, sizeof(ntp_response));
+
+    // Decode the NTP response
+    decode_ntp_response((uint8_t*)&ntp_response, &ntp_response);
+
+    // Calculate the correct UNIX time
+    uint32_t unix_time = calculate_corrected_time(&ntp_response, delay); // Subtract artifically added delays
+    // Cast unix_time to unit64_t to match g_timestamp
+    g_timestamp = (timestamp)unix_time * 1000; // Convert seconds to milliseconds
+    send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
+
+    // Ensure UDP connection is closed
+    wifi2_async_udp_close();
+}
+
 static void do_wifi(void) {
     ////////////////////////////////////////////////////////////////
     // Holder styr på hvilken async command vi er i gang med,
@@ -63,6 +116,7 @@ static void do_wifi(void) {
                 wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi ap join\n");
+
             } break;
 
             case WIFI_STEP_TCP_OPEN: {
@@ -112,6 +166,7 @@ static void do_wifi(void) {
     bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
+        send_to_pc_fmt("Async command done: %d\n", curr_wifi_step);
 
         send_to_pc(ANSI_FG_YELLOW);
         uart_send_array_blocking(USART_0, (uint8_t *)wifi2_g_recv_buf, wifi2_g_recv_len);
@@ -119,6 +174,14 @@ static void do_wifi(void) {
         send_to_pc(ANSI_RESET);
 
         if (cmd_result.ok) {
+            send_to_pc_fmt("next_wifi_step = %d\n", next_wifi_step);
+
+            if (curr_wifi_step == WIFI_STEP_AP_JOIN) {
+                start_ntp_sync(); // Start NTP sync after joining AP
+                wifi2_cancel_async();
+            }
+
+            // TODO(rune): Conditional debug print
             send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
             send_to_pc(ANSI_FG_CYAN);
             uart_send_array_blocking(USART_0, cmd_result.data, cmd_result.data_len);
@@ -145,7 +208,7 @@ static void do_wifi(void) {
     if (timeout_or_error) {
         // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
         next_wifi_step = WIFI_STEP_RESET;
-        wifi2_canel_async();
+        wifi2_cancel_async();
     }
 }
 
@@ -158,53 +221,70 @@ static void co2_callback(uint8_t byte) {
 
 static void do_co2(void) {
     static timestamp co2_timestamp = 0;
-    static timestamp co2_interval = 5000; // TODO(rune): Test hvor langt vi kan sætte delay'et ned
+    static timestamp co2_interval = 5000; // Adjust the interval as needed
 
     if (co2_timestamp + co2_interval <= g_timestamp) {
         co2_timestamp = g_timestamp;
         send_to_pc("⚡ Send CO2 command\n");
         send_co2_command(Co2SensorRead);  // Trigger CO2 reading
+
+        g_measurements.co2           = 0;
+        g_measurements.co2_timestamp = 0;
     }
 
     // Check global variable, which may have been updated by the CO2 driver.
     if (new_co2_data_available) {
         new_co2_data_available = false;  // Reset flag after reading
         g_measurements.co2 = latest_co2_concentration;
+        g_measurements.co2_timestamp = g_timestamp / 1000; // Save timestamp of CO2 measurement
+        // Print timestamp
+        send_to_pc_fmt("🕒 CO2 timestamp: %lu\n", g_measurements.co2_timestamp);
     }
 }
 
 ////////////////////////////////////////////////////////////////
-// Temperature and humidity
+// Temperature and Humidity Reading
 
 static void do_dht11() {
     static timestamp dht11_timestamp = 0;
-    static timestamp dht11_interval = 1000;
+    static timestamp dht11_interval = 1000; // Sample every second
 
     if (dht11_timestamp + dht11_interval <= g_timestamp) {
-        dht11_timestamp = g_timestamp;
+        dht11_timestamp = g_timestamp; // Update last measurement time
 
         uint8_t a, b, c, d;
         if (dht11_get(&a, &b, &c, &d) == DHT11_OK) {
-            g_measurements.humidity_integral    = a;
-            g_measurements.humidity_decimal     = b;
+            g_measurements.humidity_integral = a;
+            g_measurements.humidity_decimal = b;
             g_measurements.temperature_integral = c;
-            g_measurements.temperature_decimal  = d;
-
+            g_measurements.temperature_decimal = d;
+            g_measurements.humidity_timestamp = g_timestamp / 1000; // Save timestamp of humidity measurement
+            g_measurements.temperature_timestamp = g_timestamp / 1000; // Save timestamp of temperature measurement
+            // Print timestamp
+            send_to_pc_fmt("🕒 Humidity timestamp: %lu\n", g_measurements.humidity_timestamp);
+            send_to_pc_fmt("🕒 Temperature timestamp: %lu\n", g_measurements.temperature_timestamp);
             send_to_pc("🌡️ DHT11 OK\n");
         } else {
             send_to_pc("🌡️ DHT11 not OK\n");
+
+            g_measurements.humidity_integral     = 0;
+            g_measurements.humidity_decimal      = 0;
+            g_measurements.temperature_integral  = 0;
+            g_measurements.temperature_decimal   = 0;
+            g_measurements.humidity_timestamp    = 0;
+            g_measurements.temperature_timestamp = 0;
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////
-// Servo
+// Servo Control
 
 static void do_servo() {
     if (g_measurements.open_window) {
-        servo(0);
+        servo(0); // Assume 0 degrees is the position to open the window
     } else {
-        servo(180);
+        servo(180); // Assume 180 degrees is the position to close the window
     }
 }
 

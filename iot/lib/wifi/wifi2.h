@@ -16,7 +16,7 @@
 
 typedef enum wifi2_state {
     WIFI2_STATE_NONE,            // Ingen igangv�rende command
-
+                                 
     WIFI2_STATE_DONE_OK,         // Fandt "OK" i respose fra ESP32
     WIFI2_STATE_DONE_FAIL,       // Fandt "ERROR" eller "FAIL" i response fra ESP32
 
@@ -55,8 +55,10 @@ static void wifi2_async_ap_join(char *ssid, char *password);
 static void wifi2_async_tcp_open(char *ip, int port);
 static void wifi2_async_tcp_send(char *data, int data_len);
 static void wifi2_async_tcp_close(void);
+static void wifi2_async_udp_open(char *ip, int port);
+static void wifi2_async_udp_send(char *data, int data_len);
+static void wifi2_async_udp_close(void);
 
 static bool wifi2_can_begin_async(void); // Klar til at starte ny async command?
 static bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command f�rdig eller har fejlet?
-static void wifi2_canel_async(void);
-
+static void wifi2_cancel_async(void);
