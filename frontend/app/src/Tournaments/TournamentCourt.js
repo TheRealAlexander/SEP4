@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Card,
+  Card as MuiCard,
   CardContent,
   Typography,
   Dialog,
@@ -11,25 +11,38 @@ import {
   Box,
   Button,
 } from "@mui/material";
-import { styled } from "@mui/system";
 
-const CourtScore = styled(Box)(({ theme }) => ({
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  fontSize: "1.5rem",
-  fontWeight: "bold",
-  margin: theme.spacing(1),
-}));
+const CourtScore = ({ children }) => (
+  <Box
+    sx={{
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      fontSize: "1.5rem",
+      fontWeight: "bold",
+      margin: 1,
+    }}
+  >{children}</Box>
+);
 
-const TeamColumn = styled(Box)(({ theme }) => ({
-  display: "flex",
-  flexDirection: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  margin: theme.spacing(1),
-  width: "100px"
-}));
+const TeamColumn = ({ team }) => (
+  <Box
+    sx={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "center",
+      margin: 1,
+      width: "100px",
+    }}
+  >
+    {team.map(player => (
+      <Typography key={player.id} variant="body1" fontWeight="bold">
+        {player.name}
+      </Typography>
+    ))}
+  </Box>
+);
 
 const TournamentCourt = ({
   court,
@@ -38,7 +51,14 @@ const TournamentCourt = ({
   handleClose,
   handleClick,
 }) => {
-  const [tempScore, setTempScore] = useState([court.score1, court.score2]);
+  const [tempScore, setTempScore] = useState([0, 0]);
+
+  useEffect(() => {
+    setTempScore([
+      court.score1,
+      court.score2
+    ]);
+  }, [court.score1, court.score2]);
 
   const handleUpdate = () => {
     onUpdate(court.id, tempScore);
@@ -51,37 +71,40 @@ const TournamentCourt = ({
     setTempScore(newScores);
   };
 
+  // Check for incomplete data structure
+  if (!court || !court.players || court.players[0].length < 2 || court.players[1].length < 2) {
+    return <div>Loading or incomplete data...</div>;
+  }
+
   return (
-    <Card variant="outlined" sx={{ width: "100%" }} onClick={handleClick}>
+    <MuiCard
+      variant="outlined"
+      onClick={handleClick}
+      sx={{
+        width: "100%",
+        transition: "transform 0.2s, box-shadow 0.2s",
+        "&:hover": {
+          transform: "scale(1.05)",
+          boxShadow: "0px 10px 15px rgba(0,0,0,0.3)",
+        },
+      }}
+    >
       <CardContent sx={{ textAlign: "center" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <TeamColumn>
-          <Typography variant="body1" fontWeight="bold">{court.players[0][0].name}</Typography>
-            <Typography variant="body1" fontWeight="bold">&</Typography>
-            <Typography variant="body1" fontWeight="bold">{court.players[0][1].name}</Typography>
-          </TeamColumn>
+          <TeamColumn team={court.players[0]} />
           <Typography variant="h6">vs</Typography>
-          <TeamColumn>
-            <Typography variant="body1" fontWeight="bold">{court.players[1][0].name}</Typography>
-            <Typography variant="body1" fontWeight="bold">&</Typography>
-            <Typography variant="body1" fontWeight="bold">{court.players[1][1].name}</Typography>
-          </TeamColumn>
+          <TeamColumn team={court.players[1]} />
         </Box>
-        <CourtScore>
-          {court.score1} - {court.score2}
-        </CourtScore>
+        <CourtScore>{tempScore[0]} - {tempScore[1]}</CourtScore>
       </CardContent>
-
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
-          <DialogContentText>
-            Set the new scores for each team.
-          </DialogContentText>
+          <DialogContentText>Set the new scores for each team.</DialogContentText>
           <TextField
             autoFocus
             margin="dense"
             id="score1"
-            label={`${court.players[0][0].name} & ${court.players[0][1].name}`}
+            label="Team 1 Score"
             type="number"
             fullWidth
             variant="outlined"
@@ -91,7 +114,7 @@ const TournamentCourt = ({
           <TextField
             margin="dense"
             id="score2"
-            label={`${court.players[1][0].name} & ${court.players[1][1].name}`}
+            label="Team 2 Score"
             type="number"
             fullWidth
             variant="outlined"
@@ -100,25 +123,11 @@ const TournamentCourt = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleClose();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleUpdate();
-            }}
-          >
-            Update
-          </Button>
+          <Button onClick={handleClose}>Cancel</Button>
+          <Button onClick={handleUpdate}>Update</Button>
         </DialogActions>
       </Dialog>
-    </Card>
+    </MuiCard>
   );
 };
 
