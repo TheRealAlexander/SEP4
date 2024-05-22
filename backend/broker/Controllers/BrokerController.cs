@@ -74,7 +74,7 @@ namespace Broker.Controllers
             return await _brokerService.RemoveParticipant(tournamentID, participant);
         }
 
-        [HttpPost("auth/login")]
+        [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] string user)
         {
             var result = await _brokerService.Login(user);
@@ -95,10 +95,17 @@ namespace Broker.Controllers
             return Content(result, "application/json");
         }
 
-        [HttpPut("users/adjustUserPermissions/{usersToChange}")]
+        [HttpPut("adjustUserPermissions/{usersToChange}")]
         public async Task<IActionResult> AdjustUserPermissions(string usersToChange)
         {
             var result = await _brokerService.AdjustUserPermissions(usersToChange);
+            return Content(result, "application/json");
+        }
+
+        [HttpGet("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] string user)
+        {
+            var result = await _brokerService.RegisterUser(user);
             return Content(result, "application/json");
         }
     }
