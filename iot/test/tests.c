@@ -1,4 +1,13 @@
 ////////////////////////////////////////////////////////////////
+// Fake configuration
+
+#define SERVER_IP       "N/A"
+#define SERVER_PORT     0
+#define WIFI_SSID       "N/A"
+#define WIFI_PASSWORD   "N/A"
+#define HALL_ID         -1
+
+////////////////////////////////////////////////////////////////
 // Include dependencies
 
 #include "../lib/includes.h"
@@ -55,7 +64,7 @@ static void test_calculatePartsPerMil_min(void) {
 
 static void test_packet_incomplete(void) {
     uint8_t partial_packet[] = { 0xFF, 0x86 };
-    for (int i = 0; i < sizeof(partial_packet); i++) {
+    for (int i = 0; i < isizeof(partial_packet); i++) {
         usart3_co2_rx_handler(partial_packet[i]);
     }
     assert_uint8_msg(0, new_co2_data_available, "Data should not be available with incomplete packet");
@@ -63,7 +72,7 @@ static void test_packet_incomplete(void) {
 
 static void test_packet_error(void) {
     uint8_t error_packet[] = { 0xFF, 0x86, 0x01, 0x9A, 0x41, 0xFF, 0x00, 0x00, 0x00 }; // Incorrect checksum deliberately
-    for (int i = 0; i < sizeof(error_packet); i++) {
+    for (int i = 0; i < isizeof(error_packet); i++) {
         usart3_co2_rx_handler(error_packet[i]);
     }
     assert_uint8_msg(0, new_co2_data_available, "Data should not be available with erroneous content");
@@ -157,7 +166,7 @@ void test_resetScores(void) {
     assert_int(0, teamscore_b);
 }
 
-#if 0 
+#if 0
 //tilføj mock funktioner
 
 #include <stdio.h>
@@ -216,8 +225,12 @@ void set_mock_recv(int result, const char *data) {
 #endif
 
 
+// TODO(rune,fatema): Det kunne være fedt at køre tcp-client.c automatisk,
+// men det kræver at der kører en rigtig backend.
+#if 0
 
-///TCP test 
+
+///TCP test
 
 void test_tcp_connection_success() {
     // Setup mock behavior
@@ -247,6 +260,8 @@ void test_tcp_connection_failure() {
     // Assertions to verify error handling
     assert(error_handled_properly);
 }
+
+#endif
 
 
 ////////////////////////////////////////////////////////////////
@@ -283,14 +298,6 @@ int main(void) {
     test_run(test_checkScoreBMinus_DeincrementsCorrectly);
     test_run(test_resetScores);
     test_end();
-
-  ////////////////////////////////////////////////////////////////
-    // Run tcp tests
-    test_begin("tcp", test_display_setup, test_display_teardown);
-    test_run(test_tcp_connection_success);
-    test_run(test_tcp_connection_failure);
-    test_end();
-
 
     ////////////////////////////////////////////////////////////////
     // Print results

@@ -1,56 +1,28 @@
+////////////////////////////////////////////////////////////////
+// Standard library and OS headers
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-#define MOCK 1
-#include "../includes.h"
-
 #pragma comment(lib, "ws2_32.lib") // Link against the Winsock library
 
-static int build_http_request(char *http_buf, int http_cap) {
+////////////////////////////////////////////////////////////////
+// Configuration 
 
-    // Fake measurements
-    int temperature_integral = 1;
-    int temperature_decimal = 2;
-    int humidity_integral = 3;
-    int humidity_decimal = 4;
-    int co2 = 5;
-    int hall_id = 6;
+#define SERVER_IP   "127.0.0.1"
+#define SERVER_PORT 5200
+#define WIFI_SSID   "N/A"
+#define WIFI_PASSWORD   "N/A"
+#define HALL_ID         37
 
-    // Json
-    char json_buf[256];
-    int json_len = snprintf(
-        json_buf, sizeof(json_buf),
-        "{"
-        "\"temperature\": %d.%d, "
-        "\"humidity\": %d.%d, "
-        "\"co2\": %d, "
-        "\"hallId\": %d"
-        "}",
-        temperature_integral, temperature_decimal,
-        humidity_integral, humidity_decimal,
-        co2,
-        hall_id
-    );
+#define MOCK 1
 
-    // Http
-    int http_len = snprintf(
-        http_buf, http_cap,
-        "POST /PostEnvironmentData HTTP/1.0\r\n"
-        "Host: tcp-client\r\n"
-        "Connection: Close\r\n"
-        "Accept: application/json\r\n"
-        "Accept-Encoding: identity\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %d\r\n"
-        "\r\n"
-        "%s",
-        json_len, json_buf
-    );
+////////////////////////////////////////////////////////////////
+// Dependencies
 
-    return http_len;
-}
+#include "../includes.h"
 
 
 int main() {
@@ -85,7 +57,7 @@ int main() {
 
     // Send request
     char request[2048]  = { 0 };
-    int  request_len = build_http_request(request, sizeof(request));
+    int  request_len = http_build_request(request, sizeof(request));
     send(sock, request, request_len, 0);
 
     // Print request
@@ -118,7 +90,6 @@ int main() {
     send_to_pc_fmt(ANSI_FG_CYAN);
     send_to_pc_fmt("%s\n", response);
     send_to_pc_fmt(ANSI_RESET);
-
 
     // Close the socket
     closesocket(sock);

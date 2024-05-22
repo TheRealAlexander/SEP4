@@ -92,8 +92,8 @@ where /q cl  && set local_compiler="cl"
 where /q gcc && set local_compiler="gcc"
 
 if %test_local% == 1 (
-    if %local_compiler% == "cl"   cl  test\tests.c   /Febuild\tests.exe  /DTESTING=1  /DMOCK=1               && build\tests.exe
-    if %local_compiler% == "gcc"  gcc test\tests.c   -o build\tests.exe  -DTESTING=1  -DMOCK=1 -Wall -Wextra && build\tests.exe
+    if %local_compiler% == "cl"   cl  test\tests.c   /Febuild\tests.exe  /DTESTING=1  /DMOCK=1                                    && build\tests.exe
+    if %local_compiler% == "gcc"  gcc test\tests.c   -o build\tests.exe  -DTESTING=1  -DMOCK=1 -Wall -Wextra -Wno-unused-function && build\tests.exe
     if %local_compiler% == 0      echo No C compiler found. Tried 'gcc' and 'cl'.
 )
 
