@@ -10,9 +10,32 @@
 5. Skriv `upload COM5` (husk at ændr COM5 til den rigtige port) (hvis du bruger powershell, skal du skrive `./upload.bat COM5` i stedet).
 6. Serial monitor starter automatisk når upload er færdig. For at stoppe tryk `Ctrl+C` to gange.
 
-### For at køre test:
+WiFi, server ip osv. bliver læst fra enviroment variabler, dvs. for eksempelvis at sætte wifi navn skal du køre `set WIFI_SSID=My wifi name`.
+Se `iot\lib\globals.h` for en oversigt over hvilke variabler kan sættes. 
+
+### For at køre unit test:
 - Test på Arduino: Kør `test-avr COM5` fra `iot` mappen (trin 1-4 ligesom ovenfor).
 - Test på egen PC: Kør `test-local` fra `iot` mappen.
+
+### For at køre integration test
+
+Integration test kan enten kører med *fake arduino og real backend* eller *real arduino og fake backend*.
+
+Fake arduino og real backend:
+- Start backend med `docker compose up`
+- Vent på at alle microservices er færdig med startup
+- `cd` til `iot\lib\network` og kør `run-client.bat`
+
+Real arduino og fake backend:
+- Sæt enviroment variabler. Eksempel:
+```
+set WIFI_SSID=Fatema - iPhone
+set WIFI_PASSWORD=12345678
+set SERVER_IP=172.20.10.5
+set SERVER_PORT=8080
+```
+- [Upload til Arduino](###for-at-uploade-til-arduino)
+- `cd` til `iot\lib\network` og kør `run-server.bat`
 
 ### Forklaring
 
