@@ -74,6 +74,7 @@ namespace BrokerTest
             var tournamentId = "1";
             var participant = "participant1";
             _mockBrokerService.Setup(x => x.AddParticipant(tournamentId, participant)).ReturnsAsync(participant);
+
             // Act
             var result = await _controller.AddParticipant(tournamentId, participant);
 
@@ -109,8 +110,8 @@ namespace BrokerTest
             var result = await _controller.Login(user);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            Assert.Equal(expected, actionResult.Value);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(expected, contentResult.Content);
         }
 
         [Fact]
@@ -124,8 +125,8 @@ namespace BrokerTest
             var result = await _controller.FetchSuperUsers();
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            Assert.Equal(expected, actionResult.Value);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(expected, contentResult.Content);
         }
 
         [Fact]
@@ -139,8 +140,8 @@ namespace BrokerTest
             var result = await _controller.FetchNonAdminUsers();
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            Assert.Equal(expected, actionResult.Value);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(expected, contentResult.Content);
         }
 
         [Fact]
@@ -155,8 +156,8 @@ namespace BrokerTest
             var result = await _controller.AdjustUserPermissions(usersToChange);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            Assert.Equal(expected, actionResult.Value);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(expected, contentResult.Content);
         }
 
         [Fact]
@@ -171,8 +172,8 @@ namespace BrokerTest
             var result = await _controller.RegisterUser(user);
 
             // Assert
-            var actionResult = Assert.IsType<ActionResult<string>>(result);
-            Assert.Equal(expected, actionResult.Value);
+            var contentResult = Assert.IsType<ContentResult>(result);
+            Assert.Equal(expected, contentResult.Content);
         }
     }
 }
