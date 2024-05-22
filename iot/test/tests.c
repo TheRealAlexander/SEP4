@@ -166,6 +166,8 @@ void test_resetScores(void) {
     assert_int(0, teamscore_b);
 }
 
+// TODO(rune,fatema): Det kunne være fedt at køre tcp-client.c automatisk,
+// men det kræver at der kører en rigtig backend.
 #if 0
 //tilføj mock funktioner
 
@@ -223,7 +225,6 @@ void set_mock_recv(int result, const char *data) {
     }
 }
 #endif
-
 
 // TODO(rune,fatema): Det kunne være fedt at køre tcp-client.c automatisk,
 // men det kræver at der kører en rigtig backend.

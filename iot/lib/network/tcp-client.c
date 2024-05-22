@@ -1,3 +1,5 @@
+// tcp-client.c er en fake arduino, der har forbindelse med rigtig backend.
+
 ////////////////////////////////////////////////////////////////
 // Standard library and OS headers
 

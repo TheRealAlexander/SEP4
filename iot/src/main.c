@@ -255,6 +255,7 @@ int main() {
     buttons_init();
     display_init();
     pir_init();
+    dht11_init();
 
     while (1) {
         do_wifi();
