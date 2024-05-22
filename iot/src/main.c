@@ -81,7 +81,7 @@ static int build_http_request(char *http_buf, int http_cap) {
 
     int http_len = snprintf(
         http_buf, http_cap,
-        "POST /PostEnviromentData HTTP/1.0\r\n"
+        "POST /PostEnvironmentData HTTP/1.0\r\n"
         "Host: indeklima\r\n"
         "Connection: Close\r\n"
         "Accept: application/json\r\n"
