@@ -120,7 +120,7 @@ namespace Broker.Services
         public async Task<string> Login(string user)
         {
             var content = new StringContent(user, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://auth_webapi/login", content);
+            var response = await _httpClient.PostAsync("http://auth_webapi:5001/login", content);
 
             if (!response.IsSuccessStatusCode)
             {
@@ -133,20 +133,20 @@ namespace Broker.Services
 
         public async Task<string> FetchSuperUsers()
         {
-            var response = await _httpClient.GetAsync("http://backend-url/api/superUsers");
+            var response = await _httpClient.GetAsync("http://auth_webapi:5001/user/superUsers");
             return await response.Content.ReadAsStringAsync();
         }
 
         public async Task<string> FetchNonAdminUsers()
         {
-            var response = await _httpClient.GetAsync("http://backend-url/api/nonSuperUsers");
+            var response = await _httpClient.GetAsync("http://auth_webapi:5001/user/nonSuperUsers");
             return await response.Content.ReadAsStringAsync();
         }
 
         public async Task<string> AdjustUserPermissions(string usersToChange)
         {
             var content = new StringContent(usersToChange, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PutAsync($"http://backend-url/api/users/adjustUserPermissions/{usersToChange}", content);
+            var response = await _httpClient.PutAsync($"http://auth_webapi:5001/users/adjustUserPermissions/{usersToChange}", content);
             return await response.Content.ReadAsStringAsync();
         }
     }
