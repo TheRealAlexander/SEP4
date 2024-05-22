@@ -2,7 +2,6 @@
 #define ZERO_POINT_CALIBRATION 0x87
 #define SPAN_POINT_CALIBRATION 0x88
 #define BAUD_RATE 9600
-#define F_CPU 16000000UL  // Ensure your CPU frequency is defined correctly
 
 volatile int latest_co2_concentration = 0;
 volatile bool new_co2_data_available = false;
