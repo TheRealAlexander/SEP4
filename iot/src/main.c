@@ -4,54 +4,7 @@
 #include "../lib/includes.h"
 
 ////////////////////////////////////////////////////////////////
-// Macros
-
-
-
-#ifndef SERVER_IP
-#error "SERVER_IP not defined"
-#endif
-
-#ifndef SERVER_PORT
-#error "SERVER_PORT not defined"
-#endif
-
-#ifndef WIFI_SSID
-#error "WIFI_SSID not defined"
-#endif
-
-#ifndef WIFI_PASSWORD
-#error "WIFI_PASSWORD not defined"
-#endif
-
-#ifndef HALL_ID
-#error "HALL_ID not defined"
-#endif
-
-////////////////////////////////////////////////////////////////
-// Measurements
-
-typedef struct measurements {
-    // NOTE(rune): From sensors
-    uint8_t humidity_integral;    // Før komma
-    uint8_t humidity_decimal;     // Efter komma
-    uint8_t temperature_integral; // Før komma
-    uint8_t temperature_decimal;  // Efter komma
-    uint16_t co2;
-
-    // NOTE(rune): From backend
-    bool open_window;
-    int want_next_measurement_delay;
-} measurements;
-
-static measurements g_measurements;
-
-////////////////////////////////////////////////////////////////
-// Time keeping
-
-typedef uint64_t timestamp;
-
-static timestamp g_timestamp;
+// Timekeeper
 
 static void timekeeper() {
     g_timestamp += 1;
@@ -59,128 +12,6 @@ static void timekeeper() {
 
 ////////////////////////////////////////////////////////////////
 // Networking
-
-static int build_http_request(char *http_buf, int http_cap) {
-    // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
-    // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
-    // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
-    char json_buf[256];
-    int json_len = snprintf(
-        json_buf, sizeof(json_buf),
-        "{"
-        "\"temperature\": %d.%d, "
-        "\"humidity\": %d.%d, "
-        "\"co2\": %d, "
-        "\"hallId\": %d"
-        "}",
-        g_measurements.temperature_integral, g_measurements.temperature_decimal,
-        g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2,
-        HALL_ID
-    );
-
-    int http_len = snprintf(
-        http_buf, http_cap,
-        "POST /PostEnviromentData HTTP/1.0\r\n"
-        "Host: indeklima\r\n"
-        "Connection: Close\r\n"
-        "Accept: application/json\r\n"
-        "Accept-Encoding: identity\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %d\r\n"
-        "\r\n"
-        "%s",
-        json_len, json_buf
-    );
-
-    return http_len;
-}
-
-// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
-// Returns false if the property is not found, and in that case does not touch *value.
-static bool read_bool_from_http_response(char *response, char *property, bool *value) {
-    char needle[128];
-    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
-    char *needle_ptr = strstr(response, needle);
-    if (needle_ptr) {
-        char *value_ptr = needle_ptr + needle_len;
-        if (strstr(value_ptr, "true") == value_ptr) {
-            *value = true;
-            return true;
-        }
-
-        if (strstr(value_ptr, "false") == value_ptr) {
-            *value = false;
-            return true;
-        }
-    }
-
-    return false;
-}
-
-// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
-// Returns false if the property is not found, and in that case does not touch *value.
-static bool read_int_from_http_response(char *response, char *property, int *value) {
-    char needle[128];
-    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
-    char *needle_ptr = strstr(response, needle);
-    if (needle_ptr) {
-        *value = 0;
-        char *value_ptr = needle_ptr + needle_len;
-        while (*value_ptr >= '0' && *value_ptr <= '9') {
-            int digit = *value_ptr - '0';
-            *value *= 10;
-            *value += digit;
-
-            value_ptr++;
-        }
-    }
-
-    return false;
-}
-
-static void process_http_response(char *http_buf, int http_len) {
-
-    send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-    send_to_pc("========================\n");
-
-    // NOTE(rune): Fjern whitespace så vi kan lave string comparison,
-    // uden at bekymre os om formatting fra serveren.
-    char trim_buf[WIFI2_MAX_RECV];
-    int read = 0;
-    int write = 0;
-    while (read < http_len) {
-        if (http_buf[read] == ' ' ||
-            http_buf[read] == '\n' ||
-            http_buf[read] == '\r' ||
-            http_buf[read] == '\t') {
-
-            read++;
-        } else {
-            trim_buf[write] = http_buf[read];
-            read++;
-            write++;
-        }
-    }
-
-    int trim_len = write;
-    trim_buf[trim_len] = '\0';
-
-    send_to_pc(ANSI_FG_GREEN);
-    send_to_pc(trim_buf);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-
-    read_bool_from_http_response(trim_buf, "openWindow", &g_measurements.open_window);
-    read_int_from_http_response(trim_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
-
-    send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
-    send_to_pc_fmt("window: %d\n", g_measurements.open_window);
-    send_to_pc(ANSI_RESET);
-}
 
 static void do_wifi(void) {
     ////////////////////////////////////////////////////////////////
@@ -248,7 +79,7 @@ static void do_wifi(void) {
 
             case WIFI_STEP_TCP_SEND: {
                 char http_buf[512];
-                int  http_len = build_http_request(http_buf, sizeof(http_buf));
+                int  http_len = http_build_request(http_buf, sizeof(http_buf));
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
@@ -263,7 +94,7 @@ static void do_wifi(void) {
 
             case WIFI_STEP_TCP_CLOSE: {
                 if (packet_timestamp + packet_timeout <= g_timestamp) {
-                    process_http_response(wifi2_g_recv_buf, wifi2_g_recv_len);
+                    http_process_response(wifi2_g_recv_buf, wifi2_g_recv_len);
                     wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
@@ -389,11 +220,9 @@ static void do_pir() {
     }
 
     if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
-        DDRB = 0xff;
-        PORTB = 0x00;
+        led_set(0x00);
     } else {
-        DDRB = 0xff;
-        PORTB = 0xff;
+        led_set(0xff);
     }
 }
 
@@ -424,6 +253,8 @@ int main() {
     buttons_init();
     display_init();
     pir_init();
+    dht11_init();
+    led_init();
 
     while (1) {
         do_wifi();

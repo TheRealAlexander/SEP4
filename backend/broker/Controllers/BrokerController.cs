@@ -18,16 +18,25 @@ namespace Broker.Controllers
         }
 
         [HttpGet("GetSensorData")]
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId)
         {
-            return await _brokerService.GetSensorData();
+            var result = await _brokerService.GetSensorData(hallId);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
         }
 
-        // Corresponds to GetAllTournaments
         [HttpGet("tournaments")]
-        public async Task<ActionResult<List<Tournament>>> GetTournaments()
+        public async Task<IActionResult> GetTournaments()
         {
-            return await _brokerService.GetTournaments();
+            var result = await _brokerService.GetTournaments();
+            if (result?.Value == null)
+            {
+                return NoContent();
+            }
+            return Ok(result.Value);
         }
 
         // Corresponds to CreateTournament
@@ -53,7 +62,7 @@ namespace Broker.Controllers
 
         // Corresponds to AddParticipant
         [HttpPost("tournaments/{tournamentID}/participants")]
-        public async Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant)
+        public async Task<ActionResult<string>> AddParticipant(string tournamentID, string participant)
         {
             return await _brokerService.AddParticipant(tournamentID, participant);
         }

@@ -1,13 +1,14 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SharedObjects.Models;
+using System.Collections.Generic;
 
 
 namespace Broker.Services
 {
     public interface IBrokerService
     {
-        public Task<List<SensorData>> GetSensorData();
+        public Task<List<SensorData>?> GetSensorData(int hallId);
 
         // Corresponds to GetAllTournaments
         public Task<ActionResult<List<Tournament>>> GetTournaments();
@@ -22,7 +23,7 @@ namespace Broker.Services
         public Task<ActionResult> DeleteTournament(string tournamentID);
 
         // Corresponds to AddParticipant
-        public Task<ActionResult<Participant>> AddParticipant(string tournamentID, string participant);
+        public Task<ActionResult<string>> AddParticipant(string tournamentID, string participant);
 
         // Corresponds to RemoveParticipant
         public Task<ActionResult> RemoveParticipant(string tournamentID, string participant);
