@@ -29,10 +29,12 @@ const TournamentLiveOverview = ({ tournamentID }) => {
 
     const handleClick = (courtId) => {
         setDialogOpen(prevState => ({ ...prevState, [courtId]: true }));
+        console.log('clicked');
     };
 
     const handleClose = (courtId) => {
         setDialogOpen(prevState => ({ ...prevState, [courtId]: false }));
+        console.log('closed');
     };
 
     if (loading) {
