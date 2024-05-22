@@ -85,34 +85,22 @@ bool is_ntp_response_packet(const uint8_t* buffer, size_t size) {
     return true;
 }
 
-uint32_t calculate_corrected_time(ntp_response_packet* packet, unsigned long long t1, unsigned long long t4) {
+uint32_t calculate_corrected_time(ntp_response_packet* packet, int32_t subtract_milliseconds) {
     uint32_t t2_seconds = packet->txTm_s;
-    uint32_t t2_fraction = packet->txTm_f;
-    uint32_t t3_seconds = packet->rxTm_s;
-    uint32_t t3_fraction = packet->rxTm_f;
 
-    unsigned long long t2 = ((unsigned long long)t2_seconds << 32) | t2_fraction;
-    unsigned long long t3 = ((unsigned long long)t3_seconds << 32) | t3_fraction;
-
-    int64_t delta_t2_t1 = t2 - t1;
-    int64_t delta_t3_t4 = t3 - t4;
-    int64_t theta = (delta_t2_t1 + delta_t3_t4) / 2;
-
-    uint32_t server_time = t3_seconds;
-    server_time += theta;
+    // Convert subtract_milliseconds to seconds for correct subtraction from UNIX time
+    // Note: subtract_milliseconds / 1000 will handle the conversion to seconds
+    // and subtract_milliseconds % 1000 will handle the remaining milliseconds
+    int32_t subtract_seconds = subtract_milliseconds / 1000;
+    int32_t remaining_milliseconds = subtract_milliseconds % 1000;
 
     // Convert NTP timestamp to UNIX timestamp
-    server_time -= NTP_TIMESTAMP_DELTA;
+    uint32_t unix_time = t2_seconds - NTP_TIMESTAMP_DELTA - subtract_seconds;
 
-    // Print all variables and values
-    send_to_pc_fmt("t1: %lX\n", t1);
-    send_to_pc_fmt("t2: %lX\n", t2);
-    send_to_pc_fmt("t3: %lX\n", t3);
-    send_to_pc_fmt("t4: %lX\n", t4);
-    send_to_pc_fmt("delta_t2_t1: %lX\n", delta_t2_t1);
-    send_to_pc_fmt("delta_t3_t4: %lX\n", delta_t3_t4);
-    send_to_pc_fmt("theta: %lX\n", theta);
-    send_to_pc_fmt("server_time: %lX\n", server_time);
+    // Print the relevant data for debugging
+    send_to_pc_fmt("t2_seconds: %u (NTP time)\n", t2_seconds);
+    send_to_pc_fmt("subtract_milliseconds: %d (milliseconds to subtract)\n", subtract_milliseconds);
+    send_to_pc_fmt("UNIX time: %u (after correcting for NTP to UNIX epoch and subtraction)\n", unix_time);
 
-    return server_time;
+    return unix_time;
 }

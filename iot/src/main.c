@@ -224,12 +224,14 @@ void print_raw_bytes(void* ptr, size_t size) {
 }
 
 void start_ntp_sync() {
+    uint16_t delay = 3000;
+
     send_to_pc_fmt("📡 wifi begin NTP sync\n");
 
     wifi2_async_udp_open("216.239.35.0", 123);
     send_to_pc_fmt("📡 wifi udp open\n");
 
-    _delay_ms(3000);
+    _delay_ms(delay);
 
     ntp_request_packet ntp_request;
     construct_ntp_request(&ntp_request);
@@ -242,12 +244,7 @@ void start_ntp_sync() {
 
     wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
     send_to_pc_fmt("📡 wifi udp send\n");
-    _delay_ms(3000);
-
-    // Record t4 immediately after receiving the NTP response
-    unsigned long long t4 = g_timestamp + NTP_TIMESTAMP_DELTA;
-    // Subtract the artificial delay to get the correct t4
-    t4 -= 3000;
+    _delay_ms(delay);
 
     // Set ntp_response to the last 48 bytes of the wifi recv buffer
     ntp_response_packet ntp_response;
@@ -265,10 +262,11 @@ void start_ntp_sync() {
     decode_ntp_response((uint8_t*)&ntp_response, &ntp_response);
 
     // Calculate the correct UNIX time
-    uint32_t unix_time = calculate_corrected_time(&ntp_response, t1, t4);
+    uint32_t unix_time = calculate_corrected_time(&ntp_response, delay); // Subtract artifically added delays
+    g_timestamp = unix_time;
     send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
 
-    // Ensure UDP connection is closed after timeout
+    // Ensure UDP connection is closed
     wifi2_async_udp_close();
 }
 
