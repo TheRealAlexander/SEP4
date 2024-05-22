@@ -123,8 +123,14 @@ const TournamentCourt = ({
           />
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Cancel</Button>
-          <Button onClick={handleUpdate}>Update</Button>
+          <Button onClick={(e) => {
+            e.stopPropagation(); // Stop the event from propagating to the parent card
+            handleClose();
+          }}>Cancel</Button>
+          <Button onClick={(e) => {
+            e.stopPropagation(); // Stop the event from propagating to the parent card
+            handleUpdate();
+          }}>Update</Button>
         </DialogActions>
       </Dialog>
     </MuiCard>
