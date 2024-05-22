@@ -53,19 +53,12 @@ void *memmem(void *haystack, size_t haystack_len,
 #endif
 
 ////////////////////////////////////////////////////////////////
-// Include globals
-
-#include "globals.h"
-
-////////////////////////////////////////////////////////////////
 // Include drivers
 
 #include "uart/uart.h"
 #include "uart/uart.c"
 #include "print/print.h"
 #include "print/print.c"
-#include "http/http.h"
-#include "http/http.c"
 #include "driverMHZ19B/driverMHZ19B.h"
 #include "driverMHZ19B/driverMHZ19B.c"
 #include "Periodic/periodic_task.h"
@@ -84,8 +77,8 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "display/display.c"
 #include "display_button/display_button.h"
 #include "display_button/display_button.c"
-#include "pir/pir.h"
-#include "pir/pir.c"
+#include "network/tcp-client.c"
+#include "network/tcp-server.c"
 
 ////////////////////////////////////////////////////////////////
 // Include testing framework
