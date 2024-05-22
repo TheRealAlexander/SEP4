@@ -2,30 +2,28 @@ import React from 'react';
 
 import { Card, CardActionArea, CardContent, Typography } from '../MUI_imports';
 
-function TournamentItem({ tournament, onClick }) {
+export default function TournamentItem({ tournament, onClick }) {
   return (
     <Card sx={{ width: '100%', m: 2 }}>
       <CardActionArea onClick={() => onClick(tournament)}>
         <CardContent>
           <Typography gutterBottom variant="h5" component="div">
-            {tournament.name}
+            {tournament.Name}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Date: {tournament.date}
+            Date: {tournament.TimeAndDate}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Format: {tournament.format}
+            Format: {tournament.Format}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Game Fields: {tournament.baneAntal}
+            Game Fields: {tournament.FieldCount}
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            Participants: {tournament.currentParticipants}
+            Participants: {tournament.Participants}
           </Typography>
         </CardContent>
       </CardActionArea>
     </Card>
   );
 }
-
-export default TournamentItem;
