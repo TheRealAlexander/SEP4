@@ -10,9 +10,9 @@
 
 //#define SERVER_IP       "159.89.140.122"
 //#define SERVER_IP       "216.58.211.14"
-#define SERVER_IP       "172.20.10.6" // Alexander
+#define SERVER_IP       "192.168.200.96" // Alexander
 //#define SERVER_IP       "172.20.10.3" // Rune 
-#define SERVER_PORT     5200
+#define SERVER_PORT     8888
 //#define SERVER_PORT      5038
 
 //#define WIFI_SSID       "Rune - iPhone"
@@ -111,26 +111,28 @@ void send_to_pc_fmt(char *fmt, ...) {
 #define ANSI_FG_BRIGHT_CYAN         "\x1b[96m"
 
 ////////////////////////////////////////////////////////////////
-// Measurements
-
-typedef struct measurements {
-    uint8_t humidity_integral;     // NOTE(rune): Før komma
-    uint8_t humidity_decimal;      // NOTE(rune): Efter komma
-    uint8_t temperature_integral;  // NOTE(rune): Før komma
-    uint8_t temperature_decimal;   // NOTE(rune): Efter komma
-
-    uint16_t co2;
-    bool open_window;   
-} measurements;
-
-static measurements g_measurements;
-
-////////////////////////////////////////////////////////////////
 // Time keeping
 
 typedef uint64_t timestamp;
 
 static timestamp g_timestamp;
+
+////////////////////////////////////////////////////////////////
+// Measurements
+
+typedef struct measurements {
+    uint8_t humidity_integral;     
+    uint8_t humidity_decimal;      
+    uint8_t temperature_integral;  
+    uint8_t temperature_decimal;   
+    uint16_t co2;
+    bool open_window;
+    timestamp humidity_timestamp;
+    timestamp temperature_timestamp;
+    timestamp co2_timestamp;
+} measurements;
+
+static measurements g_measurements;
 
 static void timekeeper() {
     g_timestamp += 1;
@@ -143,22 +145,35 @@ static int build_http_request(char *http_buf, int http_cap) {
     // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
     // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
     // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
-    char json_buf[256];
+    char json_buf[512];
+    char temp_ts_str[21], humid_ts_str[21], co2_ts_str[21];
+
+    // Convert timestamps to strings (assuming simple conversion here, adjust as necessary)
+    sprintf(temp_ts_str, "%lu", g_measurements.temperature_timestamp);
+    sprintf(humid_ts_str, "%lu", g_measurements.humidity_timestamp);
+    sprintf(co2_ts_str, "%lu", g_measurements.co2_timestamp);
+
+    // JSON string with timestamps as strings
     int json_len = snprintf(
         json_buf, sizeof(json_buf),
         "{"
         "\"temperature\": %d.%d, "
         "\"humidity\": %d.%d, "
-        "\"co2\": %d"
+        "\"co2\": %d, "
+        "\"temperature_ts\": \"%s\", "
+        "\"humidity_ts\": \"%s\", "
+        "\"co2_ts\": \"%s\""
         "}",
         g_measurements.temperature_integral, g_measurements.temperature_decimal,
         g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2
+        g_measurements.co2,
+        temp_ts_str, humid_ts_str, co2_ts_str
     );
 
+    // Include the JSON string in the HTTP POST request
     int http_len = snprintf(
         http_buf, http_cap,
-        "POST /PostEnviromentData HTTP/1.0\r\n"
+        "POST /data HTTP/1.0\r\n"
         "Host: indeklima\r\n"
         "Connection: Close\r\n"
         "Accept: application/json\r\n"
@@ -239,9 +254,6 @@ void start_ntp_sync() {
     print_raw_bytes(&ntp_request, sizeof(ntp_request));
     send_to_pc_fmt(ANSI_RESET);
 
-    // Record t1 just before sending the NTP request
-    unsigned long long t1 = g_timestamp + NTP_TIMESTAMP_DELTA;
-
     wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
     send_to_pc_fmt("📡 wifi udp send\n");
     _delay_ms(delay);
@@ -263,7 +275,8 @@ void start_ntp_sync() {
 
     // Calculate the correct UNIX time
     uint32_t unix_time = calculate_corrected_time(&ntp_response, delay); // Subtract artifically added delays
-    g_timestamp = unix_time;
+    // Cast unix_time to unit64_t to match g_timestamp
+    g_timestamp = (timestamp)unix_time * 1000; // Convert seconds to milliseconds
     send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
 
     // Ensure UDP connection is closed
@@ -365,11 +378,14 @@ static void do_wifi(void) {
         send_to_pc(ANSI_RESET);
 
         if (cmd_result.ok) {
+            send_to_pc_fmt("next_wifi_step = %d\n", next_wifi_step);
+
             if (curr_wifi_step == WIFI_STEP_TCP_SEND) {
                 //process_http_response(cmd_result.data, cmd_result.data_len);
             }
             if (curr_wifi_step == WIFI_STEP_AP_JOIN) {
                 start_ntp_sync(); // Start NTP sync after joining AP
+                wifi2_cancel_async(); 
             }
 
             // TODO(rune): Conditional debug print
@@ -396,11 +412,11 @@ static void do_wifi(void) {
 
 static void do_co2(void) {
     static timestamp co2_timestamp = 0;
-    static timestamp co2_interval = 5000; // TODO(rune): Test hvor langt vi kan sætte delay'et ned
+    static timestamp co2_interval = 5000; // Adjust the interval as needed
 
     if (co2_timestamp + co2_interval <= g_timestamp) {
-        co2_timestamp = g_timestamp;
-        send_to_pc("⚡ Send CO2 command\n"); // TODO(rune): Conditional debug print
+        co2_timestamp = g_timestamp; // Update last measurement time
+        send_to_pc("⚡ Send CO2 command\n"); // Debug print, conditional
         send_co2_command(Co2SensorRead);  // Trigger CO2 reading
     }
 
@@ -408,26 +424,33 @@ static void do_co2(void) {
     if (new_co2_data_available) {
         new_co2_data_available = false;  // Reset flag after reading
         g_measurements.co2 = latest_co2_concentration;
+        g_measurements.co2_timestamp = g_timestamp / 1000; // Save timestamp of CO2 measurement
+        // Print timestamp
+        send_to_pc_fmt("🕒 CO2 timestamp: %lu\n", g_measurements.co2_timestamp);
     }
 }
 
 ////////////////////////////////////////////////////////////////
-// Temperature and humidity
+// Temperature and Humidity Reading
 
 static void do_dht11() {
     static timestamp dht11_timestamp = 0;
-    static timestamp dht11_interval = 1000;
+    static timestamp dht11_interval = 1000; // Sample every second
 
     if (dht11_timestamp + dht11_interval <= g_timestamp) {
-        dht11_timestamp = g_timestamp;
+        dht11_timestamp = g_timestamp; // Update last measurement time
 
         uint8_t a, b, c, d;
         if (dht11_get(&a, &b, &c, &d) == DHT11_OK) {
-            g_measurements.humidity_integral    = a;
-            g_measurements.humidity_decimal     = b;
+            g_measurements.humidity_integral = a;
+            g_measurements.humidity_decimal = b;
             g_measurements.temperature_integral = c;
-            g_measurements.temperature_decimal  = d;
-
+            g_measurements.temperature_decimal = d;
+            g_measurements.humidity_timestamp = g_timestamp / 1000; // Save timestamp of humidity measurement
+            g_measurements.temperature_timestamp = g_timestamp / 1000; // Save timestamp of temperature measurement
+            // Print timestamp
+            send_to_pc_fmt("🕒 Humidity timestamp: %lu\n", g_measurements.humidity_timestamp);
+            send_to_pc_fmt("🕒 Temperature timestamp: %lu\n", g_measurements.temperature_timestamp);
             send_to_pc("🌡️ DHT11 OK\n");
         } else {
             send_to_pc("🌡️ DHT11 not OK\n");
@@ -436,14 +459,14 @@ static void do_dht11() {
 }
 
 ////////////////////////////////////////////////////////////////
-// Servo
+// Servo Control
 
 static void do_servo() {
-
+    // Control servo based on the 'open window' command
     if (g_measurements.open_window) {
-        servo(0);
+        servo(0); // Assume 0 degrees is the position to open the window
     } else {
-        servo(180);
+        servo(180); // Assume 180 degrees is the position to close the window
     }
 }
 

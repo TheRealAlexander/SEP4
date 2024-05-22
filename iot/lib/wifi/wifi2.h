@@ -61,4 +61,4 @@ extern void wifi2_async_udp_close(void);
 
 extern bool wifi2_can_begin_async(void); // Klar til at starte ny async command?
 extern bool wifi2_async_is_done(wifi2_cmd_result *result); // Er seneste async command f�rdig eller har fejlet?
-
+static void wifi2_cancel_async(void);

@@ -55,6 +55,10 @@ extern bool wifi2_async_is_done(wifi2_cmd_result *result) {
     }
 }
 
+static void wifi2_cancel_async(void) {
+    wifi2_g_state = WIFI2_STATE_NONE;
+}
+
 extern void wifi2_async(char *cmd, bool ipd) {
     memset(wifi2_g_recv_buf, 0, sizeof(wifi2_g_recv_buf));
     wifi2_g_recv_len = 0;
