@@ -43,17 +43,19 @@ jobs:
       - name: List files for debugging
         run: find backend/microservices -type f -name "*.xml"
 
-      - name: Copy files to coverage folder
-        run:
-          cp backend/microservices/**/**/coverage.cobertura.xml
-          backend/microservices/TestProjects/coverage
+      - name: Create coverage directory
+        run: mkdir -p backend/microservices/TestProjects/coverage
+
+      - name: Copy coverage report
+        run: |
+          find backend/microservices -type f -name "coverage.cobertura.xml" -exec cp {} backend/microservices/TestProjects/coverage \;
 
       - name: Install ReportGenerator tool
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
       - name: Generate report
         run: |
-          reportgenerator "-reports:backend/microservices/**/**/coverage.cobertura.xml" "-targetdir:backend/microservices/**/**/coverage" -reporttypes:Html
+          reportgenerator "-reports:backend/microservices/TestProjects/coverage/coverage.cobertura.xml" "-targetdir:backend/microservices/TestProjects/coverage" -reporttypes:Html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.5
