@@ -1,11 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Paper, Typography, Box, Grid, Button } from '@mui/material';
 
 const scoresPerPage = 16; // Single column, 16 rows
 
 const Scoreboard = ({ scores }) => {
   const [currentPage, setCurrentPage] = useState(0);
+
+  useEffect(() => {
+    // Reset to the first page when scores update
+    setCurrentPage(0);
+  }, [scores]);
+
   const pageCount = Math.ceil(scores.length / scoresPerPage);
+
+  // Sort scores in descending order based on points
+  const sortedScores = [...scores].sort((a, b) => b.Points - a.Points);
 
   const handlePreviousPage = () => {
     if (currentPage > 0) {
@@ -21,7 +30,7 @@ const Scoreboard = ({ scores }) => {
 
   const startIndex = currentPage * scoresPerPage;
   const endIndex = startIndex + scoresPerPage;
-  const currentScores = scores.slice(startIndex, endIndex);
+  const currentScores = sortedScores.slice(startIndex, endIndex);
 
   return (
     <Paper elevation={3} sx={{ padding: 3, margin: 2 }}>
