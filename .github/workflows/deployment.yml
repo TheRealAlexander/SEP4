@@ -22,6 +22,9 @@ jobs:
           sudo mv ./kompose /usr/local/bin/kompose
       - name: Convert docker-compose to k8s
         run: kompose convert -f docker-compose.yml -o k8s/
+      - name: Modify Kubernetes manifests for NodePort
+        run: |
+          sed -i 's/type: ClusterIP/type: NodePort/' k8s/*.yaml
       - name: Upload k8s files
         uses: actions/upload-artifact@v2
         with:
