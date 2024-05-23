@@ -52,6 +52,9 @@ jobs:
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
+      - name: List all services
+        run: kubectl get services
+
       - name: Wait for ${{ matrix.service }} to be ready
         run: |
           kubectl wait --for=condition=available --timeout=600s deployment/${{ matrix.service }}
