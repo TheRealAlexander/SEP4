@@ -45,12 +45,10 @@ jobs:
           kubectl apply -f k8s/
       - name: List all services
         run: kubectl get services
-      - name: List all pods
-        run: kubectl get pods
-      - name: Test service availability
+      - name: Wait for services to be ready
         run: |
-          kubectl wait --for=condition=ready pod --all --timeout=600s
-          kubectl wait --for=condition=ready service --all --timeout=600s
+          kubectl wait --for=condition=ready --timeout=120s pod --all
+          kubectl wait --for=condition=ready --timeout=120s deployment --all
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
