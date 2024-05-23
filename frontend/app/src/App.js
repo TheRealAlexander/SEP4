@@ -33,6 +33,7 @@ import {
   Tooltip,
   MenuItem
 } from './MUI_imports';
+import OngoingTournamentPage from './Tournaments/OngoingTournamentPage.js';
 
 const pages = ["Home", "Controls", "Data", "Tournaments"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
@@ -77,6 +78,7 @@ function AppContent() {
             <Route path="/registration" element={<Registration />} /> 
             <Route path="/users" element={<UserPermissionPage />} />
             <Route path="/tournamentLiveOverview" element={<TournamentLiveOverview />} />
+            <Route path="ongoingTournaments" element={<OngoingTournamentPage />} />
           </Routes>
         </div>
       </Box>
