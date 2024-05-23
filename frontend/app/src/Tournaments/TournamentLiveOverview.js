@@ -5,6 +5,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
 import useTournamentData from '../Hooks/Tournament/useTournamentData'; // Import the new hook
+import TournamentDetails from './TournamentDetails'; // Import TournamentDetails
 
 const TournamentLiveOverview = ({ tournamentID }) => {
     const {
@@ -50,6 +51,14 @@ const TournamentLiveOverview = ({ tournamentID }) => {
 
     return (
         <Grid container spacing={2} sx={{ margin: 'auto', maxWidth: 1400 }}>
+            <Grid item xs={12}>
+                <TournamentDetails 
+                    name={tournamentData.Name} 
+                    format={tournamentData.Format} 
+                    numberOfCourts={tournamentData.NumberOfCourts} 
+                    pointsPerMatch={tournamentData.PointsPerMatch} 
+                />
+            </Grid>
             <Grid item xs={12} md={8}>
                 <Paper elevation={3} sx={{ p: 3, margin: 'auto', maxWidth: 1200 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
