@@ -32,13 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service:
-          [
-            mongo-service,
-            indeklima-webapi-service,
-            auth-webapi-service,
-            broker-service,
-          ]
+        service: [mongo, indeklima-webapi, auth-webapi, broker]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Minikube
@@ -54,13 +48,12 @@ jobs:
           kubectl apply -f k8s/
       - name: List all services
         run: kubectl get services
-
-      - name: Wait for ${{ matrix.service }} to be ready
+      - name: List all pods
+        run: kubectl get pods
+      - name: Test service availability
         run: |
-          kubectl wait --for=condition=available --timeout=600s deployment/${{ matrix.service }}
-      - name: Run ${{ matrix.service }} service
-        run: |
-          minikube service ${{ matrix.service }} --url
+          kubectl wait --for=condition=ready pod --all --timeout=600s
+          kubectl wait --for=condition=ready service --all --timeout=600s
       - name: Clean up
         if: ${{ matrix.service == 'broker-service' }}
         run: |
