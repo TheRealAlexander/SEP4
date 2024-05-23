@@ -28,7 +28,17 @@ public class PostEnvironmentDataControllerTests
     public async Task PostSensorData_ReturnsOkResult_WhenDataIsValid()
     {
         // Arrange
-        var sensorDataDto = new IOTSensorDataDto { HallId = 1, Temperature = 25, Humidity = 30, CO2 = 400 };
+        var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var sensorDataDto = new IOTSensorDataDto 
+        { 
+            HallId = 1, 
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            Temperature_ts = currentTime,
+            Humidity_ts = currentTime,
+            Co2_ts = currentTime
+        };
         var sensorGoal = new SensorGoal { HallId = 1, DesiredTemperature = 22, DesiredHumidity = 50, DesiredCo2 = 600 };
 
         _mockSensorGoalService.Setup(svc => svc.GetSensorGoalAsync(sensorDataDto.HallId)).ReturnsAsync(sensorGoal);
@@ -68,7 +78,17 @@ public class PostEnvironmentDataControllerTests
     public async Task PostSensorData_ReturnsBadRequest_WhenExceptionIsThrown()
     {
         // Arrange
-        var sensorDataDto = new IOTSensorDataDto { HallId = 1, Temperature = 25, Humidity = 30, CO2 = 400 };
+        var currentTime = DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        var sensorDataDto = new IOTSensorDataDto 
+        { 
+            HallId = 1, 
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            Temperature_ts = currentTime,
+            Humidity_ts = currentTime,
+            Co2_ts = currentTime
+        };
         _mockSensorDataService.Setup(x => x.AddSensorDataAsync(It.IsAny<SensorData>())).Throws(new Exception("Test exception"));
 
         // Act
