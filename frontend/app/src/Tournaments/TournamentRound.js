@@ -9,14 +9,14 @@ const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClos
                 Courts
             </Typography>
             <Grid container spacing={2}>
-                {courts.map(court => (
-                    <Grid item xs={12} sm={6} md={3} key={court.id}>
+                {courts.map((court, index) => (
+                    <Grid item xs={12} sm={6} md={3} key={index}>
                         <TournamentCourt
                             court={court}
                             onUpdate={onUpdate}
-                            open={dialogOpen[court.id] || false}
-                            handleClose={() => handleClose(court.id)}
-                            handleClick={() => handleClick(court.id)}
+                            open={dialogOpen[index] || false}
+                            handleClose={() => handleClose(index)}
+                            handleClick={() => handleClick(index)}
                         />
                     </Grid>
                 ))}

@@ -22,7 +22,9 @@ const CourtScore = ({ children }) => (
       fontWeight: "bold",
       margin: 1,
     }}
-  >{children}</Box>
+  >
+    {children}
+  </Box>
 );
 
 const TeamColumn = ({ team }) => (
@@ -36,9 +38,9 @@ const TeamColumn = ({ team }) => (
       width: "100px",
     }}
   >
-    {team.map(player => (
-      <Typography key={player.id} variant="body1" fontWeight="bold">
-        {player.name}
+    {team && team.map((player, index) => (
+      <Typography key={index} variant="body1" fontWeight="bold">
+        {player?.Name || 'Unknown Player'}
       </Typography>
     ))}
   </Box>
@@ -54,11 +56,8 @@ const TournamentCourt = ({
   const [tempScore, setTempScore] = useState([0, 0]);
 
   useEffect(() => {
-    setTempScore([
-      court.score1,
-      court.score2
-    ]);
-  }, [court.score1, court.score2]);
+    setTempScore(court.scores || [0, 0]);
+  }, [court.scores]);
 
   const handleUpdate = () => {
     onUpdate(court.id, tempScore);
@@ -72,7 +71,7 @@ const TournamentCourt = ({
   };
 
   // Check for incomplete data structure
-  if (!court || !court.players || court.players[0].length < 2 || court.players[1].length < 2) {
+  if (!court || !court.teams || court.teams.length < 2 || !court.teams[0] || !court.teams[1]) {
     return <div>Loading or incomplete data...</div>;
   }
 
@@ -91,9 +90,9 @@ const TournamentCourt = ({
     >
       <CardContent sx={{ textAlign: "center" }}>
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-          <TeamColumn team={court.players[0]} />
+          <TeamColumn team={court.teams[0]} />
           <Typography variant="h6">vs</Typography>
-          <TeamColumn team={court.players[1]} />
+          <TeamColumn team={court.teams[1]} />
         </Box>
         <CourtScore>{tempScore[0]} - {tempScore[1]}</CourtScore>
       </CardContent>

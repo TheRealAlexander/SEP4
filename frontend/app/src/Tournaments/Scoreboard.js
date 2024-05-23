@@ -30,10 +30,10 @@ const Scoreboard = ({ scores }) => {
           Scoreboard
         </Typography>
         <Grid container spacing={2}>
-          {currentScores.map(({ id, name, score }) => (
-            <Grid item xs={12} sm={6} key={id}>
+          {currentScores.map(({ Name, Wins, Draws, Losses, Points }, index) => (
+            <Grid item xs={12} sm={6} key={index}>
               <Typography variant="h6" sx={{ overflowWrap: 'break-word' }}>
-                {name}: {score}
+                {Name}: {Points} points (W: {Wins}, D: {Draws}, L: {Losses})
               </Typography>
             </Grid>
           ))}

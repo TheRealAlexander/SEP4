@@ -4,9 +4,17 @@ const API_BASE_URL = "http://broker:5202";
 
 const useTournamentData = (tournamentID) => {
   const [tournamentData, setTournamentData] = useState({
-    id: tournamentID,
-    rounds: [],
-    scoreboard: []
+    Id: tournamentID,
+    Name: "Tournament Name",
+    Format: "Mexicano",
+    NumberOfCourts: 4,
+    PointsPerMatch: 32,
+    Players: [],
+    State: 2,
+    Rounds: [],
+    NextRoundNumber: 1,
+    SkippedARound: [],
+    SkippedLastRound: []
   });
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -15,69 +23,67 @@ const useTournamentData = (tournamentID) => {
   useEffect(() => {
     const fetchTournamentData = async () => {
       try {
-        // Use the provided dummy JSON
         const generateDummyData = (tournamentID) => {
-            const playerCount = 64;
-            const courtCount = 16;
-            const roundCount = 3;
+          const playerCount = 16;
+          const courtCount = 4;
+          const roundCount = 3;
+          
+          // Generate 8 unique players
+          const players = Array.from({ length: playerCount }, (_, i) => ({
+            Name: `Player ${i + 1}`,
+            Wins: 0,
+            Draws: 0,
+            Losses: 0,
+            Points: 0
+          }));
+        
+          const rounds = Array.from({ length: roundCount }, (_, roundIndex) => ({
+            RoundNumber: roundIndex + 1,
+            Courts: []
+          }));
+        
+          // Distribute players to courts for each round
+          for (let roundIndex = 0; roundIndex < roundCount; roundIndex++) {
+            let shuffledPlayers = [...players];
             
-            // Generate 64 unique players
-            const players = Array.from({ length: playerCount }, (_, i) => ({
-              id: i + 1,
-              name: `Player ${i + 1}`
-            }));
-          
-            const rounds = Array.from({ length: roundCount }, (_, roundIndex) => ({
-              id: roundIndex + 1,
-              courts: []
-            }));
-          
-            // Distribute players to courts for each round
-            for (let roundIndex = 0; roundIndex < roundCount; roundIndex++) {
-              let shuffledPlayers = [...players];
-              
-              // Shuffle players to ensure different team compositions per round
-              // Fisher-Yates (Durstenfeld) shuffle algorithm
-              for (let i = shuffledPlayers.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
-              }
-          
-              // Assign players to courts
-              const courts = Array.from({ length: courtCount }, (_, courtIndex) => {
-                const baseIndex = courtIndex * 4;
-                return {
-                  id: courtIndex + 1,
-                  players: [
-                    [shuffledPlayers[baseIndex], shuffledPlayers[baseIndex + 1]],
-                    [shuffledPlayers[baseIndex + 2], shuffledPlayers[baseIndex + 3]]
-                  ],
-                  score1: 0,
-                  score2: 0
-                };
-              });
-          
-              rounds[roundIndex].courts = courts;
+            // Shuffle players to ensure different team compositions per round
+            for (let i = shuffledPlayers.length - 1; i > 0; i--) {
+              const j = Math.floor(Math.random() * (i + 1));
+              [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
             }
-          
-            const scoreboard = players.map(player => ({
-              id: player.id,
-              name: player.name,
-              score: Math.floor(Math.random() * 100)
-            }));
-          
-            return {
-              id: tournamentID,
-              rounds,
-              scoreboard
-            };
+        
+            // Assign players to courts
+            const courts = Array.from({ length: courtCount }, (_, courtIndex) => {
+              const baseIndex = courtIndex * 4;
+              return {
+                teams: [
+                  [shuffledPlayers[baseIndex], shuffledPlayers[baseIndex + 1]],
+                  [shuffledPlayers[baseIndex + 2], shuffledPlayers[baseIndex + 3]]
+                ],
+                scores: [0, 0]
+              };
+            });
+        
+            rounds[roundIndex].Courts = courts;
+          }
+        
+          return {
+            Id: tournamentID,
+            Name: "Tournament Name",
+            Format: "Mexicano",
+            NumberOfCourts: 4,
+            PointsPerMatch: 32,
+            Players: players,
+            State: 2,
+            Rounds: rounds,
+            NextRoundNumber: 2,
+            SkippedARound: [],
+            SkippedLastRound: []
           };
+        };
 
         const dummyData = generateDummyData(tournamentID);
-          
-          
-          
-
+        
         // Simulate a delay to mimic an API call
         await new Promise(resolve => setTimeout(resolve, 1000));
 
@@ -92,56 +98,53 @@ const useTournamentData = (tournamentID) => {
     fetchTournamentData();
   }, [tournamentID]);
 
-  const updateScores = (roundId, courtId, newScores) => {
+  const updateScores = (roundNumber, courtIndex, newScores) => {
     setTournamentData(prev => {
       let scoreDifferences = [0, 0]; // To track score differences
   
       // Update the rounds and courts, and determine score differences
-      const newRounds = prev.rounds.map(round => {
-        if (round.id === roundId) {
-          const newCourts = round.courts.map(court => {
-            if (court.id === courtId) {
+      const newRounds = prev.Rounds.map(round => {
+        if (round.RoundNumber === roundNumber) {
+          const newCourts = round.Courts.map((court, index) => {
+            if (index === courtIndex) {
               // Calculate score differences
               scoreDifferences = [
-                newScores[0] - court.score1,
-                newScores[1] - court.score2
+                newScores[0] - court.scores[0],
+                newScores[1] - court.scores[1]
               ];
-              return { ...court, score1: newScores[0], score2: newScores[1] };
+              return { ...court, scores: newScores };
             }
             return court;
           });
-          return { ...round, courts: newCourts };
+          return { ...round, Courts: newCourts };
         }
         return round;
       });
   
-      // Update the scoreboard based on the score differences
-      const newScoreboard = prev.scoreboard.map(player => {
-        const court = prev.rounds.find(round => round.id === roundId)
-                        .courts.find(court => court.id === courtId);
-  
-        // Check if this player is in the updated court
-        const playerIndexInCourt = court.players.flat().findIndex(p => p.id === player.id);
-  
-        // Determine which score difference to apply based on player's team
-        if (playerIndexInCourt !== -1) {
-          const teamIndex = Math.floor(playerIndexInCourt / 2); // Assuming 2 players per team
-          return { ...player, score: player.score + scoreDifferences[teamIndex] };
-        }
-  
+      // Update the players based on the score differences
+      const newPlayers = prev.Players.map(player => {
+        newRounds.forEach(round => {
+          round.Courts.forEach(court => {
+            court.teams.forEach((team, teamIndex) => {
+              team.forEach(teamPlayer => {
+                if (teamPlayer.Name === player.Name) {
+                  player.Points += scoreDifferences[teamIndex];
+                }
+              });
+            });
+          });
+        });
         return player;
-      }).sort((a, b) => b.score - a.score);  // Sort the scoreboard by score, descending
+      });
   
-      return { ...prev, rounds: newRounds, scoreboard: newScoreboard };
+      return { ...prev, Rounds: newRounds, Players: newPlayers };
     });
   };
   
-  
-
   const navigateRound = (direction) => {
     setCurrentRoundIndex(prev => {
       const newIndex = direction === 'next' ? prev + 1 : prev - 1;
-      return Math.max(0, Math.min(newIndex, tournamentData.rounds.length - 1));
+      return Math.max(0, Math.min(newIndex, tournamentData.Rounds.length - 1));
     });
   };
 

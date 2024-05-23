@@ -22,17 +22,18 @@ const TournamentLiveOverview = ({ tournamentID }) => {
         navigateRound(direction); // Simplify navigation handling
     };
 
-    const handleUpdate = (courtId, newScores) => {
+    const handleUpdate = (courtIndex, newScores) => {
         // Simplify score updates
-        updateScores(tournamentData.rounds[currentRoundIndex].id, courtId, newScores);
+        const roundNumber = tournamentData.Rounds[currentRoundIndex].RoundNumber;
+        updateScores(roundNumber, courtIndex, newScores);
     };
 
-    const handleClick = (courtId) => {
-        setDialogOpen(prevState => ({ ...prevState, [courtId]: true }));
+    const handleClick = (courtIndex) => {
+        setDialogOpen(prevState => ({ ...prevState, [courtIndex]: true }));
     };
 
-    const handleClose = (courtId) => {
-        setDialogOpen(prevState => ({ ...prevState, [courtId]: false }));
+    const handleClose = (courtIndex) => {
+        setDialogOpen(prevState => ({ ...prevState, [courtIndex]: false }));
     };
 
     if (loading) {
@@ -43,7 +44,7 @@ const TournamentLiveOverview = ({ tournamentID }) => {
         return <Typography>Error: {error.message}</Typography>;
     }
 
-    if (!tournamentData || !tournamentData.rounds || tournamentData.rounds.length === 0) {
+    if (!tournamentData || !tournamentData.Rounds || tournamentData.Rounds.length === 0) {
         return <Typography>No data available</Typography>;
     }
 
@@ -59,17 +60,17 @@ const TournamentLiveOverview = ({ tournamentID }) => {
                             startIcon={<ArrowBackIosIcon />}
                         />
                         <Typography variant="h6" sx={{ mx: 2 }}>
-                            Round {tournamentData.rounds[currentRoundIndex].id}
+                            Round {tournamentData.Rounds[currentRoundIndex].RoundNumber}
                         </Typography>
                         <Button
                             variant="contained"
                             onClick={() => handleNavigation('next')}
-                            disabled={currentRoundIndex === tournamentData.rounds.length - 1}
+                            disabled={currentRoundIndex === tournamentData.Rounds.length - 1}
                             endIcon={<ArrowForwardIosIcon />}
                         />
                     </Box>
                     <TournamentRound
-                        courts={tournamentData.rounds[currentRoundIndex].courts}
+                        courts={tournamentData.Rounds[currentRoundIndex].Courts}
                         onUpdate={handleUpdate}
                         dialogOpen={dialogOpen}
                         handleClick={handleClick}
@@ -78,7 +79,7 @@ const TournamentLiveOverview = ({ tournamentID }) => {
                 </Paper>
             </Grid>
             <Grid item xs={12} md={4}>
-                <Scoreboard scores={tournamentData.scoreboard} />
+                <Scoreboard scores={tournamentData.Players} />
             </Grid>
         </Grid>
     );
