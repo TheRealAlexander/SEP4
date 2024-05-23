@@ -77,18 +77,3 @@ export async function setPreferredValue(HallID, desiredTemperature, desiredHumid
     throw error; // Re-throwing error to handle it in the component
   }
 }
-
-export async function setWindowState(HallID, action) {
-  try {
-    const data = {
-      HallID,
-      action
-    };
-
-    const response = await axios.post(`${API_BASE_URL}/setWindowState`, data);
-    return response.data;
-  } catch (error) {
-    console.error('Error setting window state:', error);
-    throw error; // Re-throwing error to handle it in the component
-  }
-}

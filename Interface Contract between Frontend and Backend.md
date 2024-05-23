@@ -216,40 +216,6 @@ specific hall
     }
 ```
 
-### setWindowState Function
-
-**Description:**
-
-The `setWindowState` function sends a prompt to open or close a window in a specific hall. It uses a POST request to communicate with the backend service.
-
-**Method:** POST
-
-- URL: /SetWindowState
-- Port : 5200
-
-**Parameters**
-
-- **HallID**: An integer representing the ID of the hall where the window is located.
-- **action**: A string representing the action to be taken. It should be either `"open"` or `"close"`.
-
-**Example Usage**
-
-```javascript
-try {
-  const response = await setWindowState(1, 'open');
-  console.log('Window state set successfully:', response);
-} catch (error) {
-  console.error('Error setting window state:', error);
-}
-```
-
-**Response:**
-
-- Status Code: 200 OK
-- Json body which confirms that the posted data corresponds with what the user
-  expects to have posted
-
-
 ### Request: User registration
 
 **Description:**
