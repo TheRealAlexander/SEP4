@@ -8,11 +8,6 @@ on:
     paths:
       - "backend/**"
 
-# on:
-#   push:
-#     branches:
-#       - prod
-
 jobs:
   convert_dockercompose_to_k8s:
     runs-on: ubuntu-latest
@@ -34,7 +29,9 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    name: build and deploy to minikube
+    strategy:
+      matrix:
+        service: [mongo, indeklima_webapi, auth_webapi, broker]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Minikube
@@ -45,18 +42,17 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
-      - name: Try the cluster
-        run: kubectl get pods -A
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
-      - name: Run the services
+      - name: Wait for ${{ matrix.service }} to be ready
         run: |
-          minikube service mongo
-          minikube service indeklima_webapi
-          minikube service auth_webapi
-          minikube service broker
+          kubectl wait --for=condition=available --timeout=600s deployment/${{ matrix.service }}
+      - name: Run ${{ matrix.service }} service
+        run: |
+          minikube service ${{ matrix.service }} --url
       - name: Clean up
+        if: ${{ matrix.service == 'broker' }}
         run: |
           eval $(minikube docker-env -u)
           minikube delete
