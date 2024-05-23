@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        dotnet-version: ["3.1.x", "8.0.x"]
+        dotnet-version: ["7.0.x"]
         mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
 
     steps:
