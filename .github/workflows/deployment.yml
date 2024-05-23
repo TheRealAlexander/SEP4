@@ -46,22 +46,16 @@ jobs:
       - name: Build images indeklima
         working-directory: backend/microservices/indeklima/WebApi
         run: |
-          export SHELL=/bin/bash
-          eval $(minikube -p minikube docker-env)
           docker build -t indeklima_webapi backend/microservices/indeklima/WebApi
           echo "Built indeklima_webapi"
       - name: Build images auth
         working-directory: backend/microservices/autorisering/WebApi
         run: |
-          export SHELL=/bin/bash
-          eval $(minikube -p minikube docker-env)
           docker build -t auth_webapi backend/microservices/autorisering/WebApi
           echo "Built auth_webapi"
       - name: Build images broker
         working-directory: backend/broker
         run: |
-          export SHELL=/bin/bash
-          eval $(minikube -p minikube docker-env)
           docker build -t broker backend/broker
           echo "Built broker"
       - name: Apply the k8s files
