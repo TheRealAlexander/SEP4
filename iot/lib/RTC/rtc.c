@@ -1,7 +1,7 @@
 #include "RTC.h"
 #include <util/delay.h>
 
-// DS1320 Registers (continued)
+// DS1320 Registers
 #define DS1320_SECONDS 0x00
 #define DS1320_MINUTES 0x01
 #define DS1320_HOURS 0x02

@@ -7,7 +7,14 @@
 // Timekeeper
 
 static void timekeeper() {
-    g_timestamp += 1;
+    // Read time from DS1320
+    i2c_init();
+    g_timestamp = (timestamp)DS1320_getDateTime();
+    i2c_stop();
+    // Convert to string and print
+    char time_str[32];
+    snprintf(time_str, sizeof(time_str), "🕒 Time: %lu\n", g_timestamp);
+    send_to_pc_fmt(time_str);
 }
 
 ////////////////////////////////////////////////////////////////
@@ -58,9 +65,11 @@ void start_ntp_sync() {
 
     // Calculate the correct UNIX time
     uint32_t unix_time = calculate_corrected_time(&ntp_response, delay); // Subtract artifically added delays
-    // Cast unix_time to unit64_t to match g_timestamp
-    g_timestamp = (timestamp)unix_time * 1000; // Convert seconds to milliseconds
     send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
+
+    i2c_init();
+    DS1320_setDateTime(unix_time);
+    i2c_stop();
 
     // Ensure UDP connection is closed
     wifi2_async_udp_close();
@@ -111,7 +120,7 @@ static void do_wifi(void) {
             } break;
 
             case WIFI_STEP_AP_JOIN: {
-                wifi2_async_ap_join(WIFI_SSID, WIFI_PASSWORD);
+                wifi2_async_ap_join("TheHotspot", "pfea1111");
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
                 wifi_cmd_timestamp = g_timestamp;
 
@@ -123,7 +132,7 @@ static void do_wifi(void) {
                 if (packet_timestamp + packet_interval <= g_timestamp) { // Er der gået mere end packet_interval siden vi sendte sidste pakke?
                     packet_timestamp = g_timestamp;
 
-                    wifi2_async_tcp_open(SERVER_IP, SERVER_PORT);
+                    wifi2_async_tcp_open("127.0.0.1", 8888);
                     next_wifi_step = WIFI_STEP_TCP_SEND;
                     wifi_cmd_timestamp = g_timestamp;
 
@@ -338,9 +347,9 @@ int main() {
 
     while (1) {
         do_wifi();
-        do_co2();
+        //do_co2();
         do_dht11();
-        do_servo();
+        //do_servo();
         do_buttons_and_display();
         do_pir();
 

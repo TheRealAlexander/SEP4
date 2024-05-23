@@ -90,6 +90,8 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "display_button/display_button.c"
 #include "pir/pir.h"
 #include "pir/pir.c"
+#include "rtc/rtc.h"
+#include "rtc/rtc.c"
 
 ////////////////////////////////////////////////////////////////
 // Include testing framework
