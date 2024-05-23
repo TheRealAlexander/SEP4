@@ -10,6 +10,7 @@ import {
   TextField,
   Box,
   Button,
+  Divider,
 } from "@mui/material";
 
 const CourtScore = ({ children }) => (
@@ -53,6 +54,7 @@ const TournamentCourt = ({
   handleClose,
   handleClick,
   pointsPerMatch,
+  index,
 }) => {
   const [tempScore, setTempScore] = useState([0, 0]);
   const [errors, setErrors] = useState([null, null]);
@@ -101,6 +103,10 @@ const TournamentCourt = ({
     return <div>Loading or incomplete data...</div>;
   }
 
+  const team1Players = court.teams[0].map(player => player?.Name || 'Unknown Player').join(' & ');
+  const team2Players = court.teams[1].map(player => player?.Name || 'Unknown Player').join(' & ');
+
+
   return (
     <MuiCard
       variant="outlined"
@@ -115,6 +121,8 @@ const TournamentCourt = ({
       }}
     >
       <CardContent sx={{ textAlign: "center" }}>
+        <Typography variant="h6" gutterBottom> Court #{index+1} </Typography>
+        <Divider />
         <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <TeamColumn team={court.teams[0]} />
           <Typography variant="h6">vs</Typography>
@@ -124,6 +132,13 @@ const TournamentCourt = ({
       </CardContent>
       <Dialog open={open} onClose={handleClose}>
         <DialogContent>
+          <Box component="span" sx={{ display: "inline" }}>
+            <Typography variant="h6" component="span"> Court #{index + 1}: </Typography>
+            <Typography variant="subtitle1" component="span"> {team1Players} </Typography>
+            <Typography variant="h6" component="span" sx={{textDecoration: "bold"}}> -vs- </Typography>
+            <Typography variant="subtitle1" component="span"> {team2Players} </Typography>
+          </Box>
+          <Divider />
           <DialogContentText>Set the new scores for each team.</DialogContentText>
           <TextField
             autoFocus
