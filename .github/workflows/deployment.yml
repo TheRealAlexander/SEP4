@@ -43,6 +43,15 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
+      - name: Build images for services
+        run: |
+          export SHELL=/bin/bash
+          eval $(minikube -p minikube docker-env)
+          docker build -t indeklima_webapi backend/microservices/indeklima/WebApi
+          docker build -t auth_webapi backend/microservices/autorisering/WebApi
+          docker build -t broker backend/broker
+          echo -n "Verifying images: "
+          docker images
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
