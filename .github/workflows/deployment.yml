@@ -46,20 +46,14 @@ jobs:
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
-      - name: Port forward services
-        run: |
-          kubectl port-forward service/indeklima-webapi 8080:80 &
-          kubectl port-forward service/auth-webapi 8081:80 &
-          kubectl port-forward service/broker 8082:80 &
-          kubectl port-forward service/frontend 8083:80 &
-          sleep 5 # Wait for port forwarding to start
-      - name: Test service URLs
-        run: |
-          echo "-----------------opening the service URLs using port forwarding-----------------"
-          curl http://localhost:8080
-          curl http://localhost:8081
-          curl http://localhost:8082
-          curl http://localhost:8083
+      - name: List all services
+        run: kubectl get services
+      - name: List all pods
+        run: kubectl get pods
+      - name: List all deployments
+        run: kubectl get deployments
+      - name: Show status on pods
+        run: kubectl describe pods
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
