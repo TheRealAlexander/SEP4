@@ -18,6 +18,7 @@ const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClos
                             handleClose={() => handleClose(court.id)}
                             handleClick={() => handleClick(court.id)}
                             pointsPerMatch={pointsPerMatch}
+                            index={index}
                         />
                     </Grid>
                 ))}
