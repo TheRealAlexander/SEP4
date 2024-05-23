@@ -32,7 +32,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        service: [mongo, indeklima_webapi, auth_webapi, broker]
+        service:
+          [
+            mongo-service,
+            indeklima-webapi-service,
+            auth-webapi-service,
+            broker-service,
+          ]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Minikube
@@ -53,7 +59,7 @@ jobs:
         run: |
           minikube service ${{ matrix.service }} --url
       - name: Clean up
-        if: ${{ matrix.service == 'broker' }}
+        if: ${{ matrix.service == 'broker-service' }}
         run: |
           eval $(minikube docker-env -u)
           minikube delete
