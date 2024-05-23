@@ -51,7 +51,7 @@ public class UserDAO : IUserDAO
             var duplicateData = await _userMongoCollection.Find(filter).FirstOrDefaultAsync();
             if (duplicateData != null)
             {
-                throw new DuplicateNameException("Username already taken");
+                throw new Exception("Something went wrong."); // Vague response to make it harder for hackers
             }
 
             // Add data to the collection

@@ -73,12 +73,4 @@ public class AuthController : ControllerBase
         }
     }
 
-    [HttpGet("/auth/admin"), Authorize("MustBeAdmin")]
-    public ActionResult GetAsAdmin()
-    {
-        return Ok("This was accepted as admin role");
-    }
-
-    
-
 }
