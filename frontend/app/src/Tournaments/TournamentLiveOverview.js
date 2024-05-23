@@ -84,6 +84,7 @@ const TournamentLiveOverview = ({ tournamentID }) => {
             dialogOpen={dialogOpen}
             handleClick={handleClick}
             handleClose={handleClose}
+            pointsPerMatch={tournamentData.PointsPerMatch}
           />
         </Paper>
       </Grid>

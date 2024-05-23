@@ -52,22 +52,49 @@ const TournamentCourt = ({
   open,
   handleClose,
   handleClick,
+  pointsPerMatch,
 }) => {
   const [tempScore, setTempScore] = useState([0, 0]);
+  const [errors, setErrors] = useState([null, null]);
 
   useEffect(() => {
     setTempScore(court.scores || [0, 0]);
   }, [court.scores]);
 
   const handleUpdate = () => {
-    onUpdate(court.id, tempScore);
-    handleClose();
+    if (validateScores(tempScore)) {
+      onUpdate(court.id, tempScore);
+      handleClose();
+    }
   };
 
   const handleScoreChange = (index, value) => {
     const newScores = [...tempScore];
-    newScores[index] = value === '' ? '' : Number(value);
+    const score = value === '' ? '' : Number(value);
+    newScores[index] = score;
     setTempScore(newScores);
+    validateScores(newScores);
+  };
+
+  const validateScores = (scores) => {
+    const newErrors = [null, null];
+    let valid = true;
+
+    scores.forEach((score, index) => {
+      if (score < 0) {
+        newErrors[index] = 'Score cannot be less than 0';
+        valid = false;
+      } else if (score > pointsPerMatch) {
+        newErrors[index] = `Score cannot be greater than ${pointsPerMatch}`;
+        valid = false;
+      } else if (scores[0] + scores[1] > pointsPerMatch) {
+        newErrors[index] = `Total score cannot exceed ${pointsPerMatch}`;
+        valid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return valid;
   };
 
   if (!court || !court.teams || court.teams.length < 2 || !court.teams[0] || !court.teams[1]) {
@@ -108,6 +135,8 @@ const TournamentCourt = ({
             variant="outlined"
             value={tempScore[0]}
             onChange={(e) => handleScoreChange(0, e.target.value)}
+            error={!!errors[0]}
+            helperText={errors[0]}
           />
           <TextField
             margin="dense"
@@ -118,17 +147,19 @@ const TournamentCourt = ({
             variant="outlined"
             value={tempScore[1]}
             onChange={(e) => handleScoreChange(1, e.target.value)}
+            error={!!errors[1]}
+            helperText={errors[1]}
           />
         </DialogContent>
         <DialogActions>
           <Button onClick={(e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Stop the event from propagating to the parent card
             handleClose();
           }}>Cancel</Button>
           <Button onClick={(e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // Stop the event from propagating to the parent card
             handleUpdate();
-          }}>Update</Button>
+          }} disabled={errors[0] !== null || errors[1] !== null}>Update</Button>
         </DialogActions>
       </Dialog>
     </MuiCard>

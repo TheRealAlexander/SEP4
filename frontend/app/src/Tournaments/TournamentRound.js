@@ -2,7 +2,7 @@ import React from 'react';
 import TournamentCourt from './TournamentCourt';
 import { Box, Typography, Grid } from '@mui/material';
 
-const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClose }) => {
+const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClose, pointsPerMatch }) => {
     return (
         <Box sx={{ margin: 2 }}>
             <Typography variant="h5" gutterBottom component="div" sx={{ textAlign: 'center' }}>
@@ -17,6 +17,7 @@ const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClos
                             open={dialogOpen[court.id] || false}
                             handleClose={() => handleClose(court.id)}
                             handleClick={() => handleClick(court.id)}
+                            pointsPerMatch={pointsPerMatch}
                         />
                     </Grid>
                 ))}
