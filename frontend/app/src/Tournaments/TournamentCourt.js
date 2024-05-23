@@ -70,7 +70,6 @@ const TournamentCourt = ({
     setTempScore(newScores);
   };
 
-  // Check for incomplete data structure
   if (!court || !court.teams || court.teams.length < 2 || !court.teams[0] || !court.teams[1]) {
     return <div>Loading or incomplete data...</div>;
   }
@@ -123,11 +122,11 @@ const TournamentCourt = ({
         </DialogContent>
         <DialogActions>
           <Button onClick={(e) => {
-            e.stopPropagation(); // Stop the event from propagating to the parent card
+            e.stopPropagation();
             handleClose();
           }}>Cancel</Button>
           <Button onClick={(e) => {
-            e.stopPropagation(); // Stop the event from propagating to the parent card
+            e.stopPropagation();
             handleUpdate();
           }}>Update</Button>
         </DialogActions>

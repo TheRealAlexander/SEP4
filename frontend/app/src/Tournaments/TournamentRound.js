@@ -14,9 +14,9 @@ const TournamentRound = ({ courts, onUpdate, dialogOpen, handleClick, handleClos
                         <TournamentCourt
                             court={court}
                             onUpdate={onUpdate}
-                            open={dialogOpen[index] || false}
-                            handleClose={() => handleClose(index)}
-                            handleClick={() => handleClick(index)}
+                            open={dialogOpen[court.id] || false}
+                            handleClose={() => handleClose(court.id)}
+                            handleClick={() => handleClick(court.id)}
                         />
                     </Grid>
                 ))}
