@@ -44,11 +44,17 @@ jobs:
         run: |
           kubectl apply -f k8s/
       - name: List all services
-        run: kubectl get services
-      - name: Wait for services to be ready
+        run: minikube service list
+      - name: Test service URLs
         run: |
-          kubectl wait --for=condition=ready --timeout=120s pod --all
-          kubectl wait --for=condition=ready --timeout=120s deployment --all
+          minikube service indeklima-webapi --url
+          minikube service auth-webapi --url
+          minikube service broker --url
+          minikube service frontend --url
+          echo "-----------------opening the service URLs-----------------"
+          curl $(minikube service indeklima-webapi --url)
+          curl $(minikube service auth-webapi --url)
+          curl $(minikube service broker --url)
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
