@@ -44,6 +44,7 @@ jobs:
           name: k8s-files
           path: k8s/
       - name: Build images for services
+        working-directory: .
         run: |
           export SHELL=/bin/bash
           eval $(minikube -p minikube docker-env)
