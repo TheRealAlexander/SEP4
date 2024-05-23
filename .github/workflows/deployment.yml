@@ -43,18 +43,10 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
-      - name: Build images indeklima
-        run: |
-          docker build -t indeklima_webapi backend/microservices/indeklima/WebApi
-          echo "Built indeklima_webapi"
-      - name: Build images auth
-        run: |
-          docker build -t auth_webapi backend/microservices/autorisering/WebApi
-          echo "Built auth_webapi"
-      - name: Build images broker
-        run: |
-          docker build -t broker backend/broker
-          echo "Built broker"
+      - name: Docker-compose Build
+        run: docker-compose build
+      - name: See all images
+        run: docker images
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
