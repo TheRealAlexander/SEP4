@@ -43,7 +43,22 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
-
+      - name: Create PersistentVolume
+        run: |
+          cat <<EOF | kubectl apply -f -
+          apiVersion: v1
+          kind: PersistentVolume
+          metadata:
+            name: my-pv
+          spec:
+            capacity:
+              storage: 1Gi
+            volumeMode: Filesystem
+            accessModes:
+              - ReadWriteOnce
+            hostPath:
+              path: /data/mongodbdata
+          EOF
       - name: Docker-compose Build
         run: docker-compose build
       - name: See all images
