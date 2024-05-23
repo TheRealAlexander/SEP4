@@ -29,11 +29,18 @@ public class TournamentController : ControllerBase
         return Ok(newRound);
     }
 
-    [HttpGet("{tournamentID}")]
+    [HttpGet("{tournamentID}/scores")]
     public async Task<IActionResult> GetScoreboard([FromRoute] string tournamentID)
     {
         List<Player> players = await _tournamentService.GetScoreboardAsync(tournamentID);
         return Ok(players);
+    }
+
+    [HttpGet("{tournamentID}")]
+    public async Task<IActionResult> GetTournament([FromRoute] string tournamentID)
+    {
+        Tournament tournament = await _tournamentService.GetTournamentAsync(tournamentID);
+        return Ok(tournament);
     }
 
     [HttpGet("history")]
