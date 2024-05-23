@@ -1,6 +1,12 @@
 name: Deployment
 
-on: push
+on:
+  push:
+    paths:
+      - "backend/**"
+  pull_request:
+    paths:
+      - "backend/**"
 
 # on:
 #   push:
@@ -44,6 +50,12 @@ jobs:
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
+      - name: Run the services
+        run: |
+          minikube service mongo
+          minikube service indeklima_webapi
+          minikube service auth_webapi
+          minikube service broker
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
