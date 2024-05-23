@@ -1,7 +1,4 @@
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 using WebApi.Models;
 using WebApi.Models.Dto;
 using WebApi.Services;
@@ -28,6 +25,13 @@ namespace WebApi.Controllers
         {
             try
             {
+                // Assuming your local time zone is +2 hours (Central European Time - CET)
+                TimeZoneInfo localTimeZone = TimeZoneInfo.FindSystemTimeZoneById("Europe/Copenhagen");
+
+                DateTime temperatureTimestamp = TimeZoneInfo.ConvertTime(DateTimeOffset.FromUnixTimeSeconds(data.Temperature_ts).UtcDateTime, localTimeZone);
+                DateTime humidityTimestamp = TimeZoneInfo.ConvertTime(DateTimeOffset.FromUnixTimeSeconds(data.Humidity_ts).UtcDateTime, localTimeZone);
+                DateTime co2Timestamp = TimeZoneInfo.ConvertTime(DateTimeOffset.FromUnixTimeSeconds(data.Co2_ts).UtcDateTime, localTimeZone);
+                
                 // Get sensor goal for the current hallId
                 SensorGoal? sensorGoal = await _sensorGoalService.GetSensorGoalAsync(data.HallId);
                 
@@ -38,7 +42,9 @@ namespace WebApi.Controllers
                     Temperature = data.Temperature,
                     Humidity = data.Humidity,
                     CO2 = data.CO2,
-                    Timestamp = DateTime.Now
+                    TemperatureTimestamp = temperatureTimestamp,
+                    HumidityTimestamp = humidityTimestamp,
+                    CO2Timestamp = co2Timestamp
                 };
 
                 await _sensorDataService.AddSensorDataAsync(sensorData);
