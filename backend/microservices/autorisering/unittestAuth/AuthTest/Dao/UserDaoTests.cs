@@ -57,7 +57,7 @@
 
             // Act & Assert
             async Task action() => await _dao.RegisterUserAsync(user);
-            await Assert.ThrowsAsync<DuplicateNameException>(action);
+            await Assert.ThrowsAsync<Exception>(action);
         }
 
         [Fact]

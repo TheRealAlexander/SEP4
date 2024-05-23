@@ -33,7 +33,17 @@ public class SensorDataDAOTests : IAsyncLifetime
     public async Task AddSensorDataAsync_ShouldAddData_WhenDataIsUnique()
     {
         // Arrange
-        var sensorData = new SensorData { HallId = 1,Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
+        var now = DateTime.UtcNow;
+        var sensorData = new SensorData 
+        { 
+            HallId = 1, 
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            TemperatureTimestamp = now,
+            HumidityTimestamp = now,
+            CO2Timestamp = now 
+        };
 
         // Act
         await _dao.AddSensorDataAsync(sensorData);
@@ -43,20 +53,29 @@ public class SensorDataDAOTests : IAsyncLifetime
         Assert.NotNull(insertedData);
         Assert.Equal(sensorData.Temperature, insertedData[0].Temperature);
         Assert.Equal(sensorData.Humidity, insertedData[0].Humidity);
+        Assert.Equal(sensorData.CO2, insertedData[0].CO2);
     }
 
     [Fact]
-    public async Task AddSensorDataAsync_ShouldThrowExeption_WhenDuplicateData()
+    public async Task AddSensorDataAsync_ShouldThrowException_WhenDuplicateData()
     {
-        //Arrange
-        var sensorData = new SensorData { Temperature = 25, Humidity = 30, Timestamp = DateTime.UtcNow };
+        // Arrange
+        var sensorData = new SensorData 
+        { 
+            HallId = 1,
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            TemperatureTimestamp = DateTime.UtcNow,
+            HumidityTimestamp = DateTime.UtcNow,
+            CO2Timestamp = DateTime.UtcNow 
+        };
         await _dao.AddSensorDataAsync(sensorData);
 
-        //Act
+        // Act
         async Task act() => await _dao.AddSensorDataAsync(sensorData);
 
-        //Assert
+        // Assert
         await Assert.ThrowsAsync<Exception>(act);
-        
     }
 }

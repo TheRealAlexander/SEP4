@@ -1,4 +1,6 @@
-﻿namespace AuthTest;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace AuthTest;
 
 using Xunit;
 using Moq;
@@ -41,6 +43,17 @@ public class UserServiceTests
             u.Password == "password" &&
             u.Email == "email@example.com")),
             Times.Once);
+    }
+    
+    [Fact]
+    public async Task RegisterUser_ShouldThrowValidationException_WhenPasswordIsLessThan8Characters()
+    {
+	    // Arrange
+	    var userCreationDTO = new UserCreationDTO("username", "short", "email@example.com", 25);
+
+	    // Act & Assert
+	    var exception = await Assert.ThrowsAsync<ValidationException>(() => _userService.RegisterUserAsync(userCreationDTO));
+	    Assert.Equal("Password must be at least 8 characters long.", exception.Message);
     }
 
     [Fact]
