@@ -43,6 +43,7 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
+
       - name: Docker-compose Build
         run: docker-compose build
       - name: See all images
@@ -58,6 +59,9 @@ jobs:
         run: kubectl get deployments
       - name: Show status on pods
         run: kubectl describe pods
+      - name: Wait for ready status
+        run: |
+          kubectl wait --for=condition=ready pod --all --timeout=600s
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)
