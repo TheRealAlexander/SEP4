@@ -4,18 +4,9 @@ import { useState, useEffect } from "react";
 const API_BASE_URL = "http://broker:5202";
 
 export function GetAllTournaments() {
-  const [tournaments, setTournaments] = useState([]);
-  useEffect(() => {
-    axios
-      .get(`${API_BASE_URL}/broker/tournaments`)
-      .then((response) => {
-        setTournaments(response.data);
-      })
-      .catch((error) => {
-        console.error(error);
-      });
-  }, []);
-  return tournaments;
+  return axios.get(`${API_BASE_URL}/broker/tournaments`)
+    .then(response => response.data)
+    .catch(error => console.error(error));
 }
 
 export function CreateTournament(tournamentData) {
