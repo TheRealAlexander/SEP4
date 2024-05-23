@@ -43,6 +43,11 @@ jobs:
       - name: List files for debugging
         run: find backend/microservices -type f -name "*.xml"
 
+      - name: Copy files to coverage folder
+        run:
+          cp backend/microservices/**/**/coverage.cobertura.xml
+          backend/microservices/TestProjects/coverage
+
       - name: Install ReportGenerator tool
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
