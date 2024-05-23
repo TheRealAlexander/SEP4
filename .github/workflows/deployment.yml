@@ -30,9 +30,6 @@ jobs:
 
   deploy:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        service: [mongo, indeklima-webapi, auth-webapi, broker]
     steps:
       - uses: actions/checkout@v3
       - name: Set up Minikube
@@ -55,7 +52,6 @@ jobs:
           kubectl wait --for=condition=ready pod --all --timeout=600s
           kubectl wait --for=condition=ready service --all --timeout=600s
       - name: Clean up
-        if: ${{ matrix.service == 'broker-service' }}
         run: |
           eval $(minikube docker-env -u)
           minikube delete
