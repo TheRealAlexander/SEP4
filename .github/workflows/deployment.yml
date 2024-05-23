@@ -44,17 +44,14 @@ jobs:
           name: k8s-files
           path: k8s/
       - name: Build images indeklima
-        working-directory: backend/microservices/indeklima/WebApi
         run: |
           docker build -t indeklima_webapi backend/microservices/indeklima/WebApi
           echo "Built indeklima_webapi"
       - name: Build images auth
-        working-directory: backend/microservices/autorisering/WebApi
         run: |
           docker build -t auth_webapi backend/microservices/autorisering/WebApi
           echo "Built auth_webapi"
       - name: Build images broker
-        working-directory: backend/broker
         run: |
           docker build -t broker backend/broker
           echo "Built broker"
