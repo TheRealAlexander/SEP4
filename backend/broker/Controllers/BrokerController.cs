@@ -73,5 +73,11 @@ namespace Broker.Controllers
         {
             return await _brokerService.RemoveParticipant(tournamentID, participant);
         }
+
+        [HttpPost("setWindowState")]
+        public async Task<ActionResult> SetWindowState(string hallId, string state)
+        {
+            return await _brokerService.SetWindowState(hallId, state);
+        }
     }
 }

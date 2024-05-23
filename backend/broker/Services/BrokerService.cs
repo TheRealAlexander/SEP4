@@ -116,5 +116,10 @@ namespace Broker.Services
             var response = await _httpClient.DeleteAsync($"http://turnering_webapi:5101/tournaments/{tournamentID}/participants/{participant}");
             return response.IsSuccessStatusCode ? new OkResult() : null as ActionResult;
         }
+
+        public async Task<ActionResult> SetWindowState(string hallId, string state)
+        {
+            var response = await _httpClient.PostAsJsonAsync<string>("http://indeklima_webapi:5200/setWindowState", state);
+            return response.IsSuccessStatusCode ? new OkResult() : null as ActionResult;
     }
 }

@@ -27,5 +27,8 @@ namespace Broker.Services
 
         // Corresponds to RemoveParticipant
         public Task<ActionResult> RemoveParticipant(string tournamentID, string participant);
+
+        // Corresponds to setWindowState
+        public Task<ActionResult> SetWindowState(string tournamentID, string windowState);
     }
 }
