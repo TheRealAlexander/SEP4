@@ -39,7 +39,7 @@ static bool wifi2_async_is_done(wifi2_cmd_result *result) {
     }
 }
 
-static void wifi2_canel_async(void) {
+static void wifi2_cancel_async(void) {
     wifi2_g_state = WIFI2_STATE_NONE;
 }
 
@@ -147,4 +147,23 @@ static void wifi2_async_tcp_send(char *data, int data_len) {
 static void wifi2_async_tcp_close(void) {
     char *cmd = "AT+CIPCLOSE\r\n";
     wifi2_async(cmd, false);
+}
+
+static void wifi2_async_udp_open(char *ip, int port) {
+    char cmd[128];
+    snprintf(cmd, sizeof(cmd), "AT+CIPSTART=\"UDP\",\"%s\",%d\r\n", ip, port);
+    wifi2_async(cmd, false);
+}
+
+static void wifi2_async_udp_send(char *data, int data_len) {
+    char cmd[1024];
+    snprintf(cmd, sizeof(cmd), "AT+CIPSEND=%d\r\n", data_len);
+    wifi2_async(cmd, false);
+    _delay_ms(20);
+    uart_send_array_blocking(WIFI2_USART, data, data_len);
+}
+
+static void wifi2_async_udp_close(void) {
+    // Same as tcp close
+    wifi2_async_tcp_close();
 }

@@ -74,6 +74,8 @@ void *memmem(void *haystack, size_t haystack_len,
 #include "dht11/dht11.c"
 #include "wifi/wifi2.h"
 #include "wifi/wifi2.c"
+#include "wifi/ntp.h"
+#include "wifi/ntp.c"
 #include "servo/servo.h"
 #include "servo/servo.c"
 #include "tone/tone.h"
