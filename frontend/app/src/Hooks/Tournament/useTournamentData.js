@@ -15,6 +15,7 @@ const useTournamentData = (tournamentID) => {
         const response = await axios.get(`${API_BASE_URL}/broker/tournaments/${tournamentID}`);
         setTournamentData(response.data);
         setLoading(false);
+        setError(null);
       } catch (err) {
         setError(err);
         setLoading(false);
@@ -72,6 +73,7 @@ const useTournamentData = (tournamentID) => {
   const saveRound = async (round) => {
     try {
       await axios.put(`${API_BASE_URL}/broker/tournaments/${tournamentID}/rounds/${round.RoundNumber}`, round);
+      setError(null);
     } catch (err) {
       setError(err);
     }
