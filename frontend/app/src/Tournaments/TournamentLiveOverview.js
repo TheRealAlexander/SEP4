@@ -51,14 +51,17 @@ const TournamentLiveOverview = () => {
 
   const handleSave = async () => {
     setIsPromptOpen(false);
-    setHasUnsavedChanges(false);
 
     const roundToSave = tournamentData.Rounds[currentRoundIndex];
-    await saveRound(roundToSave);
-
-    if (pendingNavigation) {
-      navigateRound(pendingNavigation);
-      setPendingNavigation(null);
+    try {
+      await saveRound(roundToSave);
+      setHasUnsavedChanges(false);
+      if (pendingNavigation) {
+        navigateRound(pendingNavigation);
+        setPendingNavigation(null);
+      }
+    } catch (error) {
+      console.error('Failed to save round:', error);
     }
   };
 
