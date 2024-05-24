@@ -48,31 +48,6 @@ on:
       - "backend/**"
 
 jobs:
-  convert_dockercompose_to_k8s:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-
-      - name: Install Kompose
-        run: |
-          curl -L https://github.com/kubernetes/kompose/releases/download/v1.24.0/kompose-linux-amd64 -o kompose
-          chmod +x kompose
-          sudo mv ./kompose /usr/local/bin/kompose
-
-      - name: Convert docker-compose to k8s
-        run: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
-
-      - name: Modify Kubernetes manifests for NodePort
-        run: |
-          sed -i 's/type: ClusterIP/type: NodePort/' k8s/*.yaml
-
-      - name: Upload k8s files
-        uses: actions/upload-artifact@v2
-        with:
-          name: k8s-files
-          path: k8s/
-
   deploy:
     runs-on: ubuntu-latest
     steps:
