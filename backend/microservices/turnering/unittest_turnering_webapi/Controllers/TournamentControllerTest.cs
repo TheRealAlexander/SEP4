@@ -27,7 +27,9 @@ public class TournamentControllerTest
             "Americano",
             2,
             32,
-            new List<string>
+            DateTime.Now,
+            "Test description",
+        new List<string>
             {
                 "Player1", "Player2", "Player3", "Player4", "Player5", "Player6", "Player7", "Player8"
             }
@@ -37,13 +39,13 @@ public class TournamentControllerTest
         var result = await _testController.PostTournament(tournamentDto);
 
         // Assert
-        Assert.IsType<OkResult>(result); // Verify that the result is an OkResult
+        Assert.IsType<OkResult>(result);
     }
 
 
     
     [Fact]
-    public void CreateTournament_ReturnsBadRequest_WhenExceptionIsThrown()
+    public async Task CreateTournament_ReturnsBadRequest_WhenExceptionIsThrown()
     {
         // Arrange
         var tournamentDto = new TournamentCreationDTO(
@@ -51,16 +53,18 @@ public class TournamentControllerTest
             "Americano",
             2,
             32,
+            DateTime.Now,
+            "Test description",
             new List<string>
             {
                 "Player1", "Player2", "Player3", "Player4", "Player5", "Player6", "Player7", "Player8"
             }
         );
         _mockTournamentService.Setup(x => x.AddTournamentAsync(It.IsAny<TournamentCreationDTO>())).Throws(new Exception("Test exception"));
-        
+    
         // Act
-        var result = _testController.PostTournament(tournamentDto);
-        
+        IActionResult result = await _testController.PostTournament(tournamentDto);
+    
         // Assert
         var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
         Assert.Equal("Test exception", badRequestResult.Value);

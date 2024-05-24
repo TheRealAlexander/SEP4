@@ -18,8 +18,15 @@ public class TournamentController : ControllerBase
     [HttpPost]
     public async Task<IActionResult> PostTournament([FromBody] TournamentCreationDTO tournamentCreationDto)
     {
-        await _tournamentService.AddTournamentAsync(tournamentCreationDto);
-        return Ok();
+        try
+        {
+            await _tournamentService.AddTournamentAsync(tournamentCreationDto);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 
     [HttpPost("{tournamentID}/players")]

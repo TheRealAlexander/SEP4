@@ -22,7 +22,10 @@ public class PostEnviromentDataControllerTests
     public void PostSensorData_ReturnsOkResult_WhenDataIsValid()
     {
         // Arrange
-        var sensorDataDto = new IOTSensorDataDto { Temperature = 25, Humidity = 30 };
+        var sensorDataDto = new IOTSensorDataDto
+        { 
+            Temperature = 25, Humidity = 30 
+        };
 
         // Act
         var result = _controller.PostSensorData(sensorDataDto);
