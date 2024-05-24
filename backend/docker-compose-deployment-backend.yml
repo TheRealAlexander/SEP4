@@ -11,8 +11,6 @@ services:
       - 7292:7292 #Https
     networks:
       - backend
-    depends_on:
-      - mongo
 
   auth_webapi:
     image: auth_webapi
