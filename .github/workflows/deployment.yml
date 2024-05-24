@@ -72,24 +72,25 @@ jobs:
         run: |
           kubectl apply -f mongo-pv-pvc.yml
           kubectl apply -f mongo-deployment.yml
+          kubectl wait --for=condition=available pod -l app=mongo --timeout=120s
 
       - name: Deploy Indeklima WebApi
         working-directory: k8s
-        run: kubectl apply -f indeklima-webapi-deployment.yaml
+        run: |
+          kubectl apply -f indeklima-webapi-deployment.yaml
+          kubectl wait --for=condition=available pod -l app=indeklima-webapi --timeout=120s
 
       - name: Deploy Auth WebApi
         working-directory: k8s
-        run: kubectl apply -f auth-webapi-deployment.yaml
+        run: |
+          kubectl apply -f auth-webapi-deployment.yaml
+          kubectl wait --for=condition=available pod -l app=auth-webapi --timeout=120s
 
       - name: Deploy Broker
         working-directory: k8s
-        run: kubectl apply -f broker-deployment.yaml
-
-      - name: List all resources
-        run: kubectl get all
-
-      - name: Get Pods
-        run: kubectl get pods
+        run: |
+          kubectl apply -f broker-deployment.yaml
+          kubectl wait --for=condition=available pod -l app=broker --timeout=120s
 
       - name: Expose services
         run: |
