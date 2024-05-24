@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using WebApi.DAO;
-
 namespace WebApi.Models
 {
     public class Mexicano : TournamentFormat
@@ -9,10 +5,11 @@ namespace WebApi.Models
         public static Round GenerateRound(List<Player> players, Tournament tournament)
         {
             var round = new Round(tournament.NextRoundNumber++);
+            tournament.State = 2;
     
             if (tournament.NextRoundNumber == 1)
             {
-                players = tournament.ShufflePlayers();
+                tournament.ShufflePlayers();
             }
             
             players = tournament.SkipPlayers();

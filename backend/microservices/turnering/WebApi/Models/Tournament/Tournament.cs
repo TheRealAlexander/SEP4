@@ -10,22 +10,25 @@ public class Tournament
     public string Id { get; set; } = ObjectId.GenerateNewId().ToString();
     public string Name { get; set; }
     public string Format { get; set; }
-    public int NumberOfPlayers { get; set; }
     public int NumberOfCourts { get; set; }
     public int PointsPerMatch { get; set; }
+    public DateTime StartTime { get; set; }
+    public string Description { get; set; }
     public List<Player> Players { get; set; }
-    public List<Round> Rounds { get; set; }
+    public int State { get; set; } = 1;
+    public List<Round> Rounds { get; set; } = new List<Round>();
     public int NextRoundNumber { get; set; } = 1;
-    public List<Player> SkippedARound { get; set; } = new List<Player>();
-    public List<Player> SkippedLastRound { get; set; } = new List<Player>();
+    private List<Player> SkippedARound { get; set; } = new List<Player>();
+    private List<Player> SkippedLastRound { get; set; } = new List<Player>();
 
-    public Tournament(string name, string format, int numberOfPlayers, int numberOfCourts, int pointsPerMatch, List<Player> players)
+    public Tournament(string name, string format, int numberOfCourts, int pointsPerMatch, DateTime startTime, string description, List<Player> players)
     {
         Name = name;
         Format = format;
-        NumberOfPlayers = numberOfPlayers;
         NumberOfCourts = numberOfCourts;
         PointsPerMatch = pointsPerMatch;
+        StartTime = startTime;
+        Description = description;
         Players = players;
     }
 
@@ -48,9 +51,7 @@ public class Tournament
         {
             n--;
             int k = rng.Next(n + 1);
-            Player value = Players[k];
-            Players[k] = Players[n];
-            Players[n] = value;
+            (Players[k], Players[n]) = (Players[n], Players[k]);
         }
         return Players;
     }

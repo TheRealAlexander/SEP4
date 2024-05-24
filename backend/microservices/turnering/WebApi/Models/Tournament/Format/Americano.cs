@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-
 namespace WebApi.Models
 {
     public class Americano : TournamentFormat
@@ -8,8 +5,9 @@ namespace WebApi.Models
         public static Round GenerateRound(List<Player> players, Tournament tournament)
         {
             var round = new Round(tournament.NextRoundNumber++);
+            tournament.State = 2;
 
-            players = tournament.ShufflePlayers();
+            tournament.ShufflePlayers();
             players = tournament.SkipPlayers();
             
             for (int i = 0; i < tournament.NumberOfCourts; i++)
