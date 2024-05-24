@@ -75,36 +75,10 @@ jobs:
           kubectl apply -f k8s/
           kubectl get all
 
-      - name: Test services
+      - name: Show Services and pods in Minikube
         run: |
-          # Run indeklimawebapi service in the background
-          minikube service indeklimawebapi &
-          indeklimawebapi_pid=$!
-
-          # Wait for a few seconds before deleting the service
-          sleep 5
-          minikube service indeklimawebapi --delete
-
-          # Run authwebapi service in the background
-          minikube service authwebapi &
-          authwebapi_pid=$!
-
-          # Wait for a few seconds before deleting the service
-          sleep 5
-          minikube service authwebapi --delete
-
-          # Run broker service in the background
-          minikube service broker &
-          broker_pid=$!
-
-          # Wait for a few seconds before deleting the service
-          sleep 5
-          minikube service broker --delete
-
-          # Wait for all background processes to complete
-          wait $indeklimawebapi_pid
-          wait $authwebapi_pid
-          wait $broker_pid
+          minikube service list
+          kubectl get pods
 
       - name: Clean up
         run: |
