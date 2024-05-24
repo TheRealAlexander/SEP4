@@ -58,11 +58,15 @@ jobs:
         uses: medyagh/setup-minikube@latest
 
       - name: Setup docker env
-        run: eval $(minikube docker-env)
+        run: |
+          export SHELL=/bin/bash
+          eval $(minikube -p minikube docker-env)
+          docker compose -f docker-compose-deployment-backend.yml build
 
       - name: Deploy MongoDB
         working-directory: backend/k8s
         run: |
+          docker pull mongo:7.0
           kubectl apply -f mongo-pv-pvc.yml
           kubectl apply -f mongo-deployment.yml
 
