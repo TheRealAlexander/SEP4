@@ -50,7 +50,7 @@ jobs:
           apiVersion: v1
           kind: PersistentVolume
           metadata:
-            name: mongodbdata
+            name: mongo-pv
           spec:
             capacity:
               storage: 1Gi
@@ -59,7 +59,31 @@ jobs:
               - ReadWriteOnce
             hostPath:
               path: /data/mongodbdata
+          ---
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: mongodbdata
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Gi
           EOF
+
+      - name: Modify Mongo Deployment to Use PVC
+        run: |
+          # Ensure the mongo deployment uses the PVC
+          sed -i '/containers:/a \
+          \      volumeMounts:\n\
+          \        - name: mongodbdata\n\
+          \          mountPath: /data/db' k8s/mongo-deployment.yaml
+          sed -i '/spec:/a \
+          \  volumes:\n\
+          \    - name: mongodbdata\n\
+          \      persistentVolumeClaim:\n\
+          \        claimName: mongodbdata' k8s/mongo-deployment.yaml
 
       - name: Docker-compose Build
         run: docker-compose build
