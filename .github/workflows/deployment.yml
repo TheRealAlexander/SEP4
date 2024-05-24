@@ -82,29 +82,6 @@ jobs:
         id: minikube
         uses: medyagh/setup-minikube@latest
 
-      - name: Start Minikube
-        run: minikube start --driver=docker
-
-      - name: Download k8s files
-        uses: actions/download-artifact@v2
-        with:
-          name: k8s-files
-          path: k8s/
-
-      - name: Docker-compose Build
-        run: docker-compose -f docker-compose-deployment-backend.yml build
-
-      - name: Add MongoDB image
-        run: docker pull mongo:7.0
-
-      - name: See all images
-        run: docker images
-
-      - name: Deploy network
-        working-directory: k8s
-        run: |
-          kubectl apply -f backend-networkpolicy.yaml
-
       - name: Deploy MongoDB
         working-directory: backend/k8s
         run: |
