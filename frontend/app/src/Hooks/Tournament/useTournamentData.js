@@ -69,7 +69,15 @@ const useTournamentData = (tournamentID) => {
     });
   };
 
-  return { tournamentData, currentRoundIndex, updateScores, navigateRound, loading, error };
+  const saveRound = async (round) => {
+    try {
+      await axios.put(`${API_BASE_URL}/broker/tournaments/${tournamentID}/rounds/${round.RoundNumber}`, round);
+    } catch (err) {
+      setError(err);
+    }
+  };
+
+  return { tournamentData, currentRoundIndex, updateScores, navigateRound, saveRound, loading, error };
 };
 
 export default useTournamentData;
