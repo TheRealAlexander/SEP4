@@ -1,19 +1,10 @@
+import axios from 'axios';
 import { useState, useEffect } from 'react';
 
+const API_BASE_URL = 'http://broker:5202'; // Ensure this is the correct base URL for your API
+
 const useTournamentData = (tournamentID) => {
-  const [tournamentData, setTournamentData] = useState({
-    Id: tournamentID,
-    Name: "Tournament Name",
-    Format: "Mexicano",
-    NumberOfCourts: 4,
-    PointsPerMatch: 32,
-    Players: [],
-    State: 2,
-    Rounds: [],
-    NextRoundNumber: 1,
-    SkippedARound: [],
-    SkippedLastRound: []
-  });
+  const [tournamentData, setTournamentData] = useState(null);
   const [currentRoundIndex, setCurrentRoundIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -21,68 +12,8 @@ const useTournamentData = (tournamentID) => {
   useEffect(() => {
     const fetchTournamentData = async () => {
       try {
-        const generateDummyData = (tournamentID) => {
-          const playerCount = 16;
-          const courtCount = 4;
-          const roundCount = 3;
-
-          const players = Array.from({ length: playerCount }, (_, i) => ({
-            Name: `Player ${i + 1}`,
-            Wins: 0,
-            Draws: 0,
-            Losses: 0,
-            Points: 0
-          }));
-
-          const rounds = Array.from({ length: roundCount }, (_, roundIndex) => ({
-            RoundNumber: roundIndex + 1,
-            Courts: []
-          }));
-
-          for (let roundIndex = 0; roundIndex < roundCount; roundIndex++) {
-            let shuffledPlayers = [...players];
-
-            for (let i = shuffledPlayers.length - 1; i > 0; i--) {
-              const j = Math.floor(Math.random() * (i + 1));
-              [shuffledPlayers[i], shuffledPlayers[j]] = [shuffledPlayers[j], shuffledPlayers[i]];
-            }
-
-            const courts = Array.from({ length: courtCount }, (_, courtIndex) => {
-              const baseIndex = courtIndex * 4;
-              return {
-                id: `court-${roundIndex}-${courtIndex}`,
-                teams: [
-                  [shuffledPlayers[baseIndex], shuffledPlayers[baseIndex + 1]],
-                  [shuffledPlayers[baseIndex + 2], shuffledPlayers[baseIndex + 3]]
-                ],
-                scores: [0, 0], // Initial scores are set to 0
-                previousScores: [0, 0] // Add a field to track previous scores
-              };
-            });
-
-            rounds[roundIndex].Courts = courts;
-          }
-
-          return {
-            Id: tournamentID,
-            Name: "Tournament Name",
-            Format: "Mexicano",
-            NumberOfCourts: 4,
-            PointsPerMatch: 32,
-            Players: players,
-            State: 2,
-            Rounds: rounds,
-            NextRoundNumber: 2,
-            SkippedARound: [],
-            SkippedLastRound: []
-          };
-        };
-
-        const dummyData = generateDummyData(tournamentID);
-        
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        setTournamentData(dummyData);
+        const response = await axios.get(`${API_BASE_URL}/broker/tournaments/${tournamentID}`);
+        setTournamentData(response.data);
         setLoading(false);
       } catch (err) {
         setError(err);
@@ -100,18 +31,16 @@ const useTournamentData = (tournamentID) => {
 
   const updateScores = (roundNumber, courtId, newScores) => {
     const { roundIndex, courtIndex } = parseCourtIndex(courtId);
-    
+
     setTournamentData(prev => {
       let newPlayers = [...prev.Players];
       const newRounds = prev.Rounds.map((round, rIndex) => {
         if (rIndex === roundIndex) {
           const newCourts = round.Courts.map((court, cIndex) => {
             if (cIndex === courtIndex) {
-              // Calculate the score difference
               const oldScores = court.scores;
               const scoreDifferences = newScores.map((score, index) => score - oldScores[index]);
-              
-              // Update player points
+
               court.teams.forEach((team, teamIndex) => {
                 team.forEach(player => {
                   const playerIndex = newPlayers.findIndex(p => p.Name === player.Name);
@@ -120,8 +49,7 @@ const useTournamentData = (tournamentID) => {
                   }
                 });
               });
-              
-              // Update the court with new scores and previous scores
+
               return { ...court, scores: newScores, previousScores: oldScores };
             }
             return court;
