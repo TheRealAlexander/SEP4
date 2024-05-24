@@ -53,11 +53,16 @@ jobs:
       - name: Docker-compose Build
         run: docker-compose -f docker-compose-deployment-backend.yml build
 
+      - name: Add MongoDB image
+        run: docker pull mongo:7.0
+
       - name: See all images
         run: docker images
 
-      - name: Add MongoDB image
-        run: docker pull mongo:7.0
+      - name: Deploy network
+        working-directory: backend/k8s
+        run: |
+          kubectl apply -f networkpolicy.networking.k8s.io/backend
 
       - name: Deploy MongoDB
         working-directory: backend/k8s
@@ -65,25 +70,32 @@ jobs:
           kubectl apply -f mongo-pv-pvc.yml
           kubectl apply -f mongo-deployment.yml
 
-      - name: Apply the k8s files
+      - name: Deploy Indeklima WebApi
+        working-directory: backend/k8s
+        run: kubectl apply -f deployment.apps/indeklima-webapi.yml
+
+      - name: Deploy Auth WebApi
+        working-directory: backend/k8s
+        run: kubectl apply -f deployment.apps/auth-webapi.yml
+
+      - name: Deploy Broker
+        working-directory: backend/k8s
+        run: kubectl apply -f deployment.apps/broker.yml
+
+      - name: List all resources
+        run: kubectl get all
+
+      - name: Expose services
         run: |
-          kubectl apply -f k8s/
+          kubectl expose deployment indeklima-webapi --type=NodePort --port=5200
+          kubectl expose deployment auth-webapi --type=NodePort --port=5001
+          kubectl expose deployment broker --type=NodePort --port=5202
 
-      - name: List all services
-        run: kubectl get services
-
-      - name: List all pods
-        run: kubectl get pods
-
-      - name: List all deployments
-        run: kubectl get deployments
-
-      - name: Show status on pods
-        run: kubectl describe pods
-
-      - name: Wait for ready status
+      - name: Test services
         run: |
-          kubectl wait --for=condition=ready pod --all --timeout=600s
+          minikube service indeklima-webapi
+          minikube service auth-webapi
+          minikube service broker
 
       - name: Clean up
         run: |
