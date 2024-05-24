@@ -78,8 +78,14 @@ jobs:
       - name: Test services
         run: |
           minikube service indeklimawebapi
+          sleep 5
+          minikube service indeklimawebapi --delete
           minikube service authwebapi
+          sleep 5
+          minikube service authwebapi --delete
           minikube service broker
+          sleep 5
+          minikube service broker --delete
 
       - name: Clean up
         run: |
