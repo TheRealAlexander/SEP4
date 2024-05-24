@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: authwebapi
+  name: authwebapi
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: authwebapi
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+        kompose.version: 1.30.0 (9d8dcb518)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sep4-backend: "true"
+        io.kompose.service: authwebapi
+    spec:
+      containers:
+        - image: olsen7351/sep4:auth_webapi
+          name: authwebapi
+          ports:
+            - containerPort: 5001
+              hostPort: 5001
+              protocol: TCP
+            - containerPort: 7293
+              hostPort: 7293
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}
