@@ -53,8 +53,7 @@ jobs:
           path: k8s/
 
       - name: Docker-compose Build
-        run:
-          docker-compose -f backend/docker-compose-deployment-backend.yml build
+        run: docker-compose -f docker-compose-deployment-backend.yml build
 
       - name: See all images
         run: docker images
