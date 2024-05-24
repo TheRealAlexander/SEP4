@@ -216,7 +216,7 @@ specific hall
     }
 ```
 
-## Request: User registration
+### Request: User registration
 
 **Description:**
 
