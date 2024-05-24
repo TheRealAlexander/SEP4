@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<coverage line-rate="0.6953" branch-rate="0.6875" version="1.9" timestamp="1716439879" lines-covered="194" lines-valid="279" branches-covered="11" branches-valid="16">
+<coverage line-rate="0.6709" branch-rate="0.6875" version="1.9" timestamp="1716544051" lines-covered="208" lines-valid="310" branches-covered="11" branches-valid="16">
   <sources>
     <source>/home/runner/work/SEP4/SEP4/backend/microservices/indeklima/WebApi/</source>
   </sources>
   <packages>
-    <package name="IndeklimaWebApi" line-rate="0.6953" branch-rate="0.6875" complexity="57">
+    <package name="IndeklimaWebApi" line-rate="0.6709" branch-rate="0.6875" complexity="62">
       <classes>
         <class name="Program" filename="Program.cs" line-rate="0" branch-rate="0" complexity="2">
           <methods>
@@ -324,7 +324,7 @@
             <line number="25" hits="1" branch="False" />
           </lines>
         </class>
-        <class name="WebApi.Models.SensorData" filename="Models/SensorData.cs" line-rate="1" branch-rate="1" complexity="6">
+        <class name="WebApi.Models.SensorData" filename="Models/SensorData.cs" line-rate="1" branch-rate="1" complexity="8">
           <methods>
             <method name="get_Id" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
@@ -333,7 +333,7 @@
             </method>
             <method name="get_HallId" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="11" hits="16" branch="False" />
+                <line number="11" hits="17" branch="False" />
               </lines>
             </method>
             <method name="get_Temperature" signature="()" line-rate="1" branch-rate="1" complexity="1">
@@ -348,22 +348,34 @@
             </method>
             <method name="get_CO2" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="14" hits="17" branch="False" />
+                <line number="14" hits="21" branch="False" />
               </lines>
             </method>
-            <method name="get_Timestamp" signature="()" line-rate="1" branch-rate="1" complexity="1">
+            <method name="get_TemperatureTimestamp" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
                 <line number="15" hits="20" branch="False" />
+              </lines>
+            </method>
+            <method name="get_HumidityTimestamp" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="16" hits="20" branch="False" />
+              </lines>
+            </method>
+            <method name="get_CO2Timestamp" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="17" hits="20" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
             <line number="10" hits="33" branch="False" />
-            <line number="11" hits="16" branch="False" />
+            <line number="11" hits="17" branch="False" />
             <line number="12" hits="21" branch="False" />
             <line number="13" hits="21" branch="False" />
-            <line number="14" hits="17" branch="False" />
+            <line number="14" hits="21" branch="False" />
             <line number="15" hits="20" branch="False" />
+            <line number="16" hits="20" branch="False" />
+            <line number="17" hits="20" branch="False" />
           </lines>
         </class>
         <class name="WebApi.Models.SensorGoal" filename="Models/SensorGoal.cs" line-rate="1" branch-rate="1" complexity="5">
@@ -402,7 +414,7 @@
             <line number="19" hits="29" branch="False" />
           </lines>
         </class>
-        <class name="WebApi.Models.Dto.IOTSensorDataDto" filename="Models/Dto/IOTSensorDataDto.cs" line-rate="1" branch-rate="1" complexity="4">
+        <class name="WebApi.Models.Dto.IOTSensorDataDto" filename="Models/Dto/IOTSensorDataDto.cs" line-rate="1" branch-rate="1" complexity="7">
           <methods>
             <method name="get_HallId" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
@@ -424,12 +436,30 @@
                 <line number="8" hits="4" branch="False" />
               </lines>
             </method>
+            <method name="get_Temperature_ts" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="9" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Humidity_ts" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="10" hits="4" branch="False" />
+              </lines>
+            </method>
+            <method name="get_Co2_ts" signature="()" line-rate="1" branch-rate="1" complexity="1">
+              <lines>
+                <line number="11" hits="4" branch="False" />
+              </lines>
+            </method>
           </methods>
           <lines>
             <line number="5" hits="11" branch="False" />
             <line number="6" hits="4" branch="False" />
             <line number="7" hits="4" branch="False" />
             <line number="8" hits="4" branch="False" />
+            <line number="9" hits="4" branch="False" />
+            <line number="10" hits="4" branch="False" />
+            <line number="11" hits="4" branch="False" />
           </lines>
         </class>
         <class name="WebApi.DAO.MongoDbContext" filename="DAO/MongoDbContext.cs" line-rate="1" branch-rate="1" complexity="2">
@@ -462,148 +492,188 @@
           <methods>
             <method name=".ctor" signature="(WebApi.DAO.MongoDbContext)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="10" hits="2" branch="False" />
-                <line number="11" hits="2" branch="False" />
                 <line number="12" hits="2" branch="False" />
                 <line number="13" hits="2" branch="False" />
+                <line number="14" hits="2" branch="False" />
+                <line number="15" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="10" hits="2" branch="False" />
-            <line number="11" hits="2" branch="False" />
             <line number="12" hits="2" branch="False" />
             <line number="13" hits="2" branch="False" />
+            <line number="14" hits="2" branch="False" />
+            <line number="15" hits="2" branch="False" />
           </lines>
         </class>
-        <class name="WebApi.DAO.SensorDataDAO/&lt;AddSensorDataAsync&gt;d__5" filename="DAO/SensorDataDAO.cs" line-rate="0.875" branch-rate="0.75" complexity="4">
+        <class name="WebApi.DAO.SensorDataDAO/&lt;AddSensorDataAsync&gt;d__5" filename="DAO/SensorDataDAO.cs" line-rate="0.8946999999999999" branch-rate="0.75" complexity="4">
           <methods>
-            <method name="MoveNext" signature="()" line-rate="0.875" branch-rate="0.75" complexity="4">
+            <method name="MoveNext" signature="()" line-rate="0.8946999999999999" branch-rate="0.75" complexity="4">
               <lines>
-                <line number="51" hits="3" branch="False" />
-                <line number="53" hits="3" branch="False" />
-                <line number="54" hits="3" branch="True" condition-coverage="50% (1/2)">
+                <line number="70" hits="3" branch="False" />
+                <line number="72" hits="3" branch="False" />
+                <line number="73" hits="3" branch="True" condition-coverage="50% (1/2)">
                   <conditions>
                     <condition number="83" type="jump" coverage="50%" />
                   </conditions>
                 </line>
-                <line number="55" hits="0" branch="False" />
-                <line number="56" hits="0" branch="False" />
-                <line number="60" hits="3" branch="False" />
-                <line number="61" hits="3" branch="False" />
-                <line number="62" hits="3" branch="True" condition-coverage="100% (2/2)">
+                <line number="74" hits="0" branch="False" />
+                <line number="75" hits="0" branch="False" />
+                <line number="79" hits="3" branch="False" />
+                <line number="80" hits="3" branch="False" />
+                <line number="81" hits="3" branch="False" />
+                <line number="82" hits="3" branch="False" />
+                <line number="83" hits="3" branch="False" />
+                <line number="84" hits="3" branch="True" condition-coverage="100% (2/2)">
                   <conditions>
-                    <condition number="391" type="jump" coverage="100%" />
+                    <condition number="597" type="jump" coverage="100%" />
                   </conditions>
                 </line>
-                <line number="63" hits="1" branch="False" />
-                <line number="64" hits="1" branch="False" />
-                <line number="68" hits="2" branch="False" />
-                <line number="70" hits="2" branch="False" />
-                <line number="72" hits="1" branch="False" />
-                <line number="73" hits="1" branch="False" />
-                <line number="74" hits="1" branch="False" />
-                <line number="76" hits="2" branch="False" />
+                <line number="85" hits="1" branch="False" />
+                <line number="86" hits="1" branch="False" />
+                <line number="90" hits="2" branch="False" />
+                <line number="92" hits="2" branch="False" />
+                <line number="94" hits="1" branch="False" />
+                <line number="95" hits="1" branch="False" />
+                <line number="96" hits="1" branch="False" />
+                <line number="98" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="51" hits="3" branch="False" />
-            <line number="53" hits="3" branch="False" />
-            <line number="54" hits="3" branch="True" condition-coverage="50% (1/2)">
+            <line number="70" hits="3" branch="False" />
+            <line number="72" hits="3" branch="False" />
+            <line number="73" hits="3" branch="True" condition-coverage="50% (1/2)">
               <conditions>
                 <condition number="83" type="jump" coverage="50%" />
               </conditions>
             </line>
-            <line number="55" hits="0" branch="False" />
-            <line number="56" hits="0" branch="False" />
-            <line number="60" hits="3" branch="False" />
-            <line number="61" hits="3" branch="False" />
-            <line number="62" hits="3" branch="True" condition-coverage="100% (2/2)">
+            <line number="74" hits="0" branch="False" />
+            <line number="75" hits="0" branch="False" />
+            <line number="79" hits="3" branch="False" />
+            <line number="80" hits="3" branch="False" />
+            <line number="81" hits="3" branch="False" />
+            <line number="82" hits="3" branch="False" />
+            <line number="83" hits="3" branch="False" />
+            <line number="84" hits="3" branch="True" condition-coverage="100% (2/2)">
               <conditions>
-                <condition number="391" type="jump" coverage="100%" />
+                <condition number="597" type="jump" coverage="100%" />
               </conditions>
             </line>
-            <line number="63" hits="1" branch="False" />
-            <line number="64" hits="1" branch="False" />
-            <line number="68" hits="2" branch="False" />
-            <line number="70" hits="2" branch="False" />
-            <line number="72" hits="1" branch="False" />
-            <line number="73" hits="1" branch="False" />
-            <line number="74" hits="1" branch="False" />
-            <line number="76" hits="2" branch="False" />
+            <line number="85" hits="1" branch="False" />
+            <line number="86" hits="1" branch="False" />
+            <line number="90" hits="2" branch="False" />
+            <line number="92" hits="2" branch="False" />
+            <line number="94" hits="1" branch="False" />
+            <line number="95" hits="1" branch="False" />
+            <line number="96" hits="1" branch="False" />
+            <line number="98" hits="2" branch="False" />
           </lines>
         </class>
         <class name="WebApi.DAO.SensorDataDAO/&lt;GetSensorDataAsync&gt;d__2" filename="DAO/SensorDataDAO.cs" line-rate="0.5714" branch-rate="1" complexity="1">
           <methods>
             <method name="MoveNext" signature="()" line-rate="0.5714" branch-rate="1" complexity="1">
               <lines>
-                <line number="16" hits="1" branch="False" />
                 <line number="18" hits="1" branch="False" />
-                <line number="19" hits="1" branch="False" />
-                <line number="21" hits="0" branch="False" />
-                <line number="22" hits="0" branch="False" />
+                <line number="20" hits="1" branch="False" />
+                <line number="21" hits="1" branch="False" />
                 <line number="23" hits="0" branch="False" />
-                <line number="25" hits="1" branch="False" />
+                <line number="24" hits="0" branch="False" />
+                <line number="25" hits="0" branch="False" />
+                <line number="27" hits="1" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="16" hits="1" branch="False" />
             <line number="18" hits="1" branch="False" />
-            <line number="19" hits="1" branch="False" />
-            <line number="21" hits="0" branch="False" />
-            <line number="22" hits="0" branch="False" />
+            <line number="20" hits="1" branch="False" />
+            <line number="21" hits="1" branch="False" />
             <line number="23" hits="0" branch="False" />
-            <line number="25" hits="1" branch="False" />
+            <line number="24" hits="0" branch="False" />
+            <line number="25" hits="0" branch="False" />
+            <line number="27" hits="1" branch="False" />
           </lines>
         </class>
         <class name="WebApi.DAO.SensorDataDAO/&lt;GetSensorDataAsync&gt;d__3" filename="DAO/SensorDataDAO.cs" line-rate="0" branch-rate="1" complexity="1">
           <methods>
             <method name="MoveNext" signature="()" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="27" hits="0" branch="False" />
                 <line number="29" hits="0" branch="False" />
-                <line number="30" hits="0" branch="False" />
+                <line number="31" hits="0" branch="False" />
                 <line number="32" hits="0" branch="False" />
-                <line number="33" hits="0" branch="False" />
                 <line number="34" hits="0" branch="False" />
+                <line number="35" hits="0" branch="False" />
                 <line number="36" hits="0" branch="False" />
+                <line number="38" hits="0" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="27" hits="0" branch="False" />
             <line number="29" hits="0" branch="False" />
-            <line number="30" hits="0" branch="False" />
+            <line number="31" hits="0" branch="False" />
             <line number="32" hits="0" branch="False" />
-            <line number="33" hits="0" branch="False" />
             <line number="34" hits="0" branch="False" />
+            <line number="35" hits="0" branch="False" />
             <line number="36" hits="0" branch="False" />
+            <line number="38" hits="0" branch="False" />
           </lines>
         </class>
         <class name="WebApi.DAO.SensorDataDAO/&lt;GetSensorDataAsync&gt;d__4" filename="DAO/SensorDataDAO.cs" line-rate="0" branch-rate="1" complexity="1">
           <methods>
             <method name="MoveNext" signature="()" line-rate="0" branch-rate="1" complexity="1">
               <lines>
-                <line number="39" hits="0" branch="False" />
                 <line number="41" hits="0" branch="False" />
-                <line number="42" hits="0" branch="False" />
+                <line number="43" hits="0" branch="False" />
                 <line number="44" hits="0" branch="False" />
                 <line number="45" hits="0" branch="False" />
                 <line number="46" hits="0" branch="False" />
+                <line number="47" hits="0" branch="False" />
                 <line number="48" hits="0" branch="False" />
+                <line number="49" hits="0" branch="False" />
+                <line number="50" hits="0" branch="False" />
+                <line number="51" hits="0" branch="False" />
+                <line number="52" hits="0" branch="False" />
+                <line number="53" hits="0" branch="False" />
+                <line number="54" hits="0" branch="False" />
+                <line number="55" hits="0" branch="False" />
+                <line number="56" hits="0" branch="False" />
+                <line number="57" hits="0" branch="False" />
+                <line number="58" hits="0" branch="False" />
+                <line number="59" hits="0" branch="False" />
+                <line number="60" hits="0" branch="False" />
+                <line number="62" hits="0" branch="False" />
+                <line number="63" hits="0" branch="False" />
+                <line number="64" hits="0" branch="False" />
+                <line number="65" hits="0" branch="False" />
+                <line number="67" hits="0" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="39" hits="0" branch="False" />
             <line number="41" hits="0" branch="False" />
-            <line number="42" hits="0" branch="False" />
+            <line number="43" hits="0" branch="False" />
             <line number="44" hits="0" branch="False" />
             <line number="45" hits="0" branch="False" />
             <line number="46" hits="0" branch="False" />
+            <line number="47" hits="0" branch="False" />
             <line number="48" hits="0" branch="False" />
+            <line number="49" hits="0" branch="False" />
+            <line number="50" hits="0" branch="False" />
+            <line number="51" hits="0" branch="False" />
+            <line number="52" hits="0" branch="False" />
+            <line number="53" hits="0" branch="False" />
+            <line number="54" hits="0" branch="False" />
+            <line number="55" hits="0" branch="False" />
+            <line number="56" hits="0" branch="False" />
+            <line number="57" hits="0" branch="False" />
+            <line number="58" hits="0" branch="False" />
+            <line number="59" hits="0" branch="False" />
+            <line number="60" hits="0" branch="False" />
+            <line number="62" hits="0" branch="False" />
+            <line number="63" hits="0" branch="False" />
+            <line number="64" hits="0" branch="False" />
+            <line number="65" hits="0" branch="False" />
+            <line number="67" hits="0" branch="False" />
           </lines>
         </class>
         <class name="WebApi.DAO.SensorGoalDAO" filename="DAO/SensorGoalDAO.cs" line-rate="1" branch-rate="1" complexity="1">
@@ -808,27 +878,28 @@
           <methods>
             <method name=".ctor" signature="(WebApi.Services.ISensorGoalService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
+                <line number="14" hits="2" branch="False" />
                 <line number="15" hits="2" branch="False" />
                 <line number="16" hits="2" branch="False" />
                 <line number="17" hits="2" branch="False" />
-                <line number="18" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
+            <line number="14" hits="2" branch="False" />
             <line number="15" hits="2" branch="False" />
             <line number="16" hits="2" branch="False" />
             <line number="17" hits="2" branch="False" />
-            <line number="18" hits="2" branch="False" />
           </lines>
         </class>
         <class name="WebApi.Controllers.PostEnvironmentDataGoalController/&lt;PostSensorDataGoal&gt;d__2" filename="Controllers/Frontend_Endpoints/PostEnvironmentDataGoalController.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
             <method name="MoveNext" signature="()" line-rate="1" branch-rate="1" complexity="1">
               <lines>
-                <line number="23" hits="2" branch="False" />
+                <line number="22" hits="2" branch="False" />
+                <line number="24" hits="2" branch="False" />
                 <line number="25" hits="2" branch="False" />
-                <line number="26" hits="2" branch="False" />
+                <line number="26" hits="1" branch="False" />
                 <line number="27" hits="1" branch="False" />
                 <line number="28" hits="1" branch="False" />
                 <line number="29" hits="1" branch="False" />
@@ -836,18 +907,18 @@
                 <line number="31" hits="1" branch="False" />
                 <line number="32" hits="1" branch="False" />
                 <line number="33" hits="1" branch="False" />
-                <line number="34" hits="1" branch="False" />
+                <line number="35" hits="1" branch="False" />
                 <line number="36" hits="1" branch="False" />
                 <line number="37" hits="1" branch="False" />
-                <line number="38" hits="1" branch="False" />
-                <line number="40" hits="2" branch="False" />
+                <line number="39" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="23" hits="2" branch="False" />
+            <line number="22" hits="2" branch="False" />
+            <line number="24" hits="2" branch="False" />
             <line number="25" hits="2" branch="False" />
-            <line number="26" hits="2" branch="False" />
+            <line number="26" hits="1" branch="False" />
             <line number="27" hits="1" branch="False" />
             <line number="28" hits="1" branch="False" />
             <line number="29" hits="1" branch="False" />
@@ -855,147 +926,158 @@
             <line number="31" hits="1" branch="False" />
             <line number="32" hits="1" branch="False" />
             <line number="33" hits="1" branch="False" />
-            <line number="34" hits="1" branch="False" />
+            <line number="35" hits="1" branch="False" />
             <line number="36" hits="1" branch="False" />
             <line number="37" hits="1" branch="False" />
-            <line number="38" hits="1" branch="False" />
-            <line number="40" hits="2" branch="False" />
+            <line number="39" hits="2" branch="False" />
           </lines>
         </class>
         <class name="WebApi.Controllers.PostEnvironmentDataController" filename="Controllers/IOT_Endpoints/PostEnvironmentDataController.cs" line-rate="1" branch-rate="1" complexity="1">
           <methods>
             <method name=".ctor" signature="(WebApi.Services.ISensorDataService,WebApi.Services.ISensorGoalService,WebApi.Services.IIOTControlService)" line-rate="1" branch-rate="1" complexity="1">
               <lines>
+                <line number="16" hits="2" branch="False" />
+                <line number="17" hits="2" branch="False" />
+                <line number="18" hits="2" branch="False" />
                 <line number="19" hits="2" branch="False" />
                 <line number="20" hits="2" branch="False" />
                 <line number="21" hits="2" branch="False" />
-                <line number="22" hits="2" branch="False" />
-                <line number="23" hits="2" branch="False" />
-                <line number="24" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
+            <line number="16" hits="2" branch="False" />
+            <line number="17" hits="2" branch="False" />
+            <line number="18" hits="2" branch="False" />
             <line number="19" hits="2" branch="False" />
             <line number="20" hits="2" branch="False" />
             <line number="21" hits="2" branch="False" />
-            <line number="22" hits="2" branch="False" />
-            <line number="23" hits="2" branch="False" />
-            <line number="24" hits="2" branch="False" />
           </lines>
         </class>
-        <class name="WebApi.Controllers.PostEnvironmentDataController/&lt;PostSensorData&gt;d__4" filename="Controllers/IOT_Endpoints/PostEnvironmentDataController.cs" line-rate="0.9068999999999999" branch-rate="0.6666" complexity="6">
+        <class name="WebApi.Controllers.PostEnvironmentDataController/&lt;PostSensorData&gt;d__4" filename="Controllers/IOT_Endpoints/PostEnvironmentDataController.cs" line-rate="0.9183" branch-rate="0.6666" complexity="6">
           <methods>
-            <method name="MoveNext" signature="()" line-rate="0.9068999999999999" branch-rate="0.6666" complexity="6">
+            <method name="MoveNext" signature="()" line-rate="0.9183" branch-rate="0.6666" complexity="6">
               <lines>
-                <line number="28" hits="2" branch="False" />
-                <line number="30" hits="2" branch="False" />
+                <line number="25" hits="2" branch="False" />
+                <line number="27" hits="2" branch="False" />
+                <line number="29" hits="2" branch="False" />
+                <line number="31" hits="2" branch="False" />
                 <line number="32" hits="2" branch="False" />
-                <line number="35" hits="2" branch="False" />
+                <line number="33" hits="2" branch="False" />
                 <line number="36" hits="2" branch="False" />
-                <line number="37" hits="2" branch="False" />
-                <line number="38" hits="2" branch="False" />
                 <line number="39" hits="2" branch="False" />
                 <line number="40" hits="2" branch="False" />
                 <line number="41" hits="2" branch="False" />
                 <line number="42" hits="2" branch="False" />
+                <line number="43" hits="2" branch="False" />
                 <line number="44" hits="2" branch="False" />
-                <line number="46" hits="1" branch="False" />
-                <line number="48" hits="1" branch="True" condition-coverage="75% (3/4)">
-                  <conditions>
-                    <condition number="419" type="jump" coverage="50%" />
-                    <condition number="452" type="jump" coverage="100%" />
-                  </conditions>
-                </line>
-                <line number="49" hits="1" branch="False" />
-                <line number="50" hits="1" branch="True" condition-coverage="50% (1/2)">
-                  <conditions>
-                    <condition number="544" type="jump" coverage="50%" />
-                  </conditions>
-                </line>
-                <line number="51" hits="1" branch="False" />
+                <line number="45" hits="2" branch="False" />
+                <line number="46" hits="2" branch="False" />
+                <line number="47" hits="2" branch="False" />
+                <line number="48" hits="2" branch="False" />
+                <line number="50" hits="2" branch="False" />
                 <line number="52" hits="1" branch="False" />
-                <line number="53" hits="1" branch="False" />
-                <line number="54" hits="0" branch="False" />
-                <line number="55" hits="0" branch="False" />
-                <line number="56" hits="0" branch="False" />
-                <line number="57" hits="0" branch="False" />
+                <line number="54" hits="1" branch="True" condition-coverage="75% (3/4)">
+                  <conditions>
+                    <condition number="590" type="jump" coverage="50%" />
+                    <condition number="623" type="jump" coverage="100%" />
+                  </conditions>
+                </line>
+                <line number="55" hits="1" branch="False" />
+                <line number="56" hits="1" branch="True" condition-coverage="50% (1/2)">
+                  <conditions>
+                    <condition number="715" type="jump" coverage="50%" />
+                  </conditions>
+                </line>
+                <line number="57" hits="1" branch="False" />
+                <line number="58" hits="1" branch="False" />
                 <line number="59" hits="1" branch="False" />
-                <line number="60" hits="1" branch="False" />
-                <line number="61" hits="1" branch="False" />
-                <line number="62" hits="1" branch="False" />
-                <line number="63" hits="1" branch="False" />
-                <line number="64" hits="1" branch="False" />
+                <line number="60" hits="0" branch="False" />
+                <line number="61" hits="0" branch="False" />
+                <line number="62" hits="0" branch="False" />
+                <line number="63" hits="0" branch="False" />
                 <line number="65" hits="1" branch="False" />
                 <line number="66" hits="1" branch="False" />
+                <line number="67" hits="1" branch="False" />
                 <line number="68" hits="1" branch="False" />
                 <line number="69" hits="1" branch="False" />
                 <line number="70" hits="1" branch="False" />
                 <line number="71" hits="1" branch="False" />
                 <line number="72" hits="1" branch="False" />
-                <line number="73" hits="1" branch="False" />
                 <line number="74" hits="1" branch="False" />
+                <line number="75" hits="1" branch="False" />
+                <line number="76" hits="1" branch="False" />
                 <line number="77" hits="1" branch="False" />
                 <line number="78" hits="1" branch="False" />
                 <line number="79" hits="1" branch="False" />
-                <line number="81" hits="1" branch="False" />
-                <line number="83" hits="2" branch="False" />
+                <line number="80" hits="1" branch="False" />
+                <line number="83" hits="1" branch="False" />
+                <line number="84" hits="1" branch="False" />
+                <line number="85" hits="1" branch="False" />
+                <line number="87" hits="1" branch="False" />
+                <line number="89" hits="2" branch="False" />
               </lines>
             </method>
           </methods>
           <lines>
-            <line number="28" hits="2" branch="False" />
-            <line number="30" hits="2" branch="False" />
+            <line number="25" hits="2" branch="False" />
+            <line number="27" hits="2" branch="False" />
+            <line number="29" hits="2" branch="False" />
+            <line number="31" hits="2" branch="False" />
             <line number="32" hits="2" branch="False" />
-            <line number="35" hits="2" branch="False" />
+            <line number="33" hits="2" branch="False" />
             <line number="36" hits="2" branch="False" />
-            <line number="37" hits="2" branch="False" />
-            <line number="38" hits="2" branch="False" />
             <line number="39" hits="2" branch="False" />
             <line number="40" hits="2" branch="False" />
             <line number="41" hits="2" branch="False" />
             <line number="42" hits="2" branch="False" />
+            <line number="43" hits="2" branch="False" />
             <line number="44" hits="2" branch="False" />
-            <line number="46" hits="1" branch="False" />
-            <line number="48" hits="1" branch="True" condition-coverage="75% (3/4)">
-              <conditions>
-                <condition number="419" type="jump" coverage="50%" />
-                <condition number="452" type="jump" coverage="100%" />
-              </conditions>
-            </line>
-            <line number="49" hits="1" branch="False" />
-            <line number="50" hits="1" branch="True" condition-coverage="50% (1/2)">
-              <conditions>
-                <condition number="544" type="jump" coverage="50%" />
-              </conditions>
-            </line>
-            <line number="51" hits="1" branch="False" />
+            <line number="45" hits="2" branch="False" />
+            <line number="46" hits="2" branch="False" />
+            <line number="47" hits="2" branch="False" />
+            <line number="48" hits="2" branch="False" />
+            <line number="50" hits="2" branch="False" />
             <line number="52" hits="1" branch="False" />
-            <line number="53" hits="1" branch="False" />
-            <line number="54" hits="0" branch="False" />
-            <line number="55" hits="0" branch="False" />
-            <line number="56" hits="0" branch="False" />
-            <line number="57" hits="0" branch="False" />
+            <line number="54" hits="1" branch="True" condition-coverage="75% (3/4)">
+              <conditions>
+                <condition number="590" type="jump" coverage="50%" />
+                <condition number="623" type="jump" coverage="100%" />
+              </conditions>
+            </line>
+            <line number="55" hits="1" branch="False" />
+            <line number="56" hits="1" branch="True" condition-coverage="50% (1/2)">
+              <conditions>
+                <condition number="715" type="jump" coverage="50%" />
+              </conditions>
+            </line>
+            <line number="57" hits="1" branch="False" />
+            <line number="58" hits="1" branch="False" />
             <line number="59" hits="1" branch="False" />
-            <line number="60" hits="1" branch="False" />
-            <line number="61" hits="1" branch="False" />
-            <line number="62" hits="1" branch="False" />
-            <line number="63" hits="1" branch="False" />
-            <line number="64" hits="1" branch="False" />
+            <line number="60" hits="0" branch="False" />
+            <line number="61" hits="0" branch="False" />
+            <line number="62" hits="0" branch="False" />
+            <line number="63" hits="0" branch="False" />
             <line number="65" hits="1" branch="False" />
             <line number="66" hits="1" branch="False" />
+            <line number="67" hits="1" branch="False" />
             <line number="68" hits="1" branch="False" />
             <line number="69" hits="1" branch="False" />
             <line number="70" hits="1" branch="False" />
             <line number="71" hits="1" branch="False" />
             <line number="72" hits="1" branch="False" />
-            <line number="73" hits="1" branch="False" />
             <line number="74" hits="1" branch="False" />
+            <line number="75" hits="1" branch="False" />
+            <line number="76" hits="1" branch="False" />
             <line number="77" hits="1" branch="False" />
             <line number="78" hits="1" branch="False" />
             <line number="79" hits="1" branch="False" />
-            <line number="81" hits="1" branch="False" />
-            <line number="83" hits="2" branch="False" />
+            <line number="80" hits="1" branch="False" />
+            <line number="83" hits="1" branch="False" />
+            <line number="84" hits="1" branch="False" />
+            <line number="85" hits="1" branch="False" />
+            <line number="87" hits="1" branch="False" />
+            <line number="89" hits="2" branch="False" />
           </lines>
         </class>
       </classes>
