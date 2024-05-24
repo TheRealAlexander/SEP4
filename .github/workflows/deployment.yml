@@ -43,7 +43,8 @@ jobs:
         with:
           name: k8s-files
           path: k8s/
-      - name: Create PersistentVolume
+
+      - name: Create PersistentVolume and PersistentVolumeClaim
         run: |
           cat <<EOF | kubectl apply -f -
           apiVersion: v1
@@ -58,7 +59,19 @@ jobs:
               - ReadWriteOnce
             hostPath:
               path: /data/mongodbdata
+          ---
+          apiVersion: v1
+          kind: PersistentVolumeClaim
+          metadata:
+            name: mongodbdata
+          spec:
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 1Gi
           EOF
+
       - name: Docker-compose Build
         run: docker-compose build
       - name: See all images
