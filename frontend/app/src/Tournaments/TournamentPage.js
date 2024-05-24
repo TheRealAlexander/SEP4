@@ -42,13 +42,14 @@ export default function TournamentPage() {
         />
       )}
       <div>
-        {tournaments.map((tournament) => (
-          <TournamentItem
-            key={tournament.TournamentID}
-            tournament={tournament}
-            onClick={handleTournamentClick}
-          />
-        ))}
+        {Array.isArray(tournaments) &&
+          tournaments.map((tournament) => (
+            <TournamentItem
+              key={tournament.TournamentID}
+              tournament={tournament}
+              onClick={handleTournamentClick}
+            />
+          ))}
         {selectedTournament && (
           <TournamentDialog
             open={open}
