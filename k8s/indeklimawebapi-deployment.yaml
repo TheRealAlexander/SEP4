@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: indeklimawebapi
+  name: indeklimawebapi
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: indeklimawebapi
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+        kompose.version: 1.30.0 (9d8dcb518)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sep4-backend: "true"
+        io.kompose.service: indeklimawebapi
+    spec:
+      containers:
+        - image: olsen7351/sep4:indeklima_webapi
+          name: indeklimawebapi
+          ports:
+            - containerPort: 5200
+              hostPort: 5200
+              protocol: TCP
+            - containerPort: 7292
+              hostPort: 7292
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

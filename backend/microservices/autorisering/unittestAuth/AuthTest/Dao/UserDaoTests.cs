@@ -13,9 +13,11 @@
         private readonly UserDAO _dao;
         private readonly IMongoDatabase _database;
 
+        
+        // Database must be running on localhost port 27017
         public UserDaoTests()
         {
-            var connectionString = "mongodb://localhost:27017"; // Adjust as necessary for your environment
+            var connectionString = "mongodb://localhost:27017"; 
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase("BackendTestAuthDB");
             _dao = new UserDAO(new MongoDbContext(connectionString, "BackendTestAuthDB"));

@@ -78,4 +78,47 @@ public class SensorDataDAOTests : IAsyncLifetime
         // Assert
         await Assert.ThrowsAsync<Exception>(act);
     }
+    
+    [Fact]
+    public async Task AddSensorDataAsync_ShouldAddData_WhenDuplicateDataInDifferentHall()
+    {
+        // Arrange
+        var now = DateTime.UtcNow;
+        var sensorData1 = new SensorData 
+        { 
+            HallId = 1,
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            TemperatureTimestamp = now,
+            HumidityTimestamp = now,
+            CO2Timestamp = now 
+        };
+        var sensorData2 = new SensorData 
+        { 
+            HallId = 2,
+            Temperature = 25, 
+            Humidity = 30, 
+            CO2 = 400,
+            TemperatureTimestamp = now,
+            HumidityTimestamp = now,
+            CO2Timestamp = now 
+        };
+        await _dao.AddSensorDataAsync(sensorData1);
+
+        // Act
+        await _dao.AddSensorDataAsync(sensorData2);
+
+        // Assert
+        var insertedData1 = await _dao.GetSensorDataAsync(1);
+        var insertedData2 = await _dao.GetSensorDataAsync(2);
+        Assert.NotNull(insertedData1);
+        Assert.NotNull(insertedData2);
+        Assert.Equal(sensorData1.Temperature, insertedData1[0].Temperature);
+        Assert.Equal(sensorData1.Humidity, insertedData1[0].Humidity);
+        Assert.Equal(sensorData1.CO2, insertedData1[0].CO2);
+        Assert.Equal(sensorData2.Temperature, insertedData2[0].Temperature);
+        Assert.Equal(sensorData2.Humidity, insertedData2[0].Humidity);
+        Assert.Equal(sensorData2.CO2, insertedData2[0].CO2);
+    }
 }

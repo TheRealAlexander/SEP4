@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using WebApi.DAO;
 using WebApi.Services;
-
+using SharedObjects.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,22 +23,7 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
 builder.Services.AddScoped<IUserDAO, UserDAO>();
 builder.Services.AddScoped<IUserService, UserService>();
 
-
-AuthorizationPolicies.AddPolicies(builder.Services);
-
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
-{
-    options.RequireHttpsMetadata = false;
-    options.SaveToken = true;
-    options.TokenValidationParameters = new TokenValidationParameters()
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-});
+AuthorizationPolicies.AddAuth(builder);
 
 var app = builder.Build();
 
