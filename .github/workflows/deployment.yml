@@ -72,20 +72,20 @@ jobs:
 
       - name: Wait for deployments
         run: |
-          kubectl wait --for=condition=Running --timeout=600s deployment/indeklima-webapi
-          kubectl wait --for=condition=Running --timeout=600s deployment/auth-webapi
+          kubectl wait --for=condition=Running --timeout=600s deployment/indeklimawebapi
+          kubectl wait --for=condition=Running --timeout=600s deployment/authwebapi
           kubectl wait --for=condition=Running --timeout=600s deployment/broker
 
       - name: Expose services
         run: |
-          kubectl expose deployment indeklima-webapi --type=NodePort --port=5200
-          kubectl expose deployment auth-webapi --type=NodePort --port=5001
+          kubectl expose deployment indeklimawebapi --type=NodePort --port=5200
+          kubectl expose deployment authwebapi --type=NodePort --port=5001
           kubectl expose deployment broker --type=NodePort --port=5202
 
       - name: Test services
         run: |
-          minikube service indeklima-webapi
-          minikube service auth-webapi
+          minikube service indeklimawebapi
+          minikube service authwebapi
           minikube service broker
 
       - name: Clean up
