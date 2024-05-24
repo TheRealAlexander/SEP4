@@ -7,6 +7,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
 import useTournamentData from '../Hooks/Tournament/useTournamentData';
 import TournamentDetails from './TournamentDetails';
+import PromptDialog from './RoundComponents/PromptDialog';
 
 const TournamentLiveOverview = () => {
   const { tournamentID } = useParams(); // Extract tournamentID from the URL
@@ -21,13 +22,22 @@ const TournamentLiveOverview = () => {
   } = useTournamentData(tournamentID);
 
   const [dialogOpen, setDialogOpen] = useState({});
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
 
   const handleNavigation = (direction) => {
-    navigateRound(direction);
+    if (hasUnsavedChanges) {
+      setPendingNavigation(direction);
+      setIsPromptOpen(true);
+    } else {
+      navigateRound(direction);
+    }
   };
 
   const handleUpdate = (courtId, newScores) => {
     updateScores(tournamentData.Rounds[currentRoundIndex].RoundNumber, courtId, newScores);
+    setHasUnsavedChanges(true);
   };
 
   const handleClick = (courtIndex) => {
@@ -36,6 +46,24 @@ const TournamentLiveOverview = () => {
 
   const handleClose = (courtIndex) => {
     setDialogOpen(prevState => ({ ...prevState, [courtIndex]: false }));
+  };
+
+  const handleSave = () => {
+    setIsPromptOpen(false);
+    setHasUnsavedChanges(false);
+    if (pendingNavigation) {
+      navigateRound(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  const handleDiscard = () => {
+    setIsPromptOpen(false);
+    setHasUnsavedChanges(false);
+    if (pendingNavigation) {
+      navigateRound(pendingNavigation);
+      setPendingNavigation(null);
+    }
   };
 
   if (loading) {
@@ -92,6 +120,12 @@ const TournamentLiveOverview = () => {
       <Grid item xs={12} md={4}>
         <Scoreboard scores={tournamentData.Players} />
       </Grid>
+      <PromptDialog 
+        open={isPromptOpen}
+        handleClose={() => setIsPromptOpen(false)}
+        handleSave={handleSave}
+        handleDiscard={handleDiscard}
+      />
     </Grid>
   );
 };
