@@ -23,9 +23,7 @@ jobs:
           sudo mv ./kompose /usr/local/bin/kompose
 
       - name: Convert docker-compose to k8s
-        run:
-          kompose convert -f backend/docker-compose-deployment-backend.yml -o
-          k8s/
+        run: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
 
       - name: Modify Kubernetes manifests for NodePort
         run: |
