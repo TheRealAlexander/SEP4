@@ -69,6 +69,7 @@ jobs:
       - name: Deploy All Services
         run: |
           kubectl apply -f k8s/
+          kubectl get all
 
       - name: Wait for deployments
         run: |
