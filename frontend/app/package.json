@@ -22,6 +22,7 @@
     "start": "npm install && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "test:coverage": "jest --coverage",
     "testjest": "jest",
     "eject": "react-scripts eject",
     "update": "npm update"
@@ -65,6 +66,19 @@
     },
     "transformIgnorePatterns": [
       "/node_modules/(?!(axios)/)"
+    ]
+  },
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "targets": {
+            "node": "current"
+          }
+        }
+      ],
+      "@babel/preset-react"
     ]
   }
 }
