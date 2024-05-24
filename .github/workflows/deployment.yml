@@ -62,8 +62,8 @@ jobs:
       - name: Deploy MongoDB
         working-directory: backend/k8s
         run: |
-          kubectl apply -f k8s/mongo-pv-pvc.yml
-          kubectl apply -f k8s/mongo-deployment.yml
+          kubectl apply -f mongo-pv-pvc.yml
+          kubectl apply -f mongo-deployment.yml
 
       - name: Apply the k8s files
         run: |
