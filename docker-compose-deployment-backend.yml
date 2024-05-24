@@ -1,0 +1,46 @@
+version: "3.4"
+
+services:
+  indeklimawebapi:
+    image: olsen7351/sep4:indeklima_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
+    ports:
+      - 5200:5200 #Http
+      - 7292:7292 #Https
+    networks:
+      - backend
+
+  authwebapi:
+    image: olsen7351/sep4:auth_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
+    ports:
+      - 5001:5001 #Http
+      - 7293:7293 #Https
+    networks:
+      - backend
+
+  broker:
+    image: olsen7351/sep4:broker
+    build:
+      context: .
+      dockerfile: backend/broker/Dockerfile
+    ports:
+      - 5202:5202 #Http
+      - 7294:7294 #Https
+    networks:
+      - backend
+    depends_on:
+      - indeklimawebapi
+      - authwebapi
+
+volumes:
+  mongodbdata:
+  authmongodbdata:
+
+networks:
+  backend:
+    driver: bridge
