@@ -24,8 +24,6 @@ services:
       - 7293:7293 #Https
     networks:
       - backend
-    depends_on:
-      - mongo
 
   broker:
     image: broker
