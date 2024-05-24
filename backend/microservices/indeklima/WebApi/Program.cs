@@ -1,5 +1,6 @@
 using WebApi.DAO;
 using WebApi.Services;
+using SharedObjects.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,6 +25,8 @@ builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
 builder.Services.AddScoped<ISensorGoalService, SensorGoalService>();
 builder.Services.AddScoped<ISensorGoalDAO, SensorGoalDAO>();
 builder.Services.AddScoped<IIOTControlService, IOTControlService>();
+
+AuthorizationPolicies.AddAuth(builder);
 
 var app = builder.Build();
 
