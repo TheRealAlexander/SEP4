@@ -15,16 +15,22 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+
       - name: Install Kompose
         run: |
           curl -L https://github.com/kubernetes/kompose/releases/download/v1.24.0/kompose-linux-amd64 -o kompose
           chmod +x kompose
           sudo mv ./kompose /usr/local/bin/kompose
+
       - name: Convert docker-compose to k8s
-        run: kompose convert -f docker-compose.yml -o k8s/
+        run:
+          kompose convert -f backend/docker-compose-deployment-backend.yml -o
+          k8s/
+
       - name: Modify Kubernetes manifests for NodePort
         run: |
           sed -i 's/type: ClusterIP/type: NodePort/' k8s/*.yaml
+
       - name: Upload k8s files
         uses: actions/upload-artifact@v2
         with:
@@ -35,74 +41,53 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Set up Minikube
         id: minikube
         uses: medyagh/setup-minikube@latest
+
       - name: Download k8s files
         uses: actions/download-artifact@v2
         with:
           name: k8s-files
           path: k8s/
 
-      - name: Create PersistentVolume and PersistentVolumeClaim
-        run: |
-          cat <<EOF | kubectl apply -f -
-          apiVersion: v1
-          kind: PersistentVolume
-          metadata:
-            name: mongo-pv
-          spec:
-            capacity:
-              storage: 1Gi
-            volumeMode: Filesystem
-            accessModes:
-              - ReadWriteOnce
-            hostPath:
-              path: /data/mongodbdata
-          ---
-          apiVersion: v1
-          kind: PersistentVolumeClaim
-          metadata:
-            name: mongodbdata
-          spec:
-            accessModes:
-              - ReadWriteOnce
-            resources:
-              requests:
-                storage: 1Gi
-          EOF
-
-      - name: Modify Mongo Deployment to Use PVC
-        run: |
-          # Ensure the mongo deployment uses the PVC
-          sed -i '/containers:/a \
-          \      volumeMounts:\n\
-          \        - name: mongodbdata\n\
-          \          mountPath: /data/db' k8s/mongo-deployment.yaml
-          sed -i '/spec:/a \
-          \  volumes:\n\
-          \    - name: mongodbdata\n\
-          \      persistentVolumeClaim:\n\
-          \        claimName: mongodbdata' k8s/mongo-deployment.yaml
-
       - name: Docker-compose Build
-        run: docker-compose build
+        run:
+          docker-compose -f backend/docker-compose-deployment-backend.yml build
+
       - name: See all images
         run: docker images
+
+      - name: Add MongoDB image
+        run: docker pull mongo:7.0
+
+      - name: Deploy MongoDB
+        working-directory: backend/k8s
+        run: |
+          kubectl apply -f k8s/mongo-pv-pvc.yml
+          kubectl apply -f k8s/mongo-deployment.yml
+
       - name: Apply the k8s files
         run: |
           kubectl apply -f k8s/
+
       - name: List all services
         run: kubectl get services
+
       - name: List all pods
         run: kubectl get pods
+
       - name: List all deployments
         run: kubectl get deployments
+
       - name: Show status on pods
         run: kubectl describe pods
+
       - name: Wait for ready status
         run: |
           kubectl wait --for=condition=ready pod --all --timeout=600s
+
       - name: Clean up
         run: |
           eval $(minikube docker-env -u)

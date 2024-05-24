@@ -1,0 +1,50 @@
+version: "3.4"
+
+services:
+  indeklima_webapi:
+    image: indeklima_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
+    ports:
+      - 5200:5200 #Http
+      - 7292:7292 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
+  auth_webapi:
+    image: auth_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
+    ports:
+      - 5001:5001 #Http
+      - 7293:7293 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
+  broker:
+    image: broker
+    build:
+      context: .
+      dockerfile: backend/broker/Dockerfile
+    ports:
+      - 5202:5202 #Http
+      - 7294:7294 #Https
+    networks:
+      - backend
+    depends_on:
+      - indeklima_webapi
+      - auth_webapi
+
+volumes:
+  mongodbdata:
+  authmongodbdata:
+
+networks:
+  backend:
+    driver: bridge
