@@ -76,10 +76,10 @@ namespace WebApi.DAO
                 }
 
                 // Check for duplicate data
-                var duplicateData = await _sensorDataMongoCollection.Find(s =>
+                var duplicateData = await _sensorDataMongoCollection.Find(s => s.HallId == sensorData.HallId && (
                     s.TemperatureTimestamp == sensorData.TemperatureTimestamp ||
                     s.HumidityTimestamp == sensorData.HumidityTimestamp ||
-                    s.CO2Timestamp == sensorData.CO2Timestamp
+                    s.CO2Timestamp == sensorData.CO2Timestamp)
                 ).FirstOrDefaultAsync();
                 if (duplicateData != null)
                 {
