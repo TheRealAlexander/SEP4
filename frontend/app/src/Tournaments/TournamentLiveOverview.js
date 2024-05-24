@@ -17,6 +17,7 @@ const TournamentLiveOverview = () => {
     currentRoundIndex,
     updateScores,
     navigateRound,
+    saveRound,
     loading,
     error
   } = useTournamentData(tournamentID);
@@ -61,9 +62,13 @@ const TournamentLiveOverview = () => {
     setDialogOpen(prevState => ({ ...prevState, [courtIndex]: false }));
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     setIsPromptOpen(false);
     setHasUnsavedChanges(false);
+
+    const roundToSave = tournamentData.Rounds[currentRoundIndex];
+    await saveRound(roundToSave);
+
     if (pendingNavigation) {
       navigateRound(pendingNavigation);
       setPendingNavigation(null);
