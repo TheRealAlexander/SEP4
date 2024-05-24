@@ -62,7 +62,7 @@ jobs:
       - name: Deploy network
         working-directory: backend/k8s
         run: |
-          kubectl apply -f networkpolicy.networking.k8s.io/backend
+          kubectl apply -f backend-networkpolicy.yaml
 
       - name: Deploy MongoDB
         working-directory: backend/k8s
@@ -72,15 +72,15 @@ jobs:
 
       - name: Deploy Indeklima WebApi
         working-directory: backend/k8s
-        run: kubectl apply -f deployment.apps/indeklima-webapi.yml
+        run: kubectl apply -f deployment.apps/indeklima-webapi.yaml
 
       - name: Deploy Auth WebApi
         working-directory: backend/k8s
-        run: kubectl apply -f deployment.apps/auth-webapi.yml
+        run: kubectl apply -f deployment.apps/auth-webapi.yaml
 
       - name: Deploy Broker
         working-directory: backend/k8s
-        run: kubectl apply -f deployment.apps/broker.yml
+        run: kubectl apply -f deployment.apps/broker.yaml
 
       - name: List all resources
         run: kubectl get all
