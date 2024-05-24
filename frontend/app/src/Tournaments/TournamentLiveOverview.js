@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import TournamentRound from './TournamentRound';
 import { Paper, Typography, Box, Button, Grid } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
@@ -7,7 +8,9 @@ import Scoreboard from './Scoreboard';
 import useTournamentData from '../Hooks/Tournament/useTournamentData';
 import TournamentDetails from './TournamentDetails';
 
-const TournamentLiveOverview = ({ tournamentID }) => {
+const TournamentLiveOverview = () => {
+  const { tournamentID } = useParams(); // Extract tournamentID from the URL
+
   const {
     tournamentData,
     currentRoundIndex,
@@ -26,8 +29,6 @@ const TournamentLiveOverview = ({ tournamentID }) => {
   const handleUpdate = (courtId, newScores) => {
     updateScores(tournamentData.Rounds[currentRoundIndex].RoundNumber, courtId, newScores);
   };
-  
-  
 
   const handleClick = (courtIndex) => {
     setDialogOpen(prevState => ({ ...prevState, [courtIndex]: true }));
