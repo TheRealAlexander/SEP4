@@ -71,12 +71,6 @@ jobs:
           kubectl apply -f k8s/
           kubectl get all
 
-      - name: Wait for deployments
-        run: |
-          kubectl wait --for=condition=Running --timeout=600s deployment/indeklimawebapi
-          kubectl wait --for=condition=Running --timeout=600s deployment/authwebapi
-          kubectl wait --for=condition=Running --timeout=600s deployment/broker
-
       - name: Expose services
         run: |
           kubectl expose deployment indeklimawebapi --type=NodePort --port=5200
