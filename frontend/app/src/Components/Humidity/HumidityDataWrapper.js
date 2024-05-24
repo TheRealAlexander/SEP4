@@ -1,9 +1,9 @@
 import React from 'react';
 import HumidityData from './HumidityData';
-import { useHumidityData } from '../../Services/ClimateService';
+import { useSensorData } from '../../Services/ClimateService';
 
 export default function HumidityDataWrapper() {
-    let { humidityData, isLoading } = useHumidityData();
+    let { humidityData, isLoading } = useSensorData();
 
     return <HumidityData humidityData={humidityData} isLoading={isLoading} />;
 }
