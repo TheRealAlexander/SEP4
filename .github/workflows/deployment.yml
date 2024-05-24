@@ -1,3 +1,41 @@
+# This GitHub Actions workflow is responsible for deploying a backend application using Kubernetes. It consists of two jobs: `convert_dockercompose_to_k8s` and `deploy`.
+
+# ## Workflow Triggers
+
+# The workflow is triggered on:
+# - Push events to the repository, specifically when changes are made to the `backend` directory or the `deployment.yml` workflow file.
+# - Pull request events, specifically when changes are made to the `backend` directory.
+
+# ## Job: convert_dockercompose_to_k8s
+
+# This job runs on an `ubuntu-latest` runner and performs the following steps:
+
+# 1. Checkout the repository using the `actions/checkout` action.
+# 2. Install Kompose, a tool for converting Docker Compose files to Kubernetes manifests.
+# 3. Convert the `docker-compose-deployment-backend.yml` file to Kubernetes manifests using Kompose.
+# 4. Modify the Kubernetes manifests to use NodePort instead of ClusterIP.
+# 5. Upload the generated Kubernetes files as an artifact.
+
+# ## Job: deploy
+
+# This job also runs on an `ubuntu-latest` runner and performs the following steps:
+
+# 1. Checkout the repository using the `actions/checkout` action.
+# 2. Set up Minikube using the `medyagh/setup-minikube` action.
+# 3. Start Minikube with the Docker driver.
+# 4. Download the Kubernetes files artifact generated in the previous job.
+# 5. Build the Docker images using the `docker-compose-deployment-backend.yml` file.
+# 6. Pull the MongoDB image.
+# 7. Deploy the network policy for the backend.
+# 8. Deploy MongoDB using the provided YAML files.
+# 9. Deploy the Indeklima WebApi using the provided YAML file.
+# 10. Deploy the Auth WebApi using the provided YAML file.
+# 11. Deploy the Broker using the provided YAML file.
+# 12. Expose the services using NodePort.
+# 13. Test the services using Minikube.
+# 14. Clean up by resetting the Docker environment and deleting Minikube.
+
+# Please note that this documentation comment is based on the provided code and may not reflect the complete context or dependencies of the workflow.
 name: Deployment
 
 on:
