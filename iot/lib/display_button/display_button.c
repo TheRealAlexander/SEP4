@@ -83,6 +83,7 @@ void checkScoreAPlus(void)
         {
             teamscore_a = 42;
             tone_play_final_fantasy_victory();
+            led_blink(20);
         } else
         {
             setScoreTo40();
@@ -151,6 +152,7 @@ void checkScoreBPlus(void)
             {
                 teamscore_b = 42;
                 tone_play_final_fantasy_victory();
+                led_blink(20);
             }
             else
             {

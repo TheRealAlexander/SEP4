@@ -4,54 +4,7 @@
 #include "../lib/includes.h"
 
 ////////////////////////////////////////////////////////////////
-// Macros
-
-
-
-#ifndef SERVER_IP
-#error "SERVER_IP not defined"
-#endif
-
-#ifndef SERVER_PORT
-#error "SERVER_PORT not defined"
-#endif
-
-#ifndef WIFI_SSID
-#error "WIFI_SSID not defined"
-#endif
-
-#ifndef WIFI_PASSWORD
-#error "WIFI_PASSWORD not defined"
-#endif
-
-#ifndef HALL_ID
-#error "HALL_ID not defined"
-#endif
-
-////////////////////////////////////////////////////////////////
-// Measurements
-
-typedef struct measurements {
-    // NOTE(rune): From sensors
-    uint8_t humidity_integral;    // Før komma
-    uint8_t humidity_decimal;     // Efter komma
-    uint8_t temperature_integral; // Før komma
-    uint8_t temperature_decimal;  // Efter komma
-    uint16_t co2;
-
-    // NOTE(rune): From backend
-    bool open_window;
-    int want_next_measurement_delay;
-} measurements;
-
-static measurements g_measurements;
-
-////////////////////////////////////////////////////////////////
-// Time keeping
-
-typedef uint64_t timestamp;
-
-static timestamp g_timestamp;
+// Timekeeper
 
 static void timekeeper() {
     g_timestamp += 1;
@@ -60,126 +13,57 @@ static void timekeeper() {
 ////////////////////////////////////////////////////////////////
 // Networking
 
-static int build_http_request(char *http_buf, int http_cap) {
-    // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
-    // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
-    // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
-    char json_buf[256];
-    int json_len = snprintf(
-        json_buf, sizeof(json_buf),
-        "{"
-        "\"temperature\": %d.%d, "
-        "\"humidity\": %d.%d, "
-        "\"co2\": %d, "
-        "\"hallId\": %d"
-        "}",
-        g_measurements.temperature_integral, g_measurements.temperature_decimal,
-        g_measurements.humidity_integral, g_measurements.humidity_decimal,
-        g_measurements.co2,
-        HALL_ID
-    );
-
-    int http_len = snprintf(
-        http_buf, http_cap,
-        "POST /PostEnviromentData HTTP/1.0\r\n"
-        "Host: indeklima\r\n"
-        "Connection: Close\r\n"
-        "Accept: application/json\r\n"
-        "Accept-Encoding: identity\r\n"
-        "Content-Type: application/json\r\n"
-        "Content-Length: %d\r\n"
-        "\r\n"
-        "%s",
-        json_len, json_buf
-    );
-
-    return http_len;
+void print_raw_bytes(void* ptr, size_t size) {
+    char* byte_ptr = (char*)ptr;
+    for(size_t i = 0; i < size; i++) {
+        send_to_pc_fmt("%02X ", (unsigned char)byte_ptr[i]);
+    }
+    send_to_pc_fmt("\n");
 }
 
-// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
-// Returns false if the property is not found, and in that case does not touch *value.
-static bool read_bool_from_http_response(char *response, char *property, bool *value) {
-    char needle[128];
-    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
-    char *needle_ptr = strstr(response, needle);
-    if (needle_ptr) {
-        char *value_ptr = needle_ptr + needle_len;
-        if (strstr(value_ptr, "true") == value_ptr) {
-            *value = true;
-            return true;
-        }
+void start_ntp_sync() {
+    uint16_t delay = 3000;
 
-        if (strstr(value_ptr, "false") == value_ptr) {
-            *value = false;
-            return true;
-        }
+    send_to_pc_fmt("📡 wifi begin NTP sync\n");
+
+    wifi2_async_udp_open("216.239.35.0", 123);
+    send_to_pc_fmt("📡 wifi udp open\n");
+
+    _delay_ms(delay);
+
+    ntp_request_packet ntp_request;
+    construct_ntp_request(&ntp_request);
+    send_to_pc_fmt(ANSI_FG_MAGENTA);
+    print_raw_bytes(&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt(ANSI_RESET);
+
+    wifi2_async_udp_send((char*)&ntp_request, sizeof(ntp_request));
+    send_to_pc_fmt("📡 wifi udp send\n");
+    _delay_ms(delay);
+
+    // Set ntp_response to the last 48 bytes of the wifi recv buffer
+    ntp_response_packet ntp_response;
+    uint8_t *start = wifi2_g_recv_buf + wifi2_g_recv_len - 48;
+    memcpy(&ntp_response, start, 48);
+
+    if (!is_ntp_response_packet((uint8_t*)&ntp_response, sizeof(ntp_response))) {
+        send_to_pc_fmt("📡 wifi ntp response not valid\n");
+        return;
     }
+    send_to_pc_fmt("📡 wifi ntp response valid\n");
+    print_raw_bytes(&ntp_response, sizeof(ntp_response));
 
-    return false;
-}
+    // Decode the NTP response
+    decode_ntp_response((uint8_t*)&ntp_response, &ntp_response);
 
-// NOTE(rune): Assumes that response is trimmed of all whitspace and is null terminated.
-// Returns false if the property is not found, and in that case does not touch *value.
-static bool read_int_from_http_response(char *response, char *property, int *value) {
-    char needle[128];
-    int needle_len = snprintf(needle, sizeof(needle), "\"%s\":", property);
-    char *needle_ptr = strstr(response, needle);
-    if (needle_ptr) {
-        *value = 0;
-        char *value_ptr = needle_ptr + needle_len;
-        while (*value_ptr >= '0' && *value_ptr <= '9') {
-            int digit = *value_ptr - '0';
-            *value *= 10;
-            *value += digit;
+    // Calculate the correct UNIX time
+    uint32_t unix_time = calculate_corrected_time(&ntp_response, delay); // Subtract artifically added delays
+    // Cast unix_time to unit64_t to match g_timestamp
+    g_timestamp = (timestamp)unix_time * 1000; // Convert seconds to milliseconds
+    send_to_pc_fmt("📡 wifi ntp response UNIX time: %lu\n", unix_time);
 
-            value_ptr++;
-        }
-    }
-
-    return false;
-}
-
-static void process_http_response(char *http_buf, int http_len) {
-
-    send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-    send_to_pc("========================\n");
-
-    // NOTE(rune): Fjern whitespace så vi kan lave string comparison,
-    // uden at bekymre os om formatting fra serveren.
-    char trim_buf[WIFI2_MAX_RECV];
-    int read = 0;
-    int write = 0;
-    while (read < http_len) {
-        if (http_buf[read] == ' ' ||
-            http_buf[read] == '\n' ||
-            http_buf[read] == '\r' ||
-            http_buf[read] == '\t') {
-
-            read++;
-        } else {
-            trim_buf[write] = http_buf[read];
-            read++;
-            write++;
-        }
-    }
-
-    int trim_len = write;
-    trim_buf[trim_len] = '\0';
-
-    send_to_pc(ANSI_FG_GREEN);
-    send_to_pc(trim_buf);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-
-    read_bool_from_http_response(trim_buf, "openWindow", &g_measurements.open_window);
-    read_int_from_http_response(trim_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
-
-    send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
-    send_to_pc_fmt("window: %d\n", g_measurements.open_window);
-    send_to_pc(ANSI_RESET);
+    // Ensure UDP connection is closed
+    wifi2_async_udp_close();
 }
 
 static void do_wifi(void) {
@@ -232,6 +116,7 @@ static void do_wifi(void) {
                 wifi_cmd_timestamp = g_timestamp;
 
                 send_to_pc_fmt("📡 wifi ap join\n");
+
             } break;
 
             case WIFI_STEP_TCP_OPEN: {
@@ -248,7 +133,7 @@ static void do_wifi(void) {
 
             case WIFI_STEP_TCP_SEND: {
                 char http_buf[512];
-                int  http_len = build_http_request(http_buf, sizeof(http_buf));
+                int  http_len = http_build_request(http_buf, sizeof(http_buf));
 
                 wifi2_async_tcp_send(http_buf, http_len);
                 next_wifi_step = WIFI_STEP_TCP_CLOSE;
@@ -263,7 +148,7 @@ static void do_wifi(void) {
 
             case WIFI_STEP_TCP_CLOSE: {
                 if (packet_timestamp + packet_timeout <= g_timestamp) {
-                    process_http_response(wifi2_g_recv_buf, wifi2_g_recv_len);
+                    http_process_response(wifi2_g_recv_buf, wifi2_g_recv_len);
                     wifi2_async_tcp_close();
 
                     next_wifi_step = WIFI_STEP_TCP_OPEN;
@@ -281,6 +166,7 @@ static void do_wifi(void) {
     bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
     if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
+        send_to_pc_fmt("Async command done: %d\n", curr_wifi_step);
 
         send_to_pc(ANSI_FG_YELLOW);
         uart_send_array_blocking(USART_0, (uint8_t *)wifi2_g_recv_buf, wifi2_g_recv_len);
@@ -288,6 +174,14 @@ static void do_wifi(void) {
         send_to_pc(ANSI_RESET);
 
         if (cmd_result.ok) {
+            send_to_pc_fmt("next_wifi_step = %d\n", next_wifi_step);
+
+            if (curr_wifi_step == WIFI_STEP_AP_JOIN) {
+                start_ntp_sync(); // Start NTP sync after joining AP
+                wifi2_cancel_async();
+            }
+
+            // TODO(rune): Conditional debug print
             send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
             send_to_pc(ANSI_FG_CYAN);
             uart_send_array_blocking(USART_0, cmd_result.data, cmd_result.data_len);
@@ -314,7 +208,7 @@ static void do_wifi(void) {
     if (timeout_or_error) {
         // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
         next_wifi_step = WIFI_STEP_RESET;
-        wifi2_canel_async();
+        wifi2_cancel_async();
     }
 }
 
@@ -327,53 +221,70 @@ static void co2_callback(uint8_t byte) {
 
 static void do_co2(void) {
     static timestamp co2_timestamp = 0;
-    static timestamp co2_interval = 5000; // TODO(rune): Test hvor langt vi kan sætte delay'et ned
+    static timestamp co2_interval = 5000; // Adjust the interval as needed
 
     if (co2_timestamp + co2_interval <= g_timestamp) {
         co2_timestamp = g_timestamp;
         send_to_pc("⚡ Send CO2 command\n");
         send_co2_command(Co2SensorRead);  // Trigger CO2 reading
+
+        g_measurements.co2           = 0;
+        g_measurements.co2_timestamp = 0;
     }
 
     // Check global variable, which may have been updated by the CO2 driver.
     if (new_co2_data_available) {
         new_co2_data_available = false;  // Reset flag after reading
         g_measurements.co2 = latest_co2_concentration;
+        g_measurements.co2_timestamp = g_timestamp / 1000; // Save timestamp of CO2 measurement
+        // Print timestamp
+        send_to_pc_fmt("🕒 CO2 timestamp: %lu\n", g_measurements.co2_timestamp);
     }
 }
 
 ////////////////////////////////////////////////////////////////
-// Temperature and humidity
+// Temperature and Humidity Reading
 
 static void do_dht11() {
     static timestamp dht11_timestamp = 0;
-    static timestamp dht11_interval = 1000;
+    static timestamp dht11_interval = 1000; // Sample every second
 
     if (dht11_timestamp + dht11_interval <= g_timestamp) {
-        dht11_timestamp = g_timestamp;
+        dht11_timestamp = g_timestamp; // Update last measurement time
 
         uint8_t a, b, c, d;
         if (dht11_get(&a, &b, &c, &d) == DHT11_OK) {
-            g_measurements.humidity_integral    = a;
-            g_measurements.humidity_decimal     = b;
+            g_measurements.humidity_integral = a;
+            g_measurements.humidity_decimal = b;
             g_measurements.temperature_integral = c;
-            g_measurements.temperature_decimal  = d;
-
+            g_measurements.temperature_decimal = d;
+            g_measurements.humidity_timestamp = g_timestamp / 1000; // Save timestamp of humidity measurement
+            g_measurements.temperature_timestamp = g_timestamp / 1000; // Save timestamp of temperature measurement
+            // Print timestamp
+            send_to_pc_fmt("🕒 Humidity timestamp: %lu\n", g_measurements.humidity_timestamp);
+            send_to_pc_fmt("🕒 Temperature timestamp: %lu\n", g_measurements.temperature_timestamp);
             send_to_pc("🌡️ DHT11 OK\n");
         } else {
             send_to_pc("🌡️ DHT11 not OK\n");
+
+            g_measurements.humidity_integral     = 0;
+            g_measurements.humidity_decimal      = 0;
+            g_measurements.temperature_integral  = 0;
+            g_measurements.temperature_decimal   = 0;
+            g_measurements.humidity_timestamp    = 0;
+            g_measurements.temperature_timestamp = 0;
         }
     }
 }
 
 ////////////////////////////////////////////////////////////////
-// Servo
+// Servo Control
 
 static void do_servo() {
     if (g_measurements.open_window) {
-        servo(0);
+        servo(0); // Assume 0 degrees is the position to open the window
     } else {
-        servo(180);
+        servo(180); // Assume 180 degrees is the position to close the window
     }
 }
 
@@ -389,11 +300,9 @@ static void do_pir() {
     }
 
     if (motion_timestamp + motion_delay >= g_timestamp && motion_timestamp != 0) {
-        DDRB = 0xff;
-        PORTB = 0x00;
+        led_set(0x00);
     } else {
-        DDRB = 0xff;
-        PORTB = 0xff;
+        led_set(0xff);
     }
 }
 
@@ -424,6 +333,8 @@ int main() {
     buttons_init();
     display_init();
     pir_init();
+    dht11_init();
+    led_init();
 
     while (1) {
         do_wifi();

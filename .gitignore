@@ -270,3 +270,4 @@ FakesAssemblies/
 
 !appsettings*.json
 !launchSettings.json
+backend/microservices/autorisering/unittestAuth/AuthTest/tools/
