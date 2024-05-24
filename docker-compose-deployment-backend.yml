@@ -1,8 +1,8 @@
 version: "3.4"
 
 services:
-  indeklima_webapi:
-    image: indeklima_webapi
+  indeklimawebapi:
+    image: olsen7351/sep4:indeklima_webapi
     build:
       context: .
       dockerfile: backend/microservices/indeklima/WebApi/Dockerfile
@@ -12,8 +12,8 @@ services:
     networks:
       - backend
 
-  auth_webapi:
-    image: auth_webapi
+  authwebapi:
+    image: olsen7351/sep4:auth_webapi
     build:
       context: .
       dockerfile: backend/microservices/autorisering/WebApi/Dockerfile
@@ -24,7 +24,7 @@ services:
       - backend
 
   broker:
-    image: broker
+    image: olsen7351/sep4:broker
     build:
       context: .
       dockerfile: backend/broker/Dockerfile
@@ -34,8 +34,8 @@ services:
     networks:
       - backend
     depends_on:
-      - indeklima_webapi
-      - auth_webapi
+      - indeklimawebapi
+      - authwebapi
 
 volumes:
   mongodbdata:
