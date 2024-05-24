@@ -44,6 +44,9 @@ jobs:
         id: minikube
         uses: medyagh/setup-minikube@latest
 
+      - name: Start Minikube
+        run: minikube start --driver=docker
+
       - name: Download k8s files
         uses: actions/download-artifact@v2
         with:
@@ -84,6 +87,9 @@ jobs:
 
       - name: List all resources
         run: kubectl get all
+
+      - name: Get Pods
+        run: kubectl get pods
 
       - name: Expose services
         run: |
