@@ -75,12 +75,6 @@ jobs:
           kubectl apply -f k8s/
           kubectl get all
 
-      - name: Expose services
-        run: |
-          kubectl expose deployment indeklimawebapi --type=NodePort --port=5200
-          kubectl expose deployment authwebapi --type=NodePort --port=5001
-          kubectl expose deployment broker --type=NodePort --port=5202
-
       - name: Test services
         run: |
           minikube service indeklimawebapi
