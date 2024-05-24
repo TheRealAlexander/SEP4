@@ -20,7 +20,6 @@ import Registration from "./Profile/Registration/Registration.js";
 import ControlsPage from "./Controls/ControlsPage.js";
 import TournamentPage from "./Tournaments/TournamentPage.js";
 import TournamentLiveOverview from "./Tournaments/TournamentLiveOverview.js";
-import LiveScorePage from "./LiveScore/LiveScorePage.js";
 import HomePage from "./HomePage/HomePage.js";
 
 // MUI Imports
@@ -39,7 +38,7 @@ import {
   MenuItem,
 } from "./MUI_imports";
 
-const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
+const pages = ["Home", "Controls", "Data", "Tournaments"];
 const settings = ["Profile", "Account", "Dashboard", "Logout"];
 
 function App() {
@@ -88,7 +87,6 @@ function AppContent() {
               path="/tournamentLiveOverview"
               element={<TournamentLiveOverview />}
             />
-            <Route path="/liveScores" element={<LiveScorePage />} />
           </Routes>
         </div>
       </Box>
@@ -106,7 +104,6 @@ function ResponsiveAppBar() {
     Controls: "/controlsPage",
     Tournaments: "/tournamentPage",
     TournamentLiveOverview: "/tournamentLiveOverview",
-    "Live Scores": "/liveScores",
     Data: "/DataPage",
   };
 
