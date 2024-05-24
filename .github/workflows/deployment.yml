@@ -57,30 +57,35 @@ jobs:
         id: minikube
         uses: medyagh/setup-minikube@latest
 
+      - name: Setup docker env
+        run: eval $(minikube docker-env)
+
       - name: Deploy MongoDB
         working-directory: backend/k8s
         run: |
           kubectl apply -f mongo-pv-pvc.yml
           kubectl apply -f mongo-deployment.yml
-          kubectl wait --for=condition=available pod -l app=mongo --timeout=120s
 
       - name: Deploy Indeklima WebApi
         working-directory: k8s
         run: |
           kubectl apply -f indeklima-webapi-deployment.yaml
-          kubectl wait --for=condition=available pod -l app=indeklima-webapi --timeout=120s
 
       - name: Deploy Auth WebApi
         working-directory: k8s
         run: |
           kubectl apply -f auth-webapi-deployment.yaml
-          kubectl wait --for=condition=available pod -l app=auth-webapi --timeout=120s
 
       - name: Deploy Broker
         working-directory: k8s
         run: |
           kubectl apply -f broker-deployment.yaml
-          kubectl wait --for=condition=available pod -l app=broker --timeout=120s
+
+      - name: Wait for deployments
+        run: |
+          kubectl wait --for=condition=Running --timeout=600s deployment/indeklima-webapi
+          kubectl wait --for=condition=Running --timeout=600s deployment/auth-webapi
+          kubectl wait --for=condition=Running --timeout=600s deployment/broker
 
       - name: Expose services
         run: |
