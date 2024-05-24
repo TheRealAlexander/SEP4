@@ -246,7 +246,7 @@ var assemblies = [
       { "name": "WebApi.Models.Dto.IOTSensorDataDto", "rp": "IndeklimaWebApi_IOTSensorDataDto.html", "cl": 7, "ucl": 0, "cal": 7, "tl": 13, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "WebApi.Models.SensorData", "rp": "IndeklimaWebApi_SensorData.html", "cl": 8, "ucl": 0, "cal": 8, "tl": 19, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "WebApi.Models.SensorGoal", "rp": "IndeklimaWebApi_SensorGoal.html", "cl": 5, "ucl": 0, "cal": 5, "tl": 21, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
-      { "name": "WebApi.Services.IOTControlService", "rp": "IndeklimaWebApi_IOTControlService.html", "cl": 0, "ucl": 12, "cal": 12, "tl": 25, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
+      { "name": "WebApi.Services.IOTControlService", "rp": "IndeklimaWebApi_IOTControlService.html", "cl": 12, "ucl": 0, "cal": 12, "tl": 25, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "WebApi.Services.SensorDataService", "rp": "IndeklimaWebApi_SensorDataService.html", "cl": 14, "ucl": 8, "cal": 22, "tl": 51, "cb": 2, "tb": 2, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
       { "name": "WebApi.Services.SensorGoalService", "rp": "IndeklimaWebApi_SensorGoalService.html", "cl": 27, "ucl": 0, "cal": 27, "tl": 51, "cb": 0, "tb": 0, "cm": 0, "tm": 0, "lch": [], "bch": [], "mch": [], "hc": [], "metrics": { } },
     ]},
