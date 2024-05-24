@@ -46,10 +46,6 @@ jobs:
       - name: Create coverage directory
         run: mkdir -p backend/microservices/TestProjects/coverage
 
-      - name: Copy coverage report
-        run: |
-          find backend/microservices -type f -name "coverage.cobertura.xml" -exec cp {} backend/microservices/TestProjects/coverage \;
-
       - name: Install ReportGenerator tool
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
