@@ -53,9 +53,14 @@ jobs:
       - name: Install ReportGenerator tool
         run: dotnet tool install --global dotnet-reportgenerator-globaltool
 
-      - name: Generate report
-        run: |
-          reportgenerator "-reports:backend/microservices/TestProjects/coverage/coverage.cobertura.xml" "-targetdir:backend/microservices/TestProjects/coverage" -reporttypes:Html
+      - name:
+          Generate a report for all coverage reports under
+          backend/microservices**/coverage.cobertura.xml
+        run:
+          reportgenerator
+          "-reports:backend/microservices/**/coverage.cobertura.xml"
+          "-targetdir:backend/microservices/TestProjects/coverage"
+          -reporttypes:Html
 
       - name: Deploy to GitHub Pages
         uses: JamesIves/github-pages-deploy-action@4.1.5
