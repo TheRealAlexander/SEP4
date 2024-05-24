@@ -72,15 +72,15 @@ jobs:
 
       - name: Deploy Indeklima WebApi
         working-directory: k8s
-        run: kubectl apply -f deployment.apps/indeklima-webapi.yaml
+        run: kubectl apply -f indeklima-webapi-deployment.yaml
 
       - name: Deploy Auth WebApi
         working-directory: k8s
-        run: kubectl apply -f deployment.apps/auth-webapi.yaml
+        run: kubectl apply -f auth-webapi-deployment.yaml
 
       - name: Deploy Broker
         working-directory: k8s
-        run: kubectl apply -f deployment.apps/broker.yaml
+        run: kubectl apply -f broker-deployment.yaml
 
       - name: List all resources
         run: kubectl get all
