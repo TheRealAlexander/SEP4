@@ -64,7 +64,10 @@ public class TournamentService : ITournamentService
         return round;
     }
 
-
+    public async Task SaveChangesAsync(Tournament tournament)
+    {
+        await _tournamentDAO.SaveChangesAsync(tournament);
+    }
 
     public async Task<List<Player>> GetScoreboardAsync(string tournamentID)
     {
