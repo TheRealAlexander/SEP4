@@ -64,6 +64,39 @@ public class TournamentService : ITournamentService
         return round;
     }
 
+    public async Task SetScoresAsync(string tournamentID, Round round)
+    {
+        Tournament tournament = await GetTournamentAsync(tournamentID);
+        foreach (Court court in round.Courts)
+        {
+            Player[][] players = court.GetTeams();
+            int[] scores = court.GetScores();
+            for (int i = 0; i < 2; i++)
+            {
+                for (int j = 0; j < 2; j++)
+                {
+                    Player player = tournament.Players.Find(p => p.Name.Equals(players[i][j].Name))!;
+                    player.Points += scores[i];
+                    if (scores[i] > tournament.PointsPerMatch / 2.0)
+                    {
+                        player.Wins++;
+                    }
+                    else if (scores[i] < tournament.PointsPerMatch / 2.0)
+                    {
+                        player.Losses++;
+                    }
+                    else
+                    {
+                        player.Draws++;
+                    }
+                }
+            }
+        }
+
+        tournament.Rounds[round.RoundNumber - 1] = round;
+        await SaveChangesAsync(tournament);
+    }
+
     public async Task SaveChangesAsync(Tournament tournament)
     {
         await _tournamentDAO.SaveChangesAsync(tournament);

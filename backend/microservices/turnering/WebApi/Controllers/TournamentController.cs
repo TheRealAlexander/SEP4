@@ -90,12 +90,19 @@ public class TournamentController : ControllerBase
         Round newRound = await _tournamentService.RequestNewRoundAsync(tournamentID);
         return Ok(newRound);
     }
-
-    [HttpGet("{tournamentID}/scores")]
+    
+    [HttpGet("{tournamentID}/scoreboard")]
     public async Task<IActionResult> GetScoreboard([FromRoute] string tournamentID)
     {
         List<Player> players = await _tournamentService.GetScoreboardAsync(tournamentID);
         return Ok(players);
+    }
+
+    [HttpPost("{tournamentID}/points")]
+    public async Task<IActionResult> SetScores([FromRoute] string tournamentID, [FromBody] Round round)
+    {
+        await _tournamentService.SetScoresAsync(tournamentID, round);
+        return Ok();
     }
 
     [HttpGet("{tournamentID}")]
