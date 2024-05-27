@@ -518,7 +518,7 @@ When the form is submitted, the following data is sent to the backend:
   - **Description**: The name of the tournament.
   - **Source**: `nameOfTournament` state variable.
 
-- **DateAndTime**: `string`
+- **DateAndTime**: `DateTime`
   - **Description**: The date and time of the tournament in `datetime-local` format.
   - **Source**: `dateAndTime` state variable.
 
@@ -526,7 +526,7 @@ When the form is submitted, the following data is sent to the backend:
   - **Description**: A brief description of the tournament.
   - **Source**: `description` state variable.
 
-- **FieldCount**: `number`
+- **FieldCount**: `Integer`
   - **Description**: The number of fields for the tournament.
   - **Source**: `baneAntal` state variable.
 
@@ -534,18 +534,18 @@ When the form is submitted, the following data is sent to the backend:
   - **Description**: The format of the tournament. Possible values are "Americano" and "Mexicano".
   - **Source**: `format` state variable.
 
-- **Participants**: `array`
+- **Participants**: `Empty Array`
   - **Description**: An array of participants. Initially, this is an empty array.
   - **Source**: Static value `[]`.
 
-- **State**: `number`
+- **State**: `Integer`
   - **Description**: The state of the tournament. This is set to `1` initially.
                      Ranges as follows: 1 = Planned, 2 = Ongoing, 3 = Finished
   - **Source**: Static value `1`.
 
-- **tournamentID**: `null`
+- **tournamentID**: `string`
   - **Description**: The tournament ID. This should be assigned by the backend.
-  - **Source**: Static value `null`.
+  - **Source**: Static value `""`.
 
 ### Example JSON Payload
 ```json
@@ -557,7 +557,7 @@ When the form is submitted, the following data is sent to the backend:
   "Format": "Americano",
   "Participants": [],
   "State": 1,
-  "tournamentID": null
+  "tournamentID": ""
 }
 ```
 
@@ -586,12 +586,12 @@ The `handleSaveEdits` function updates a tournament's details by sending the mod
   - **Description**: The tournament object containing updated details.
   - **Properties**:
     - `Name`: `string`
-    - `DateAndTime`: `string`
+    - `DateAndTime`: `DateTime`
     - `Description`: `string`
-    - `FieldCount`: `number`
+    - `FieldCount`: `integer`
     - `Format`: `string`
-    - `Participants`: `array`
-    - `State`: `number`
+    - `Participants`: `String[]`
+    - `State`: `integer`
     - `tournamentID`: `string`
 
 ## Sent Data Example
