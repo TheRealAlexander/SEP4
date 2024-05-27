@@ -505,6 +505,44 @@ No users provided.
 Role must be either User or SuperUser!
 ```
 
+## Get All Tournaments
+
+**Method***: GET
+
+**URL:** http://turnering_webapi:5101/tournaments
+
+**Description:** Retrieves a list of all tournaments.
+
+**Response:** 200 OK, returns a list of Tournament objects.
+
+**Response example:**
+
+```json
+[
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f32",
+    "Name": "NameOfTournament",
+    "State": 1,
+    "TimeAndDate": "2022-12-12T14:30:00Z",
+    "Description": "Tournament 1",
+    "FieldCount": 5,
+    "Format": "Single Elimination",
+    "Participants": ["Participant1", "Participant2"]
+  },
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f33",
+    "Name": "NameOfTournament",
+    "State": 2,
+    "TimeAndDate": "2023-01-01T09:00:00Z",
+    "Description": "Tournament 2",
+    "FieldCount": 8,
+    "Format": "Double Elimination",
+    "Participants": ["Participant3", "Participant4"]
+  }
+]
+```
+
+
 # Som admin vil jeg gerne kunne oprette en turnering i det ønskede format, så jeg har de bedste forudsætninger for at få afviklet denne. #72
 
 ## Overview
