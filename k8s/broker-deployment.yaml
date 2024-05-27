@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: broker
+  name: broker
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.kompose.service: broker
+  strategy: {}
+  template:
+    metadata:
+      annotations:
+        kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+        kompose.version: 1.30.0 (9d8dcb518)
+      creationTimestamp: null
+      labels:
+        io.kompose.network/sep4-backend: "true"
+        io.kompose.service: broker
+    spec:
+      containers:
+        - image: olsen7351/sep4:broker
+          name: broker
+          ports:
+            - containerPort: 5202
+              hostPort: 5202
+              protocol: TCP
+            - containerPort: 7294
+              hostPort: 7294
+              protocol: TCP
+          resources: {}
+      restartPolicy: Always
+status: {}

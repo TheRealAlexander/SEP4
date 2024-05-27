@@ -46,7 +46,7 @@ public class SensorGoalDaoTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task AddOrUpdateSensorGoalAsync_InsertsNewDocument_WhenNoExistingGoal()
+    public async Task AddOrUpdateSensorGoalAsync_InsertsNewGoal_WhenNoExistingGoal()
     {
         // Arrange
         var sensorGoal = new SensorGoal { HallId = 1, DesiredTemperature = 22, DesiredHumidity = 50, DesiredCo2 = 600 };
@@ -64,7 +64,7 @@ public class SensorGoalDaoTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task AddOrUpdateSensorGoalAsync_UpdatesExistingDocument_WhenGoalExists()
+    public async Task AddOrUpdateSensorGoalAsync_UpdatesExistingGoal_WhenGoalExists()
     {
         // Arrange
         var initialGoal = new SensorGoal { HallId = 1, DesiredTemperature = 20, DesiredHumidity = 40, DesiredCo2 = 500 };
@@ -84,7 +84,7 @@ public class SensorGoalDaoTests : IAsyncLifetime
     }
 
     [Fact]
-    public async Task DeleteSensorGoalAsync_DeletesDocument_WhenCalled()
+    public async Task DeleteSensorGoalAsync_DeletesGoal_WhenCalled()
     {
         // Arrange
         var sensorGoal = new SensorGoal { HallId = 1, DesiredTemperature = 22, DesiredHumidity = 50, DesiredCo2 = 600 };
