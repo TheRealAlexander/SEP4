@@ -10,8 +10,8 @@
 5. Skriv `upload COM5` (husk at ændr COM5 til den rigtige port) (hvis du bruger powershell, skal du skrive `./upload.bat COM5` i stedet).
 6. Serial monitor starter automatisk når upload er færdig. For at stoppe tryk `Ctrl+C` to gange.
 
-WiFi, server ip osv. bliver læst fra enviroment variabler, dvs. for eksempelvis at sætte wifi navn skal du køre `set WIFI_SSID=My wifi name`.
-Se `iot\lib\globals.h` for en oversigt over hvilke variabler kan sættes. 
+Bemærk: Første gang du kører scriptet, bliver der dannet en `iot\lib\config.h` fil, hvor du kan indstille WiFi password, server ip osv. 
+`iot\lib\config.h` er i `.gitignore`, så her kan du skrive personlige indstillinger.
 
 ### For at køre unit test:
 - Test på Arduino: Kør `test-avr COM5` fra `iot` mappen (trin 1-4 ligesom ovenfor).
@@ -27,13 +27,6 @@ Fake arduino og real backend:
 - `cd` til `iot\lib\network` og kør `run-client.bat`
 
 Real arduino og fake backend:
-- Sæt enviroment variabler. Eksempel:
-```
-set WIFI_SSID=Fatema - iPhone
-set WIFI_PASSWORD=12345678
-set SERVER_IP=172.20.10.5
-set SERVER_PORT=8080
-```
 - [Upload til Arduino](###for-at-uploade-til-arduino)
 - `cd` til `iot\lib\network` og kør `run-server.bat`
 
@@ -66,3 +59,5 @@ Ligesom `iot.bat` er der en `iot.sh` til Linux. Ikke alle funktioner er implemen
 Åbn `iot` mappen med VS Code.
 Skift til enviroment `env:atmega2560`, og tryk upload + serial monitor, for at køre `src\main.c` på Arduino.
 Skift til enviroment `env:atmega2560_test`, og tryk upload + serial monitor, for at køre `test\tests.c` på Arduino.
+
+Bemærk: Første gang du uploader, bliver der oprettet en `iot\lib\config.h`, hvor du kan indstille WiFi password, server ip, osv.
