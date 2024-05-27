@@ -1,27 +1,4 @@
 ////////////////////////////////////////////////////////////////
-// Global settings
-
-#ifndef SERVER_IP
-#error "SERVER_IP not defined"
-#endif
-
-#ifndef SERVER_PORT
-#error "SERVER_PORT not defined"
-#endif
-
-#ifndef WIFI_SSID
-#error "WIFI_SSID not defined"
-#endif
-
-#ifndef WIFI_PASSWORD
-#error "WIFI_PASSWORD not defined"
-#endif
-
-#ifndef HALL_ID
-#error "HALL_ID not defined"
-#endif
-
-////////////////////////////////////////////////////////////////
 // Global timekeeping
 
 typedef uint64_t timestamp;

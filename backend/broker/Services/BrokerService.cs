@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
+using System.Text;
 
 namespace Broker.Services
 {
@@ -115,6 +116,53 @@ namespace Broker.Services
         {
             var response = await _httpClient.DeleteAsync($"http://turnering_webapi:5101/tournaments/{tournamentID}/participants/{participant}");
             return response.IsSuccessStatusCode ? new OkResult() : null as ActionResult;
+        }
+
+        public async Task<string> Login(string user)
+        {
+            var content = new StringContent(user, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://auth_webapi:5001/login", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error logging in");
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
+        }
+
+        public async Task<string> FetchSuperUsers()
+        {
+            var response = await _httpClient.GetAsync("http://auth_webapi:5001/user/superUsers");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> FetchNonAdminUsers()
+        {
+            var response = await _httpClient.GetAsync("http://auth_webapi:5001/user/nonSuperUsers");
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> AdjustUserPermissions(string usersToChange)
+        {
+            var content = new StringContent(usersToChange, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PutAsync($"http://auth_webapi:5001/users/adjustUserPermissions/{usersToChange}", content);
+            return await response.Content.ReadAsStringAsync();
+        }
+
+        public async Task<string> RegisterUser(string user)
+        {
+            var content = new StringContent(user, Encoding.UTF8, "application/json");
+            var response = await _httpClient.PostAsync("http://auth_webapi:5001/register", content);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                throw new Exception("Error registering user");
+            }
+
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
         }
     }
 }
