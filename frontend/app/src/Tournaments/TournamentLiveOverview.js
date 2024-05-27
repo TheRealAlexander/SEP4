@@ -20,14 +20,25 @@ const TournamentLiveOverview = ({ tournamentID }) => {
   const [dialogOpen, setDialogOpen] = useState({});
 
   const handleNavigation = (direction) => {
+    if (direction === 'next') {
+      const currentRound = tournamentData.Rounds[currentRoundIndex];
+      const isNavigationBlocked = currentRound.Courts.some(court => {
+        const totalScore = court.scores.reduce((a, b) => a + b, 0);
+        return totalScore < tournamentData.PointsPerMatch;
+      });
+
+      if (isNavigationBlocked) {
+        alert("You cannot navigate to the next round because some courts haven't reached the required score.");
+        return;
+      }
+    }
+
     navigateRound(direction);
   };
 
   const handleUpdate = (courtId, newScores) => {
     updateScores(tournamentData.Rounds[currentRoundIndex].RoundNumber, courtId, newScores);
   };
-  
-  
 
   const handleClick = (courtIndex) => {
     setDialogOpen(prevState => ({ ...prevState, [courtIndex]: true }));
