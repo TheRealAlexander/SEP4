@@ -5,3 +5,6 @@
 .vscode/launch.json
 .vscode/ipch
 .vscode/extensions.json
+
+# Personlig config
+lib/config.h
