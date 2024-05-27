@@ -36,7 +36,8 @@ public class TournamentDAO : ITournamentDAO
         var filter = Builders<Tournament>.Filter.Eq(t => t.Id, updatedTournament.Id);
         var update = Builders<Tournament>.Update
             .Set(t => t.Name, updatedTournament.Name)
-            .Set(t => t.Rounds, updatedTournament.Rounds);
+            .Set(t => t.Rounds, updatedTournament.Rounds)
+            .Set(t => t.Players, updatedTournament.Players);
 
             await _tournamentMongoCollection.UpdateOneAsync(filter, update);
     }
