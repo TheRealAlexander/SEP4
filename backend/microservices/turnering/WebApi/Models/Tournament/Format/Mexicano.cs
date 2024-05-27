@@ -4,8 +4,7 @@ namespace WebApi.Models
     {
         public static Round GenerateRound(List<Player> players, Tournament tournament)
         {
-            var round = new Round(tournament.NextRoundNumber++);
-            tournament.State = 2;
+            var round = new Round(tournament.Rounds.Count + 1);
     
             if (tournament.NextRoundNumber == 1)
             {
@@ -16,19 +15,16 @@ namespace WebApi.Models
             
             for (int i = 0; i < tournament.NumberOfCourts; i++)
             {
-                round.Courts.Add(new Court(tournament.PointsPerMatch));
-            }
-
-            foreach (Court court in round.Courts)
-            {
+                Court court = new Court(tournament.PointsPerMatch);
                 court.AddPlayer(players[0]);
                 court.AddPlayer(players[2]);
                 court.AddPlayer(players[1]);
                 court.AddPlayer(players[3]);
-                for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
                 {
                     players.RemoveAt(0);
                 }
+                round.Courts.Add(court);
             }
 
             return round;

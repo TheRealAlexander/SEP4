@@ -4,9 +4,9 @@ namespace WebApi.Models
 {
     public class Court
     {
-        private Player?[][] teams;
-        private int[] scores;
-        private int totalPoints;
+        public Player?[][] teams;
+        public int[] scores;
+        public int totalPoints;
 
         public Court(int totalPoints)
         {

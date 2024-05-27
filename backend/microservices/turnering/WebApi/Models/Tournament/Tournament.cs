@@ -16,10 +16,10 @@ public class Tournament
     public string Description { get; set; }
     public List<Player> Players { get; set; }
     public int State { get; set; } = 1;
-    public List<Round> Rounds { get; set; } = new List<Round>();
+    public List<Round> Rounds { get; set; }
     public int NextRoundNumber { get; set; } = 1;
-    private List<Player> SkippedARound { get; set; } = new List<Player>();
-    private List<Player> SkippedLastRound { get; set; } = new List<Player>();
+    private List<Player>? SkippedARound { get; set; }
+    private List<Player>? SkippedLastRound { get; set; }
 
     public Tournament(string name, string format, int numberOfCourts, int pointsPerMatch, DateTime startTime, string description, List<Player> players)
     {
@@ -30,17 +30,24 @@ public class Tournament
         StartTime = startTime;
         Description = description;
         Players = players;
+        Rounds = new List<Round>();
+        SkippedARound = new List<Player>();
+        SkippedLastRound = new List<Player>();
     }
 
     public Round GenerateRound(List<Player> players)
     {
+        Round round;
         switch (Format)
         {
-            case "Americano" : return Americano.GenerateRound(players, this);
-            case "Mexicano" : return Mexicano.GenerateRound(players, this);
+            case "Americano" : round = Americano.GenerateRound(players, this);
+                break;
+            case "Mexicano" : round = Mexicano.GenerateRound(players, this);
+                break;
+            default : throw new ArgumentException("Invalid tournament format");
         }
-
-        throw new ArgumentException("Invalid tournament format");
+        
+        return round;
     }
     
     public List<Player> ShufflePlayers()
@@ -58,6 +65,12 @@ public class Tournament
     
     public List<Player> SkipPlayers()
     {
+        if (SkippedARound == null || SkippedLastRound == null)
+        {
+            Console.WriteLine("Initialization error: Skipped lists are null.");
+            SkippedARound = new List<Player>();  // Re-initializing if found null, though ideally this shouldn't happen.
+            SkippedLastRound = new List<Player>();
+        }
         int i = 0;
         List<Player> playingThisRound = new List<Player>(Players);
         List<Player> skippingThisRound = new List<Player>();

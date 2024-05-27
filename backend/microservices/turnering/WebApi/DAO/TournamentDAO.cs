@@ -28,7 +28,7 @@ public class TournamentDAO : ITournamentDAO
     public async Task<List<Player>> GetScoreboardAsync(string tournamentID)
     {
         var tournament = await GetTournamentAsync(tournamentID);
-        return tournament.Players.OrderBy(p => p.Points).ToList();
+        return tournament.Players.OrderByDescending(p => p.Points).ToList();
     }
 
     public async Task SaveChangesAsync(Tournament updatedTournament)
@@ -37,7 +37,8 @@ public class TournamentDAO : ITournamentDAO
         var update = Builders<Tournament>.Update
             .Set(t => t.Name, updatedTournament.Name)
             .Set(t => t.Rounds, updatedTournament.Rounds)
-            .Set(t => t.Players, updatedTournament.Players);
+            .Set(t => t.Players, updatedTournament.Players)
+            .Set(t => t.State, updatedTournament.State);
 
             await _tournamentMongoCollection.UpdateOneAsync(filter, update);
     }

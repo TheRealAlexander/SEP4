@@ -42,6 +42,7 @@ public class TournamentService : ITournamentService
         List<Player> players = await GetScoreboardAsync(tournamentID);
         Round round = tournament.GenerateRound(players);
         tournament.Rounds.Add(round);
+        tournament.State = 2;
         await _tournamentDAO.SaveChangesAsync(tournament);
         return round;
     }
