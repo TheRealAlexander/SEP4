@@ -16,7 +16,7 @@ public class TournamentService : ITournamentService
     {
         string format;
         List<Player> players = new List<Player>();
-        switch (tournamentDTO.TournamentFormat.ToUpper())
+        switch (tournamentDTO.Format.ToUpper())
         {
             case ("AMERICANO") :
             {
