@@ -4,13 +4,15 @@ namespace WebApi.Models
 {
     public class Court
     {
-        private Player[][] teams;
+        private Player?[][] teams;
         private int[] scores;
         private int totalPoints;
 
         public Court(int totalPoints)
         {
             teams = new Player[2][];
+            teams[0] = new Player[2];
+            teams[1] = new Player[2];
             scores = new int[2];
             this.totalPoints = totalPoints;
         }

@@ -22,7 +22,7 @@ namespace WebApi.Models
                     court.AddPlayer(players[0]);
                     for (int j = 1; j < players.Count - 1; j++)
                     {
-                        if (!((AmericanoPlayer)players[0]).PastTeammates.Contains(players[j]))
+                        if (!players[0].PastTeammates.Contains(players[j]))
                         {
                             court.AddPlayer(players[j]);
                             players.RemoveAt(j);

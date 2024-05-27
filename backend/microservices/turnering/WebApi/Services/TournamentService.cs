@@ -16,36 +16,18 @@ public class TournamentService : ITournamentService
     {
         string format;
         List<Player> players = new List<Player>();
+        foreach (var player in tournamentDTO.Players)
+        {
+            players.Add(new Player
+            {
+                Name = player
+            });
+        }
         switch (tournamentDTO.Format.ToUpper())
         {
-            case ("AMERICANO") :
-            {
-                format = "Americano";
-                foreach (var player in tournamentDTO.Players)
-                {
-                    players.Add(new AmericanoPlayer
-                    {
-                        Name = player
-                    });
-                }
-                break;
-            }
-            case ("MEXICANO"):
-            {
-                format = "Mexicano";
-                foreach (var player in tournamentDTO.Players)
-                {
-                    players.Add(new Player
-                    {
-                        Name = player
-                    });
-                }
-                break;
-            }
-            default:
-            {
-                throw new ArgumentException("Invalid tournament format");
-            }
+            case "AMERICANO" : format = "Americano"; break;
+            case "MEXICANO" : format = "Mexicano"; break;
+            default : throw new ArgumentException("Invalid tournament format");
         }
 
         Tournament tournament = new Tournament(tournamentDTO.Name, format,

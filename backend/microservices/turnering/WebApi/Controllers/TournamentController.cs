@@ -46,16 +46,7 @@ public class TournamentController : ControllerBase
             }
         }
 
-        Player newPlayer;
-        switch (tournament.Format)
-        {
-            case "Americano" : newPlayer = new AmericanoPlayer { Name = playerName };
-                break;
-            case "Mexicano" : newPlayer = new Player { Name = playerName };
-                break;
-            default : newPlayer = new Player { Name = playerName };
-                break;
-        }
+        Player newPlayer = new Player { Name = playerName };
         
         tournament.Players.Add(newPlayer);
         await _tournamentService.SaveChangesAsync(tournament);
