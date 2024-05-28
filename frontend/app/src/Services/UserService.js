@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://broker:5202/broker";
+const API_BASE_URL = "/Broker";
 
 class UserService {
   // Fetch all users

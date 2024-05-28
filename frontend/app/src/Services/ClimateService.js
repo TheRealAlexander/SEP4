@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const API_BASE_URL = 'http://broker:5202';
+const API_BASE_URL = '/Broker';
 
 export function useSensorData() {
   const [thermData, setThermData] = useState({ temperature: 0 });
@@ -16,7 +16,7 @@ export function useSensorData() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
+        const response = await axios.get(`${API_BASE_URL}/GetSensorData/1`);
         console.log('response:', response);
         const data = response.data;
         
@@ -64,7 +64,7 @@ export function useSensorData() {
 
 export async function getLimitedSensorData(limit) {
   try {
-    const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData?limit=${limit}`);
+    const response = await axios.get(`${API_BASE_URL}/GetSensorData?limit=${limit}`);
     return response.data;
   } catch (error) {
     console.error(error);

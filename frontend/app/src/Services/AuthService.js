@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://broker:5202/broker/auth/";
+const API_URL = '/Broker';
 
 const register = (username, password, email, age) => {
   return axios
-    .post(API_URL + "register", {
+    .post(API_URL + "/register", {
       username,
       password,
       email,
@@ -18,7 +18,7 @@ const register = (username, password, email, age) => {
 
 const login = (username, password) => {
   return axios
-    .post(API_URL + "login", {
+    .post(API_URL + "/login", {
       username,
       password,
     })
