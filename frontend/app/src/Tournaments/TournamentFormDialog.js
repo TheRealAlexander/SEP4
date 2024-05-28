@@ -12,6 +12,7 @@ import {
      DialogActions,
      Snackbar 
 } from '../MUI_imports';
+import { CreateTournament } from '../Services/TournamentService';
 
 export default function TournamentFormDialog({ open, onClose }) {
      const [nameOfTournament, setNameOfTournament] = useState('');
@@ -26,33 +27,47 @@ export default function TournamentFormDialog({ open, onClose }) {
          setSnackbarOpen(false);
      };
  
-     const handleSubmit = () => {
-         if (!nameOfTournament || !dateAndTime || !description || !format) {
-             setSnackbarMessage("All fields must be filled!");
-             setSnackbarOpen(true);
-             return;
-         }
- 
-         if (new Date(dateAndTime) < new Date()) {
-             setSnackbarMessage("The entered date is in the past!");
-             setSnackbarOpen(true);
-             return;
-         }
- 
-         const tournamentData = {
-             name: nameOfTournament,
-             date: dateAndTime,
-             description,
-             baneAntal,
-             format,
-             participants: [],
-             stateInt: 1,
-             tournamentID: null // This should be assigned by the backend
-         };
-         // Handle send data to backend here
-         console.log(tournamentData);
-         onClose(); // Close the dialog after submitting
-     };
+     async function handleSubmit() {
+        if (!nameOfTournament || !dateAndTime || !description || !format) {
+            setSnackbarMessage("All fields must be filled!");
+            setSnackbarOpen(true);
+            return;
+        }
+
+        if (new Date(dateAndTime) < new Date()) {
+            setSnackbarMessage("The entered date is in the past!");
+            setSnackbarOpen(true);
+            return;
+        }
+
+        const tournamentData = {
+            Name: nameOfTournament,
+            DateAndTime: dateAndTime,
+            Description: description,
+            FieldCount: baneAntal,
+            Format: format,
+            Participants: [],
+            State: 1,
+            tournamentID: null // This should be assigned by the backend
+        };
+        
+        try {
+            const response = await CreateTournament(tournamentData);
+
+            if (response.status === 200) {
+                setSnackbarMessage("Tournament created successfully!");
+                setSnackbarOpen(true);
+                onClose(); // Close the dialog after submitting
+            } else {
+                setSnackbarMessage("Error creating tournament! - " + response.status);
+                setSnackbarOpen(true);
+            }
+        }
+        catch (error) {
+            setSnackbarMessage("Error creating tournament! - " + error);
+            setSnackbarOpen(true);
+        }
+    }
  
      return (
          <Dialog open={open} onClose={onClose}>

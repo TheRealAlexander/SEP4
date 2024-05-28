@@ -216,7 +216,7 @@ specific hall
     }
 ```
 
-## Request: User registration
+### Request: User registration
 
 **Description:**
 
@@ -503,4 +503,214 @@ No users provided.
 
 ```json
 Role must be either User or SuperUser!
+```
+
+## Get All Tournaments
+
+**Method***: GET
+
+**URL:** http://turnering_webapi:5101/tournaments
+
+**Description:** Retrieves a list of all tournaments.
+
+**Response:** 200 OK, returns a list of Tournament objects.
+
+**Response example:**
+
+```json
+[
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f32",
+    "Name": "NameOfTournament",
+    "State": 1,
+    "TimeAndDate": "2022-12-12T14:30:00Z",
+    "Description": "Tournament 1",
+    "FieldCount": 5,
+    "Format": "Single Elimination",
+    "Participants": ["Participant1", "Participant2"]
+  },
+  {
+    "TournamentID": "60d5ecb1747a80a41c8e6f33",
+    "Name": "NameOfTournament",
+    "State": 2,
+    "TimeAndDate": "2023-01-01T09:00:00Z",
+    "Description": "Tournament 2",
+    "FieldCount": 8,
+    "Format": "Double Elimination",
+    "Participants": ["Participant3", "Participant4"]
+  }
+]
+```
+
+
+# Som admin vil jeg gerne kunne oprette en turnering i det ønskede format, så jeg har de bedste forudsætninger for at få afviklet denne. #72
+
+## Overview
+The `handleSubmit` function in the `TournamentFormDialog` component is responsible for validating the form inputs, creating the tournament data object, sending it to the backend service `CreateTournament`, and handling the response. It uses state variables to manage the form data and error messages.
+
+## Sent Data
+When the form is submitted, the following data is sent to the backend:
+
+### Tournament Data Object
+- **Name**: `string`
+  - **Description**: The name of the tournament.
+  - **Source**: `nameOfTournament` state variable.
+
+- **DateAndTime**: `DateTime`
+  - **Description**: The date and time of the tournament in `datetime-local` format.
+  - **Source**: `dateAndTime` state variable.
+
+- **Description**: `string`
+  - **Description**: A brief description of the tournament.
+  - **Source**: `description` state variable.
+
+- **FieldCount**: `Integer`
+  - **Description**: The number of fields for the tournament.
+  - **Source**: `baneAntal` state variable.
+
+- **Format**: `string`
+  - **Description**: The format of the tournament. Possible values are "Americano" and "Mexicano".
+  - **Source**: `format` state variable.
+
+- **Participants**: `Empty Array`
+  - **Description**: An array of participants. Initially, this is an empty array.
+  - **Source**: Static value `[]`.
+
+- **State**: `Integer`
+  - **Description**: The state of the tournament. This is set to `1` initially.
+                     Ranges as follows: 1 = Planned, 2 = Ongoing, 3 = Finished
+  - **Source**: Static value `1`.
+
+- **tournamentID**: `string`
+  - **Description**: The tournament ID. This should be assigned by the backend.
+  - **Source**: Static value `""`.
+
+### Example JSON Payload
+```json
+{
+  "Name": "Tournament Name Example",
+  "DateAndTime": "2023-12-31T12:00",
+  "Description": "This is a description of the tournament.",
+  "FieldCount": 4,
+  "Format": "Americano",
+  "Participants": [],
+  "State": 1,
+  "tournamentID": ""
+}
+```
+
+  - **Success Response Example (Status Code 200)**
+```json
+{
+  "message": "Tournament created successfully!",
+  "tournamentID": "12345"  // Example ID assigned by the backend
+}
+```
+
+  - **Error Response Example (Status Code other than 200)**
+```json
+{
+  "message": "Error creating tournament" // Example message
+}
+```
+
+# handleSaveEdits Function Documentation
+
+## Description
+The `handleSaveEdits` function updates a tournament's details by sending the modified tournament data to the backend service. It displays appropriate feedback messages based on the operation's success or failure.
+
+## Parameters
+- **updatedTournament**: `object`
+  - **Description**: The tournament object containing updated details.
+  - **Properties**:
+    - `Name`: `string`
+    - `DateAndTime`: `DateTime`
+    - `Description`: `string`
+    - `FieldCount`: `integer`
+    - `Format`: `string`
+    - `Participants`: `String[]`
+    - `State`: `integer`
+    - `tournamentID`: `string`
+
+## Sent Data Example
+```json
+{
+  "Name": "Updated Tournament Name",
+  "DateAndTime": "2024-05-31T12:00",
+  "Description": "Updated description of the tournament.",
+  "FieldCount": 5,
+  "Format": "Mexicano",
+  "Participants": ["Participant1", "Participant2"],
+  "State": 2,
+  "tournamentID": "12345"
+}
+```
+
+  - **Success Response Example (Status Code 200)**
+```json
+{
+  "message": "Tournament updated successfully!",
+  "tournamentID": "12345"  // tournamentID should match the sent tournamentID
+}
+```
+
+  - **Error Response Example (Status Code other than 200)**
+```json
+{
+  "message": "Error saving new tournament data" // Example message
+}
+```
+
+
+### handleDeleteTournament Function Documentation
+
+## Description
+The `handleDeleteTournament` function deletes a tournament by sending a delete request to the backend service. It displays appropriate feedback messages based on the operation's success or failure.
+
+## Parameters
+- **tournamentID**: `string`
+  - **Description**: The ID of the tournament to be deleted.
+
+## Sent Data Example
+No data body is sent, only the tournament ID is used in the endpoint URL.
+
+## Expected Response
+### Success Response
+- **Status Code**: `200`
+- **Body**:
+```json
+  {
+    "message": "Tournament deleted successfully!"
+  }
+```
+
+
+### handleRegister Function Documentation
+
+## Description
+The `handleRegister` function registers a participant for a tournament by sending the participant's name to the backend service. It displays appropriate feedback messages based on the operation's success or failure.
+
+## Parameters
+None (uses `participantName` state and `tournament.id`)
+
+## Sent Data Example
+```json
+{
+  "tournamentID": "12345",
+  "participantName": "John Doe"
+}
+```
+
+  - **Success Response Example (Status Code 200)**
+```json
+{
+  "message": "Participant added successfully!"
+}
+```
+
+  - **Error Response Example (Status Code other than 200)**
+```json
+{
+  "message": "Error adding participant!" // Example message
+}
 ```

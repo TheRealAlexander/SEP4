@@ -1,22 +1,26 @@
 // app.js
 // CSS Imports
-import './App.css';
+import "./App.css";
 
 // React Imports
-import { BrowserRouter as Router, Route, Routes, useNavigate, useLocation } from 'react-router-dom';
-import React from 'react';
+import {
+  BrowserRouter as Router,
+  Route,
+  Routes,
+  useNavigate,
+  useLocation,
+} from "react-router-dom";
+import React from "react";
 
 // Component Imports
-import ClimatePage from './Components/ClimatePage/ClimatePage';
-import { UserPermissionPage } from './Users/UserPermission/UserPermission.js';
-import LoginPage from './Profile/Login/LoginPage.js';
-import Registration from './Profile/Registration/Registration.js';
-import ControlsPage from './Controls/ControlsPage.js';
-import TournamentPage from './Tournaments/TournamentPage.js';
-import TournamentLiveOverview from './Tournaments/TournamentLiveOverview.js';
-
-import ThermostatDataWrapper from './Components/Thermostat/ThermostatDataWrapper';
-import HumidityDataWrapper from './Components/Humidity/HumidityDataWrapper';
+import DataPage from "./Data/DataPage.js";
+import { UserPermissionPage } from "./Users/UserPermission/UserPermission.js";
+import LoginPage from "./Profile/Login/LoginPage.js";
+import Registration from "./Profile/Registration/Registration.js";
+import ControlsPage from "./Controls/ControlsPage.js";
+import TournamentPage from "./Tournaments/TournamentPage.js";
+import TournamentLiveOverview from "./Tournaments/TournamentLiveOverview.js";
+import HomePage from "./HomePage/HomePage.js";
 
 // MUI Imports
 import {
@@ -31,12 +35,11 @@ import {
   Avatar,
   Button,
   Tooltip,
-  MenuItem
-} from './MUI_imports';
-import OngoingTournamentPage from './Tournaments/OngoingTournamentPage.js';
+  MenuItem,
+} from "./MUI_imports";
 
-const pages = ["Home", "Controls", "Data", "Tournaments"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+
+const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
 
 function App() {
   return (
@@ -53,32 +56,38 @@ function AppContent() {
 
   return (
     <>
-         {(location.pathname !== '/login' && location.pathname !== '/registration') && <ResponsiveAppBar />}
+      {location.pathname !== "/login" &&
+        location.pathname !== "/registration" && <ResponsiveAppBar />}
 
-      <Box component="main" sx={{
-        flexGrow: 1,
-        p: 3,
-        display: "flex",
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: 1,
-        mt: '-5vh',
-        width: (location.pathname === '/login' || location.pathname === '/registration') ? '100%' : `calc(100% - 240px)` }}>
+      <Box
+        component="main"
+        sx={{
+          flexGrow: 1,
+          p: 3,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          height: 1,
+          mt: "-5vh",
+        }}
+      >
+
         <Toolbar />
 
         <div className="App">
           <Routes>
-            <Route path="/" element={<ClimatePage data={data} />} />
-            <Route path="/thermostat" element={<ThermostatDataWrapper />} />
-            <Route path="/humidity" element={<HumidityDataWrapper />} />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/dataPage" element={<DataPage />} />
             <Route path="/controlsPage" element={<ControlsPage />} />
             <Route path="/tournamentPage" element={<TournamentPage />} />
-            <Route path="/login" element={<LoginPage />} /> 
-            <Route path="/registration" element={<Registration />} /> 
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/registration" element={<Registration />} />
             <Route path="/users" element={<UserPermissionPage />} />
-            <Route path="/tournamentLiveOverview" element={<TournamentLiveOverview />} />
-            <Route path="ongoingTournaments" element={<OngoingTournamentPage />} />
+            <Route
+              path="/tournamentLiveOverview"
+              element={<TournamentLiveOverview />}
+            />
           </Routes>
         </div>
       </Box>
@@ -89,6 +98,7 @@ function AppContent() {
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(!!localStorage.getItem('user'));
   const navigate = useNavigate();
 
   const pathMapping = {
@@ -96,6 +106,9 @@ function ResponsiveAppBar() {
     Controls: "/controlsPage",
     Tournaments: "/tournamentPage",
     TournamentLiveOverview: "/tournamentLiveOverview",
+    Data: "/DataPage",
+    Login: "/login",
+    Register: "/registration",
   };
 
   const handleOpenNavMenu = (event) => {
@@ -111,6 +124,11 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    window.location.reload();
   };
 
   const handleNavigate = (buttonText) => {
@@ -131,7 +149,7 @@ function ResponsiveAppBar() {
             variant="h6"
             noWrap
             component="a"
-            href="#app-bar-with-responsive-menu"
+            href="/"
             sx={{
               mr: 2,
               display: { xs: "none", md: "flex" },
@@ -187,7 +205,6 @@ function ResponsiveAppBar() {
               <Button
                 key={page}
                 onClick={() => {
-                  // Here we change to also handle navigation
                   handleCloseNavMenu();
                   handleNavigate(page);
                 }}
@@ -198,48 +215,64 @@ function ResponsiveAppBar() {
             ))}
           </Box>
 
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: "45px" }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+          {!isLoggedIn && (
+            <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" }, justifyContent: "flex-end" }}>
+              <Button
+                onClick={() => {
+                  handleCloseNavMenu();
+                  handleNavigate("Login");
+                }}
+                sx={{ my: 2, color: "white", display: "block" }}
+              >
+                Login
+              </Button>
+              <Button
+                onClick={() => {
+                  handleCloseNavMenu();
+                  handleNavigate("Register");
+                }}
+                sx={{ my: 2, color: "white", display: "block" }}
+              >
+                Register
+              </Button>
+            </Box>
+          )}
+
+          {isLoggedIn && (
+            <Box sx={{ flexGrow: 0 }}>
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                sx={{ mt: "45px" }}
+                id="menu-appbar"
+                anchorEl={anchorElUser}
+                anchorOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                keepMounted
+                transformOrigin={{
+                  vertical: "top",
+                  horizontal: "right",
+                }}
+                open={Boolean(anchorElUser)}
+                onClose={handleCloseUserMenu}
+              >
+                <MenuItem key="Logout" onClick={handleLogout}>
+                  <Typography textAlign="center">Logout</Typography>
                 </MenuItem>
-              ))}
-            </Menu>
-          </Box>
+              </Menu>
+            </Box>
+          )}
+
         </Toolbar>
       </Container>
     </AppBar>
   );
 }
-
-let data = {
-  time: "12:00",
-  location: "Living Room",
-  temperature: 19,
-  humidity: 50,
-  co2_concentration: 800,
-};
 
 export default App;
 export { ResponsiveAppBar };

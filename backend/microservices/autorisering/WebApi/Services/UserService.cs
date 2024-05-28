@@ -1,7 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using WebApi.DAO;
 using WebApi.Models;
-using System.Data;
 
 namespace WebApi.Services
 {
@@ -47,7 +46,12 @@ namespace WebApi.Services
     {
         if (string.IsNullOrEmpty(userCreationDTO.Username) || string.IsNullOrEmpty(userCreationDTO.Password) || string.IsNullOrEmpty(userCreationDTO.Email))
         {
-            throw new ValidationException("Username, password, and email cannot be null or empty.");
+            throw new ValidationException("Something went wrong."); // Vague response to make it harder for hackers
+        }
+
+        if (userCreationDTO.Password.Length < 8)
+        {
+            throw new ValidationException("Password must be at least 8 characters long.");
         }
 
         // Check for the uniqueness of the username and register the user
@@ -64,15 +68,11 @@ namespace WebApi.Services
 
             await _userDAO.RegisterUserAsync(user);
         }
-        catch (DuplicateNameException ex)
-        {
-            // Rethrow this specific exception to be caught by the controller
-            throw ex;
-        }
         catch (Exception ex)
         {
-            throw new Exception("Failed to register user: " + ex.Message, ex);
+            throw new Exception("Something went wrong.");
         }
+        
     }
 
     public async Task<List<List<User>>> GetAllUsersAsync()

@@ -32,10 +32,8 @@ public class UserController : ControllerBase
         {
             if (ex.InnerException is KeyNotFoundException)
             {
-                // Console.WriteLine($"KeyNotFoundException caught: {ex.InnerException.ToString()}");
                 return NotFound(ex.InnerException.Message);
             }
-            // Console.WriteLine($"An error occurred: {ex.ToString()}");  // Log full exception stack trace
             return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving data from the database.");
         }
     }
@@ -67,8 +65,7 @@ public class UserController : ControllerBase
         try
         {
             await _userService.RegisterUserAsync(userCreationDTO);
-            // After registration, redirect to the GetUser endpoint to fetch and return the registered user details
-            return CreatedAtAction(nameof(GetUserAsync), new { username = userCreationDTO.Username }, userCreationDTO);
+            return Ok();
         }
         catch (DuplicateNameException ex)
         {
@@ -80,8 +77,7 @@ public class UserController : ControllerBase
         }
         catch (Exception ex)
         {
-            Console.WriteLine(ex.Message);
-            return StatusCode(StatusCodes.Status500InternalServerError, "Error while creating new user.");
+            return BadRequest(new { error = "Something went wrong." });
         }
     }
 
@@ -125,7 +121,5 @@ public class UserController : ControllerBase
         }
 
     }
-    
-    
     
 }

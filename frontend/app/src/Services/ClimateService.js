@@ -3,8 +3,14 @@ import { useState, useEffect } from 'react';
 
 const API_BASE_URL = 'http://localhost:5202';
 
-export function useThermostatData() {
+export function useSensorData() {
   const [thermData, setThermData] = useState({ temperature: 0 });
+  const [humidityData, setHumidityData] = useState({
+    humidity: 0,
+    readings: [],
+    average: 0,
+  });
+  const [CO2Data, setCO2Data] = useState({ CO2: 0 });
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -13,105 +19,62 @@ export function useThermostatData() {
         const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
         console.log('response:', response);
         const data = response.data;
-        // data.length-1 is sete for testing purposes, remove it to get the latest data
-        let temperatureValue = data[data.length-1]?.temperature; // Use optional chaining to handle undefined
-
-        if (temperatureValue === undefined) {
-          // Set a default value if temperature is undefined or null
-          temperatureValue = 0;
-          setIsLoading(false);
-        }
+        
+        // Update thermostat data
+        let temperatureValue = data[data.length - 1]?.temperature || 0;
         setThermData({ temperature: temperatureValue });
-        setIsLoading(false);
-        console.log('Updated thermData:', { temperature: temperatureValue });
+        
+        // Update humidity data
+        const humidityValue = data[data.length - 1]?.humidity || 0;
+        setHumidityData((prevData) => {
+          const newReadings = [...prevData.readings, humidityValue];
+          const newAverage = newReadings.reduce((a, b) => a + b, 0) / newReadings.length;
 
+          return {
+            humidity: humidityValue,
+            readings: newReadings.length > 10 ? newReadings.slice(1) : newReadings,
+            average: newAverage,
+          };
+        });
+
+        // Update CO2 data
+        const CO2Value = data[data.length - 1]?.CO2 || 0;
+        setCO2Data({ CO2: CO2Value });
+
+        setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
-        // Remove once backend is implemented
-            setThermData({ temperature: 'CatchBlock activated, network might be down!' });
-               setIsLoading(false);
+        // Set default values on error
+        setThermData({ temperature: 'Network might be down!' });
+        setHumidityData({ humidity: 0, readings: [], average: 0 });
+        setCO2Data({ CO2: 0 });
+        setIsLoading(false);
       }
     };
-    // Remove comment to fetch data every 5 seconds
-     const interval = setInterval(fetchData, 5000);
+
+    const interval = setInterval(fetchData, 5000);
     fetchData(); // Fetch immediately when component mounts
 
-     // Remove comment to clear interval when component unmounts
-     return () => clearInterval(interval);
+    return () => clearInterval(interval);
   }, []);
 
-  return { thermData, isLoading };
-};
+  return { thermData, humidityData, CO2Data, isLoading };
+}
 
-export async function setPreferredTemperature(prefTemp) {
+export async function setPreferredValue(HallID, desiredTemperature, desiredHumidity) {
   try {
-      const response = await axios.post(`${API_BASE_URL}/setPreferredTemperature`, { temperature: prefTemp });
-      return response.data;
+    const data = {
+      HallID,
+      desiredTemperature,
+      desiredHumidity
+      // Add CO2 value here if needed
+    };
+
+    const response = await axios.post(`${API_BASE_URL}/setPreferredValue`, data);
+    return response.data;
   } catch (error) {
-      console.error('Error setting preferred temperature:', error);
-      throw error; // Re-throwing error to handle it in the component
+    console.error('Error setting preferred values:', error);
+    throw error; // Re-throwing error to handle it in the component
   }
 }
 
-
-export function useHumidityData() {
-  const [humidityData, setHumidityData] = useState({
-      humidity: 0,
-      readings: [],
-      average: 0
-  });
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-      const fetchData = async () => {
-          try {
-            const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData`);
-            console.log('response:', response);
-              const data = response.data;
-              // data.length-1 is set for testing purposes, remove it to get the latest data
-              const humidityValue = data[data.length-1].humidity;
-
-              setHumidityData(prevData => {
-                  const newReadings = [...prevData.readings, humidityValue];
-                  const newAverage = newReadings.reduce((a, b) => a + b, 0) / newReadings.length;
-
-                  return {
-                      humidity: humidityValue,
-                      readings: newReadings.length > 10 ? newReadings.slice(1) : newReadings,
-                      average: newAverage
-                  };
-              });
-
-              setIsLoading(false);
-          } catch (error) {
-              console.error('Error fetching data:', error);
-              // Remove once backend is implemented
-              setHumidityData({
-                  humidity: 'CatchBlock activated, network might be down!',
-                  readings: [],
-                  average: 0
-              });
-              setIsLoading(false);
-          }
-      };
-
-      // Remove comment to fetch data every 5 seconds
-      const interval = setInterval(fetchData, 5000);
-      fetchData(); // Fetch immediately when component mounts
-
-      // Remove comment to clear interval when component unmounts
-      return () => clearInterval(interval);
-  }, []);
-
-  return { humidityData, isLoading };
-};
-
-export async function setPreferredHumidity(prefHumi) {
-  try {
-      const response = await axios.post(`${API_BASE_URL}/setPreferredHumidity`, { humidity: prefHumi });
-      return response.data;
-  } catch (error) {
-      console.error('Error setting preferred humidity:', error);
-      throw error; // Re-throwing error to handle it in the component
-  }
-}
