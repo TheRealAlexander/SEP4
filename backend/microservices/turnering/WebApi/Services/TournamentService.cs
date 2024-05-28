@@ -40,6 +40,16 @@ public class TournamentService : ITournamentService
     {
         Tournament tournament = await GetTournamentAsync(tournamentID);
         List<Player> players = await GetScoreboardAsync(tournamentID);
+        
+        if (players.Count < 4)
+        {
+            throw new InvalidOperationException("Insufficient players to start a new round.");
+        }
+        else if (players.Count < tournament.NumberOfCourts * 4)
+        {
+            tournament.NumberOfCourts = players.Count / 4;
+        }
+        
         Round round = tournament.GenerateRound(players);
         tournament.Rounds.Add(round);
         tournament.State = 2;
