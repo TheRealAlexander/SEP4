@@ -45,7 +45,7 @@ services:
       dockerfile: backend/microservices/turnering/WebApi/Dockerfile
     ports:
       - 5002:5002 #Http
-      - 7294:7294 #Https
+      - 7295:7295 #Https
     networks:
       - backend
     depends_on:
