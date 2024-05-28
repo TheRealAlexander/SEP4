@@ -1,108 +1,154 @@
 import React, { useState } from 'react';
+import { useParams } from 'react-router-dom';
 import TournamentRound from './TournamentRound';
 import { Paper, Typography, Box, Button, Grid } from '@mui/material';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
+import useTournamentData from '../Hooks/Tournament/useTournamentData';
+import TournamentDetails from './TournamentDetails';
+import PromptDialog from './PromptDialog';
 
 const TournamentLiveOverview = () => {
-    const [currentRound, setCurrentRound] = useState(0);
-    const [dialogOpen, setDialogOpen] = useState({});
+  const { tournamentID } = useParams(); // Extract tournamentID from the URL
 
-    const [tournamentData, setTournamentData] = useState({
-        rounds: [
-            {
-                id: 1,
-                matches: [
-                    { id: 1, team1: 'Alice', team2: 'Bob', score1: 0, score2: 0 },
-                    { id: 2, team1: 'Charlie', team2: 'Dave', score1: 0, score2: 0 }
-                ]
-            },
-            {
-                id: 2,
-                matches: [
-                    { id: 3, team1: 'Winner of Match 1', team2: 'Winner of Match 2', score1: 0, score2: 0 }
-                ]
-            }
-        ]
-    });
+  const {
+    tournamentData,
+    currentRoundIndex,
+    updateScores,
+    navigateRound,
+    saveRound,
+    loading,
+    error
+  } = useTournamentData(tournamentID);
 
-    const handleNavigation = (direction) => {
-        setCurrentRound(prevRound => {
-            const nextRound = direction === 'next' ? prevRound + 1 : prevRound - 1;
-            return Math.max(0, Math.min(nextRound, tournamentData.rounds.length - 1));
-        });
-    };
+  const [dialogOpen, setDialogOpen] = useState({});
+  const [isPromptOpen, setIsPromptOpen] = useState(false);
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [pendingNavigation, setPendingNavigation] = useState(null);
 
-    const handleUpdate = (matchId, newScores) => {
-        const updatedRounds = tournamentData.rounds.map(round => {
-            return {
-                ...round,
-                matches: round.matches.map(match => {
-                    if (match.id === matchId) {
-                        return { ...match, score1: newScores[0], score2: newScores[1] };
-                    }
-                    return match;
-                })
-            };
-        });
-        setTournamentData({ rounds: updatedRounds });
-    };
+  const handleNavigation = (direction) => {
+    if (direction === 'next') {
+      const currentRound = tournamentData.Rounds[currentRoundIndex];
+      const isNavigationBlocked = currentRound.Courts.some(court => {
+        const totalScore = court.scores.reduce((a, b) => a + b, 0);
+        return totalScore < tournamentData.PointsPerMatch;
+      });
 
-    const handleClick = (matchId) => {
-        setDialogOpen(prevState => ({ ...prevState, [matchId]: true }));
-        console.log('open ' + matchId);
-    };
+      if (isNavigationBlocked) {
+        alert("You cannot navigate to the next round because some courts haven't reached the required score.");
+        return;
+      }
+    }
 
-    const handleClose = (matchId) => {
-        setDialogOpen(prevState => ({ ...prevState, [matchId]: false }));
-        console.log('close ' + matchId);
-    };
+    if (hasUnsavedChanges) {
+      setPendingNavigation(direction);
+      setIsPromptOpen(true);
+    } else {
+      navigateRound(direction);
+    }
+  };
 
-    return (
+  const handleUpdate = (courtId, newScores) => {
+    updateScores(tournamentData.Rounds[currentRoundIndex].RoundNumber, courtId, newScores);
+    setHasUnsavedChanges(true);
+  };
+
+  const handleClick = (courtIndex) => {
+    setDialogOpen(prevState => ({ ...prevState, [courtIndex]: true }));
+  };
+
+  const handleClose = (courtIndex) => {
+    setDialogOpen(prevState => ({ ...prevState, [courtIndex]: false }));
+  };
+
+  const handleSave = async () => {
+    setIsPromptOpen(false);
+
+    const roundToSave = tournamentData.Rounds[currentRoundIndex];
+    try {
+      await saveRound(roundToSave);
+      setHasUnsavedChanges(false);
+      if (pendingNavigation) {
+        navigateRound(pendingNavigation);
+        setPendingNavigation(null);
+      }
+    } catch (error) {
+      console.error('Failed to save round:', error);
+    }
+  };
+
+  const handleDiscard = () => {
+    setIsPromptOpen(false);
+    setHasUnsavedChanges(false);
+    if (pendingNavigation) {
+      navigateRound(pendingNavigation);
+      setPendingNavigation(null);
+    }
+  };
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (error) {
+    return <Typography>Error: {error.message}</Typography>;
+  }
+
+  if (!tournamentData || !tournamentData.Rounds || tournamentData.Rounds.length === 0) {
+    return <Typography>No data available</Typography>;
+  }
+
+  return (
+    <Grid container spacing={2} sx={{ margin: 'auto', maxWidth: 1400 }}>
+      <Grid item xs={12}>
+        <TournamentDetails 
+          name={tournamentData.Name} 
+          format={tournamentData.Format} 
+          numberOfCourts={tournamentData.NumberOfCourts} 
+          pointsPerMatch={tournamentData.PointsPerMatch} 
+        />
+      </Grid>
+      <Grid item xs={12} md={8}>
         <Paper elevation={3} sx={{ p: 3, margin: 'auto', maxWidth: 1200 }}>
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
-                <Button
-                    variant="contained"
-                    onClick={() => handleNavigation('previous')}
-                    disabled={currentRound === 0}
-                    startIcon={<ArrowBackIosIcon />}
-                />
-                <Typography variant="h6" sx={{ mx: 2 }}>
-                    Round {tournamentData.rounds[currentRound].id}
-                </Typography>
-                <Button
-                    variant="contained"
-                    onClick={() => handleNavigation('next')}
-                    disabled={currentRound === tournamentData.rounds.length - 1}
-                    endIcon={<ArrowForwardIosIcon />}
-                />
-            </Box>
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={4} sx={{ padding: 2 }}>
-                    <TournamentRound
-                        round={tournamentData.rounds[currentRound]}
-                        onUpdate={handleUpdate}
-                        dialogOpen={dialogOpen}
-                        handleClick={handleClick}
-                        handleClose={handleClose}
-                    />
-                </Grid>
-                <Grid item xs={12} md={4} sx={{ padding: 2 }}>
-                    <Scoreboard />
-                </Grid>
-                <Grid item xs={12} md={4} sx={{ padding: 2 }}>
-                    <TournamentRound
-                        round={tournamentData.rounds[currentRound]}
-                        onUpdate={handleUpdate}
-                        dialogOpen={dialogOpen}
-                        handleClick={handleClick}
-                        handleClose={handleClose}
-                    />
-                </Grid>
-            </Grid>
+          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: 2 }}>
+            <Button
+              variant="contained"
+              onClick={() => handleNavigation('previous')}
+              disabled={currentRoundIndex === 0}
+              startIcon={<ArrowBackIosIcon />}
+            />
+            <Typography variant="h6" sx={{ mx: 2 }}>
+              Round {tournamentData.Rounds[currentRoundIndex].RoundNumber}
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={() => handleNavigation('next')}
+              disabled={currentRoundIndex === tournamentData.Rounds.length - 1}
+              endIcon={<ArrowForwardIosIcon />}
+            />
+          </Box>
+          <TournamentRound
+            courts={tournamentData.Rounds[currentRoundIndex].Courts}
+            onUpdate={handleUpdate}
+            dialogOpen={dialogOpen}
+            handleClick={handleClick}
+            handleClose={handleClose}
+            pointsPerMatch={tournamentData.PointsPerMatch}
+          />
         </Paper>
-    );
+      </Grid>
+      <Grid item xs={12} md={4}>
+        <Scoreboard scores={tournamentData.Players} />
+      </Grid>
+      <PromptDialog 
+        open={isPromptOpen}
+        handleClose={() => setIsPromptOpen(false)}
+        handleSave={handleSave}
+        handleDiscard={handleDiscard}
+      />
+    </Grid>
+  );
 };
 
 export default TournamentLiveOverview;
