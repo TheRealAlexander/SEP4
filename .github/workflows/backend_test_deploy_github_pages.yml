@@ -1,0 +1,65 @@
+name: Run tests and deploy report to GitHub Pages
+
+on:
+  push:
+    paths:
+      - "backend/**"
+      - ".github/workflows/backend_test_deploy_github_pages.yml"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        dotnet-version: ["7.0.x"]
+        mongodb-version: ["4.2", "4.4", "5.0", "6.0"]
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v1
+        with:
+          dotnet-version: ${{ matrix.dotnet-version }}
+
+      - name: Start MongoDB
+        uses: supercharge/mongodb-github-action@1.10.0
+        with:
+          mongodb-version: ${{ matrix.mongodb-version }}
+
+      - name: Restore dependencies
+        working-directory: backend/microservices/TestProjects
+        run: dotnet restore
+
+      - name: Build
+        working-directory: backend/microservices/TestProjects
+        run: dotnet build --no-restore
+
+      - name: Test
+        working-directory: backend/microservices/TestProjects
+        run: |
+          dotnet test --no-build --verbosity normal /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+
+      - name: List files for debugging
+        run: find backend/microservices -type f -name "*.xml"
+
+      - name: Create coverage directory
+        run: mkdir -p backend/microservices/TestProjects/coverage
+
+      - name: Install ReportGenerator tool
+        run: dotnet tool install --global dotnet-reportgenerator-globaltool
+
+      - name:
+          Generate a report for all coverage reports under
+          backend/microservices**/coverage.cobertura.xml
+        run:
+          reportgenerator
+          "-reports:backend/microservices/**/coverage.cobertura.xml"
+          "-targetdir:backend/microservices/TestProjects/coverage"
+          -reporttypes:Html
+
+      - name: Deploy to GitHub Pages
+        uses: JamesIves/github-pages-deploy-action@4.1.5
+        with:
+          branch: gh-pages
+          folder: backend/microservices/TestProjects/coverage

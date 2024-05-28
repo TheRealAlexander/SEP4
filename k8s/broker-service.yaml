@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert -f docker-compose-deployment-backend.yml -o k8s/
+    kompose.version: 1.30.0 (9d8dcb518)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: broker
+  name: broker
+  namespace: default
+spec:
+  ports:
+    - name: "5202"
+      port: 5202
+      targetPort: 5202
+    - name: "7294"
+      port: 7294
+      targetPort: 7294
+  selector:
+    io.kompose.service: broker
+status:
+  loadBalancer: {}

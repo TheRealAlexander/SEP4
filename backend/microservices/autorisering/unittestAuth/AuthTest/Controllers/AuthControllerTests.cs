@@ -10,7 +10,7 @@ namespace AuthTest
     public class AuthControllerTests
     {
         private readonly Mock<IConfiguration> _mockConfig;
-        private readonly Mock<IAuthService> _mockAuthService;
+        private readonly Mock<IUserService> _mockUserService;
         private readonly AuthController _controller;
 
         public AuthControllerTests()
@@ -22,9 +22,9 @@ namespace AuthTest
             _mockConfig.Setup(c => c["Jwt:Audience"]).Returns("your_audience");
             _mockConfig.Setup(c => c["Jwt:Subject"]).Returns("your_subject");
 
-            _mockAuthService = new Mock<IAuthService>();
+            _mockUserService = new Mock<IUserService>();
              // Initialize the AuthController with mocked dependencies
-            _controller = new AuthController(_mockConfig.Object, _mockAuthService.Object);
+            _controller = new AuthController(_mockConfig.Object, _mockUserService.Object);
         }
 
         [Fact]
@@ -33,10 +33,10 @@ namespace AuthTest
             // Arrange
             var userLoginDto = new UserLoginDTO("testuser", "password");
             var user = new User { Username = "testuser", Role = "User", Email = "test@example.com", Age = 30 };
-            _mockAuthService.Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
+            _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
 
             // Assert
             var okResult = Assert.IsType<OkObjectResult>(result);
@@ -49,10 +49,10 @@ namespace AuthTest
         {
             // Arrange
             var userLoginDto = new UserLoginDTO("wronguser", "wrongpassword");
-            _mockAuthService.Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>())).Throws(new ArgumentException("Invalid username or password"));
+            _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).Throws(new ArgumentException("Invalid username or password"));
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
 
             // Assert
             var badRequestResult = Assert.IsType<BadRequestObjectResult>(result);
@@ -65,10 +65,10 @@ namespace AuthTest
             // Arrange
             var userLoginDto = new UserLoginDTO("testuser", "password");
             var user = new User { Username = "testuser", Role = "User", Email = "test@example.com", Age = 30 };
-            _mockAuthService.Setup(x => x.ValidateUser(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
+            _mockUserService.Setup(x => x.ValidateUserAsync(It.IsAny<string>(), It.IsAny<string>())).ReturnsAsync(user);
 
             // Act
-            var result = await _controller.Login(userLoginDto);
+            var result = await _controller.LoginAsync(userLoginDto);
             var okResult = Assert.IsType<OkObjectResult>(result);
             var jwt = (string)okResult.Value!;
             List<System.Security.Claims.Claim> claims;

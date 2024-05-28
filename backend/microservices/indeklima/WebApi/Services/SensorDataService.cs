@@ -13,25 +13,39 @@ namespace WebApi.Services
         {
             _sensorDataDao = sensorDataDao;
         }
-
-        public async Task<List<SensorData>> GetSensorData()
+        public async Task<List<SensorData>> GetSensorData(int hallId)
         {
-            return await _sensorDataDao.GetSensorDataAsync();
+            if (hallId == null)
+            {
+                throw new ArgumentNullException(nameof(hallId));
+            }
+            return await _sensorDataDao.GetSensorDataAsync(hallId);
         }
 
         public async Task AddSensorDataAsync(SensorData sensorData)
         {
-            _sensorDataDao.AddSensorDataAsync(sensorData);
+            if (sensorData == null)
+            {
+                throw new ArgumentNullException(nameof(sensorData));
+            }
+            await _sensorDataDao.AddSensorDataAsync(sensorData);
         }
-
-        public async Task AddSensorDataGoalAsync(SensorGoal sensorGoal)
+        public async Task<List<SensorData>> GetSensorData(int hallId, int limit)
         {
-            _sensorDataDao.AddSensorDataGoalAsync(sensorGoal);
+            return await _sensorDataDao.GetSensorDataAsync(hallId, limit);
         }
-
-        public async Task<SensorGoal> GetSensorDataGoalAsync()
+        public async Task<List<SensorData>> GetSensorData(int hallId, DateTime startDate, DateTime endDate)
         {
-            return await _sensorDataDao.GetLatestSensorGoalAsync();
+            if (hallId == null)
+            {
+                throw new ArgumentNullException(nameof(hallId));
+            }
+            if (startDate == null || endDate == null)
+            {
+                throw new ArgumentNullException(nameof(startDate));
+            }
+
+            return await _sensorDataDao.GetSensorDataAsync(hallId, startDate, endDate);
         }
     }
 }

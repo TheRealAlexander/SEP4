@@ -1,6 +1,6 @@
-
 using WebApi.DAO;
 using WebApi.Services;
+using SharedObjects.Auth;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +21,12 @@ builder.Services.AddSingleton<MongoDbContext>(sp =>
     )
 );
 builder.Services.AddScoped<ISensorDataService, SensorDataService>();
-builder.Services.AddScoped<SensorDataDao>();
+builder.Services.AddScoped<ISensorDataDAO, SensorDataDAO>();
+builder.Services.AddScoped<ISensorGoalService, SensorGoalService>();
+builder.Services.AddScoped<ISensorGoalDAO, SensorGoalDAO>();
+builder.Services.AddScoped<IIOTControlService, IOTControlService>();
+
+AuthorizationPolicies.AddAuth(builder);
 
 var app = builder.Build();
 
@@ -31,6 +36,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x
+    .AllowAnyMethod()
+    .AllowAnyHeader()
+    .SetIsOriginAllowed(origin => true) // allow any origin
+    .AllowCredentials());
 
 app.UseHttpsRedirection();
 

@@ -4,10 +4,7 @@
 /iot/.pio/build/megaatmega2560
 /iot/.pio
 *.json
-*.ini
-!appsettings.json
-!appsettings.Development.json
-!launchSettings.json
+
 ###################
 # compiled source #
 ###################
@@ -270,3 +267,7 @@ FakesAssemblies/
 *.opt
 .vscode/launch.json
 .vscode/tasks.json
+
+!appsettings*.json
+!launchSettings.json
+backend/microservices/autorisering/unittestAuth/AuthTest/tools/

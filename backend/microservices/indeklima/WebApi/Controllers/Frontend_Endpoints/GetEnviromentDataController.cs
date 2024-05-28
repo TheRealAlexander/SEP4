@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using WebApi.Models;
@@ -17,10 +16,25 @@ public class GetEnvironmentDataController : ControllerBase
         _sensorDataService = sensorDataService;
     }
 
-    [HttpGet]
+    
+    [HttpGet("{hallId}")]
     [Authorize(Policy = "MustBeAdmin")]
-    public async Task<List<SensorData>> GetSensorData()
+    public async Task<List<SensorData>> GetSensorData(int hallId)
     {
-        return await _sensorDataService.GetSensorData();
+        return await _sensorDataService.GetSensorData(hallId);
+    }
+
+    [HttpGet("{hallId}/{limit}")]
+    [Authorize(Policy = "MustBeAdmin")]
+    public async Task<List<SensorData>> GetSensorData(int hallId, int limit)
+    {
+        return await _sensorDataService.GetSensorData(hallId,limit);
+    }
+
+    [HttpGet("{hallId}/range")]
+    [Authorize(Policy = "MustBeAdmin")]
+    public async Task<List<SensorData>> GetSensorData(int hallId, DateTime startDate, DateTime endDate)
+    {
+        return await _sensorDataService.GetSensorData(hallId, startDate, endDate);
     }
 }

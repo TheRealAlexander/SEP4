@@ -8,6 +8,7 @@ services:
     volumes:
       - mongodbdata:/data/db
       - authmongodbdata:/data/db
+      - tournamentmongodbdata:/data/db
     networks:
       - backend
 
@@ -36,7 +37,7 @@ services:
       - backend
     depends_on:
       - mongo
-        
+
   turnering_webapi:
     image: turnering_webapi
     build:
@@ -50,9 +51,35 @@ services:
     depends_on:
       - mongo
 
+  broker:
+    image: broker
+    build:
+      context: .
+      dockerfile: backend/broker/Dockerfile
+    ports:
+      - 5202:5202 #Http
+      - 7294:7294 #Https
+    networks:
+      - backend
+    depends_on:
+      - indeklima_webapi
+      - auth_webapi
+      - turnering_webapi
+
+  frontend:
+    image: frontend
+    build:
+      context: ./frontend/app
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    networks:
+      - backend
+
 volumes:
   mongodbdata:
   authmongodbdata:
+  tournamentmongodbdata:
 
 networks:
   backend:

@@ -13,9 +13,11 @@
         private readonly UserDAO _dao;
         private readonly IMongoDatabase _database;
 
+        
+        // Database must be running on localhost port 27017
         public UserDaoTests()
         {
-            var connectionString = "mongodb://localhost:27017"; // Adjust as necessary for your environment
+            var connectionString = "mongodb://localhost:27017"; 
             var client = new MongoClient(connectionString);
             _database = client.GetDatabase("BackendTestAuthDB");
             _dao = new UserDAO(new MongoDbContext(connectionString, "BackendTestAuthDB"));
@@ -57,7 +59,7 @@
 
             // Act & Assert
             async Task action() => await _dao.RegisterUserAsync(user);
-            await Assert.ThrowsAsync<DuplicateNameException>(action);
+            await Assert.ThrowsAsync<Exception>(action);
         }
 
         [Fact]
@@ -84,6 +86,27 @@
             // Act & Assert
             var exception = await Assert.ThrowsAsync<UnauthorizedAccessException>(() => _dao.ValidateUserAsync("testuser", "wrongpass"));
             Assert.Equal("Password is incorrect.", exception.Message);
+        }
+        
+        [Fact]
+        public async Task UpdateUserAsync_ShouldUpdateUserDetails()
+        {
+            // Arrange
+            var user = new User { Username = "updateuser", Password = "pass", Email = "update@test.com", Role = "User", Age = 25 };
+            await _dao.RegisterUserAsync(user);
+            var updatedUser = new User { Username = "updateuser", Password = "newpass", Email = "updateNew@test.com", Role = "SuperUser", Age = 26 };
+
+            // Act
+            await _dao.UpdateUserAsync(updatedUser);
+
+            // Assert - Fetch the updated user and verify changes
+            var result = await _dao.GetUserAsync("updateuser");
+            Assert.NotNull(result);
+            Assert.Equal("updateuser", result.Username);
+            Assert.Equal("newpass", result.Password);
+            Assert.Equal("updateNew@test.com", result.Email);
+            Assert.Equal("SuperUser", result.Role);
+            Assert.Equal(26, result.Age);
         }
 
     }
