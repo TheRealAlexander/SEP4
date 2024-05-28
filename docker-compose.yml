@@ -36,6 +36,19 @@ services:
       - backend
     depends_on:
       - mongo
+        
+  turnering_webapi:
+    image: turnering_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/turnering/WebApi/Dockerfile
+    ports:
+      - 5002:5002 #Http
+      - 7294:7294 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
 
 volumes:
   mongodbdata:
