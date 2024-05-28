@@ -7,7 +7,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import Scoreboard from './Scoreboard';
 import useTournamentData from '../Hooks/Tournament/useTournamentData';
 import TournamentDetails from './TournamentDetails';
-import PromptDialog from './RoundComponents/PromptDialog';
+import PromptDialog from './PromptDialog';
 
 const TournamentLiveOverview = () => {
   const { tournamentID } = useParams(); // Extract tournamentID from the URL
