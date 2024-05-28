@@ -38,6 +38,7 @@ import {
   MenuItem,
 } from "./MUI_imports";
 
+
 const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
 
 function App() {
@@ -71,6 +72,7 @@ function AppContent() {
           mt: "-5vh",
         }}
       >
+
         <Toolbar />
 
         <div className="App">
