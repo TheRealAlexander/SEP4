@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useState, useEffect } from 'react';
 
-const API_BASE_URL = 'http://localhost:5202';
+const API_BASE_URL = 'http://broker:5202';
 
 export function useSensorData() {
   const [thermData, setThermData] = useState({ temperature: 0 });

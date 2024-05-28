@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5202/broker/auth/";
+const API_URL = "http://broker:5202/broker/auth/";
 
 const register = (username, password, email, age) => {
   return axios
