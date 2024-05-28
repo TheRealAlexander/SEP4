@@ -38,7 +38,7 @@ import {
   MenuItem,
 } from "./MUI_imports";
 
-const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
+const pages = ["Home", "Controls", "Data", "Tournaments"];
 
 function App() {
   return (
@@ -68,7 +68,7 @@ function AppContent() {
           alignItems: "center",
           justifyContent: "center",
           height: 1,
-          mt: "-5vh",
+          mt: "8",
         }}
       >
         <Toolbar />
@@ -139,7 +139,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" style={{ zIndex: 1100 }}>
+    <AppBar position="sticky" style={{ zIndex: 1100 }}>
       {" "}
       <Container maxWidth="xl">
         <Toolbar disableGutters>

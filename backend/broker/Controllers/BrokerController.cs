@@ -28,6 +28,8 @@ namespace Broker.Controllers
             return Ok(result);
         }
 
+
+
         [HttpGet("tournaments")]
         public async Task<IActionResult> GetTournaments()
         {
@@ -74,7 +76,7 @@ namespace Broker.Controllers
             return await _brokerService.RemoveParticipant(tournamentID, participant);
         }
 
-        [HttpPost("login")]
+        [HttpPost("auth/login")]
         public async Task<IActionResult> Login([FromBody] string user)
         {
             var result = await _brokerService.Login(user);
@@ -102,7 +104,7 @@ namespace Broker.Controllers
             return Content(result, "application/json");
         }
 
-        [HttpGet("register")]
+        [HttpGet("auth/register")]
         public async Task<IActionResult> RegisterUser([FromBody] string user)
         {
             var result = await _brokerService.RegisterUser(user);

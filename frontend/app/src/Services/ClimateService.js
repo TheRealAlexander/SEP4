@@ -61,6 +61,16 @@ export function useSensorData() {
   return { thermData, humidityData, CO2Data, isLoading };
 }
 
+
+export async function getLimitedSensorData(limit) {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/Broker/GetSensorData?limit=${limit}`);
+    return response.data;
+  } catch (error) {
+    console.error(error);
+  }
+}
+
 export async function setPreferredValue(HallID, desiredTemperature, desiredHumidity) {
   try {
     const data = {
