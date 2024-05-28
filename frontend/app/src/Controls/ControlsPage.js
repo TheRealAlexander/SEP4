@@ -3,6 +3,7 @@ import { Box, Card, CardActionArea, CardContent, Typography, Grid, Container, Bu
 import TempHumiComp from './TempHumiComp';
 import LightControlComp from './LightControlComp';
 import CurrentConditionsComp from './CurrentConditionsComp';
+import { setPreferredValue } from '../Services/ClimateService';
 
 
 function HomePage() {
@@ -27,8 +28,9 @@ function HomePage() {
         }
     });
 
-    const handleSave = () => {
-      setControlStates(tempControlStates);
+  const handleSave = async () => {
+        await setPreferredValue(selectedHal, tempControlStates[selectedHal].temperature, tempControlStates[selectedHal].humidity);
+        setControlStates(tempControlStates);
   };
 
   const handleCancel = () => {

@@ -87,3 +87,4 @@ export async function setPreferredValue(HallID, desiredTemperature, desiredHumid
     throw error; // Re-throwing error to handle it in the component
   }
 }
+
