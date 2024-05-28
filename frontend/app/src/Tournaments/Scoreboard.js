@@ -33,15 +33,15 @@ const Scoreboard = ({ scores }) => {
   const currentScores = sortedScores.slice(startIndex, endIndex);
 
   return (
-    <Paper elevation={3} sx={{ padding: 3, margin: 2 }}>
+    <Paper elevation={3} sx={{ padding: 3, margin: 2, minWidth: '100%' }}>
       <Box sx={{ padding: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{ overflowWrap: 'break-word', textAlign: 'center' }}>
+        <Typography variant="h4" gutterBottom sx={{ textAlign: 'center' }}>
           Scoreboard
         </Typography>
         <Grid container spacing={2} direction="column">
           {currentScores.map(({ Name, Wins, Draws, Losses, Points }, index) => (
             <Grid item xs={12} key={index}>
-              <Typography variant="h6" sx={{ overflowWrap: 'break-word', textAlign: 'center' }}>
+              <Typography variant="h6" sx={{  textAlign: 'center' }}>
                 {Name}: {Points} points (W: {Wins}, D: {Draws}, L: {Losses})
               </Typography>
             </Grid>

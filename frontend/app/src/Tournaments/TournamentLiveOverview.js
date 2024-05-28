@@ -28,6 +28,19 @@ const TournamentLiveOverview = () => {
   const [pendingNavigation, setPendingNavigation] = useState(null);
 
   const handleNavigation = (direction) => {
+    if (direction === 'next') {
+      const currentRound = tournamentData.Rounds[currentRoundIndex];
+      const isNavigationBlocked = currentRound.Courts.some(court => {
+        const totalScore = court.scores.reduce((a, b) => a + b, 0);
+        return totalScore < tournamentData.PointsPerMatch;
+      });
+
+      if (isNavigationBlocked) {
+        alert("You cannot navigate to the next round because some courts haven't reached the required score.");
+        return;
+      }
+    }
+
     if (hasUnsavedChanges) {
       setPendingNavigation(direction);
       setIsPromptOpen(true);
