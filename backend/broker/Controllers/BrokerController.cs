@@ -17,7 +17,7 @@ namespace Broker.Controllers
             _brokerService = brokerService;
         }
 
-        [HttpGet("GetSensorData")]
+        [HttpGet("GetSensorData/{hallId}")]
         public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId)
         {
             var result = await _brokerService.GetSensorData(hallId);
@@ -28,7 +28,16 @@ namespace Broker.Controllers
             return Ok(result);
         }
 
-
+        [HttpGet("GetSensorData/{hallId}/{limit}")]
+        public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId, int limit)
+        {
+            var result = await _brokerService.GetSensorData(hallId, limit);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
 
         [HttpGet("tournaments")]
         public async Task<IActionResult> GetTournaments()
@@ -110,5 +119,7 @@ namespace Broker.Controllers
             var result = await _brokerService.RegisterUser(user);
             return Content(result, "application/json");
         }
+
+
     }
 }

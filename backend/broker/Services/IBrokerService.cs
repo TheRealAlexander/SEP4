@@ -37,5 +37,7 @@ namespace Broker.Services
         public Task<string> AdjustUserPermissions(string usersToChange);
 
         public Task<string> RegisterUser(string user);
+
+        public Task<ActionResult<List<SensorData>>> GetSensorData(int hallId, int limit);
     }
 }

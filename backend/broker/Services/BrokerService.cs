@@ -31,6 +31,19 @@ namespace Broker.Services
             }
         }
 
+        public async Task<ActionResult<List<SensorData>>?> GetSensorData(int hallId, int limit)
+        {
+            try
+            {
+                return await _httpClient.GetFromJsonAsync<List<SensorData>>("http://indeklima_webapi:5200/GetEnvironmentData/" + hallId + "/" + limit);
+            }
+            catch (HttpRequestException ex)
+            {
+                // Handle exception
+                throw new Exception("Error getting sensor data", ex);
+            }
+        }
+
         public async Task<ActionResult<List<Tournament>>> GetTournaments()
         {
             var response = await _httpClient.GetAsync("http://turnering_webapi:5101/tournaments");
