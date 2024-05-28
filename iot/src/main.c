@@ -115,7 +115,7 @@ static void do_wifi(void) {
                 next_wifi_step = WIFI_STEP_TCP_OPEN;
                 wifi_cmd_timestamp = g_timestamp;
 
-                send_to_pc_fmt("📡 wifi ap join\n");
+                send_to_pc_fmt("📡 wifi ap join, ssid = '%s', password ='%s'\n", WIFI_SSID, WIFI_PASSWORD);
 
             } break;
 
@@ -127,7 +127,7 @@ static void do_wifi(void) {
                     next_wifi_step = WIFI_STEP_TCP_SEND;
                     wifi_cmd_timestamp = g_timestamp;
 
-                    send_to_pc_fmt("📡 wifi tcp open\n");
+                    send_to_pc_fmt("📡 wifi tcp open, ip = %s, port = %d\n", SERVER_IP, SERVER_PORT);
                 }
             } break;
 
