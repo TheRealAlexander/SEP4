@@ -15,22 +15,14 @@
 // Types
 
 typedef enum wifi2_state {
-    WIFI2_STATE_NONE,            // Ingen igangv�rende command
-                                 
+    WIFI2_STATE_NONE,            // Ingen igangværende command
     WIFI2_STATE_DONE_OK,         // Fandt "OK" i respose fra ESP32
     WIFI2_STATE_DONE_FAIL,       // Fandt "ERROR" eller "FAIL" i response fra ESP32
-
-    WIFI2_STATE_WAIT,            // I gang med at l�se normalt AT+XXXXX response.
-    WIFI2_STATE_WAIT_IPD,        // I gang med at l�se normalt AT+XXXXX response, og forventer at "+IPD" f�lger.
-    WIFI2_STATE_WAIT_IPD_PREFIX, // Venter p� at finde "+IPD,1234:" prefixet.
-    WIFI2_STATE_WAIT_IPD_LENGTH, // L�ser tallet efter +"IPD,1234:" prefixet, som fort�ller hvor langt response data er.
-    WIFI2_STATE_WAIT_IPD_DATA,   // L�ser data efter "+IPD,1234:" prefixet, indtil vi har modtaget wifi2_g_ipd_len antal bytes.
+    WIFI2_STATE_WAIT,            // I gang med at læse AT+XXXXX response.
 } wifi2_state;
 
 typedef struct wifi2_cmd_result {
     bool ok;
-    char *data;
-    int data_len;
 } wifi2_cmd_result;
 
 ////////////////////////////////////////////////////////////////
@@ -40,16 +32,13 @@ static wifi2_state  wifi2_g_state;
 static char         wifi2_g_recv_buf[WIFI2_MAX_RECV];
 static int          wifi2_g_recv_len;
 
-static int          wifi2_g_ipd_len; // Tallet fra "+IPD,1234:" prefixet gemmes i wifi2_g_ipd_len, og fort�ller hvor langt response data er.
-static int          wifi2_g_ipd_idx; // Index i wifi2_g_recv_buf for data efter "+IPD,1234:" prefixet.
-
 ////////////////////////////////////////////////////////////////
 // Functions
 
 static void wifi2_init();
 static void wifi2_uart_callback(uint8_t byte);
 
-static void wifi2_async(char *cmd, bool ipd);
+static void wifi2_async(char *cmd);
 static void wifi2_async_reset(void);
 static void wifi2_async_ap_join(char *ssid, char *password);
 static void wifi2_async_tcp_open(char *ip, int port);

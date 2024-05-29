@@ -15,32 +15,6 @@
 #include <stdio.h>
 #include <string.h>
 
-// TEMPORARY HACK 
-// TEMPORARY HACK 
-// TEMPORARY HACK
-#if MOCK
-
-// NOTE(rune): På Windows har C standard library ikke memmem(), s+ jeg har hugget en implementation her fra: https://stackoverflow.com/a/52989329
-// TODO(rune): Vi bruger kun memmem() i wifi2.c, men vi kan godt undvære det kode, som tjekker efter "OK", "ERROR" osv.
-void *memmem(void *haystack, size_t haystack_len,
-             void * needle, size_t needle_len) {
-    if (haystack == NULL) return NULL; // or assert(haystack != NULL);
-    if (haystack_len == 0) return NULL;
-    if (needle == NULL) return NULL; // or assert(needle != NULL);
-    if (needle_len == 0) return NULL;
-
-    for (char *h = haystack;
-         haystack_len >= needle_len;
-         ++h, --haystack_len) {
-        if (!memcmp(h, needle, needle_len)) {
-            return h;
-        }
-    }
-    return NULL;
-}
-
-#endif
-
 ////////////////////////////////////////////////////////////////
 // Include AVR or mock AVR
 

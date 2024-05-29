@@ -14,12 +14,14 @@ void construct_ntp_request(ntp_request_packet* packet) {
     packet->li_vn_mode = (LI_NO_LEAP_SECOND << 6) | (VN_NTP_VERSION << 3) | MODE_CLIENT;
 }
 
+#ifndef _WINSOCKAPI_
 uint32_t ntohl(uint32_t netlong) {
     return ((netlong>>24)&0xff) | // move byte 3 to byte 0
            ((netlong<<8)&0xff0000) | // move byte 1 to byte 2
            ((netlong>>8)&0xff00) | // move byte 2 to byte 1
            ((netlong<<24)&0xff000000); // byte 0 to byte 3
 }
+#endif
 
 void print_ntp_packet(ntp_packet* packet) {
     send_to_pc_fmt("li_vn_mode: %u\n", packet->li_vn_mode);
