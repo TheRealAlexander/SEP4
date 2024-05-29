@@ -82,15 +82,14 @@ static void do_wifi(void) {
     static wifi_step curr_wifi_step = WIFI_STEP_RESET;
     static wifi_step next_wifi_step = WIFI_STEP_RESET;
 
-    // TODO(rune): Burde dette command timeout være en del af driveren, eller er det mere fleksibelt at lade user-koden bestemme?
-    // NOTE(rune): Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
+    // Timestamp for sidste gang vi begyndte en async wifi command på ESP32'en.
     static timestamp wifi_cmd_timestamp = 0;
 
-    // NOTE(rune): Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
+    // Timestamp for hvor langt tid vi venter på svar fra ESP32'en.
     // Skal være større end packet_timeout. Er meget høj, da det kan tage langt tid at join et access point.
     static timestamp wifi_cmd_timeout = 20000;
 
-    static timestamp packet_timestamp = 0;   // NOTE(rune): Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
+    static timestamp packet_timestamp = 0;   // Timestamp for sidste gang vi begyndte en async tcp open+send+close omgang.
     static timestamp packet_timeout = 1000;
     timestamp packet_interval = g_measurements.want_next_measurement_delay;
 
@@ -98,7 +97,7 @@ static void do_wifi(void) {
     // Tjek om vi skal starte en ny command
 
     if (wifi2_can_begin_async()) {
-        curr_wifi_step = next_wifi_step; // NOTE(rune): Husk på hvilken command vi sætter i gang, så vi ved hvad der skal gøres når kommandoen er færdig.
+        curr_wifi_step = next_wifi_step; // Husk på hvilken command vi sætter i gang, så vi ved hvad der skal gøres når kommandoen er færdig.
 
         switch (next_wifi_step) {
             case WIFI_STEP_RESET: {
@@ -165,7 +164,7 @@ static void do_wifi(void) {
 
     bool timeout_or_error = false;
     wifi2_cmd_result cmd_result = { 0 };
-    if (wifi2_async_is_done(&cmd_result)) { // TODO(rune): Check også efter timeout her
+    if (wifi2_async_is_done(&cmd_result)) {
         send_to_pc_fmt("Async command done: %d\n", curr_wifi_step);
 
         send_to_pc(ANSI_FG_YELLOW);
@@ -181,14 +180,9 @@ static void do_wifi(void) {
                 wifi2_cancel_async();
             }
 
-            // TODO(rune): Conditional debug print
-            send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, data_len = %d\n", g_timestamp, 99, cmd_result.ok, cmd_result.data_len);
-            send_to_pc(ANSI_FG_CYAN);
-            uart_send_array_blocking(USART_0, cmd_result.data, cmd_result.data_len);
-            send_to_pc("\n");
-            send_to_pc(ANSI_RESET);
+            send_to_pc_fmt("🐊 CMD RESULT current_millis = %d counter = %d, ok = %d, recv_len = %d\n", g_timestamp, 99, cmd_result.ok, wifi2_g_recv_len);
         } else if (curr_wifi_step == WIFI_STEP_TCP_CLOSE) {
-            // NOTE(rune): WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
+            // WIFI_STEP_TCP_CLOSE giver ok == false hvis forbindelsen allerede er lukket,
             // hvilket den vil være er, hvis transaction blev færdig uden fejl, så vi ignorerer bare at ok == false.
         } else {
             timeout_or_error = true;
@@ -206,7 +200,7 @@ static void do_wifi(void) {
     }
 
     if (timeout_or_error) {
-        // NOTE(rune): Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
+        // Bail hvis der sker en fejl -> forsøg at join AP igen og åbn TCP forbindelse igen
         next_wifi_step = WIFI_STEP_RESET;
         wifi2_cancel_async();
     }
@@ -293,7 +287,7 @@ static void do_servo() {
 
 static void do_pir() {
     static timestamp motion_timestamp = 0;
-    static timestamp motion_delay = 10*1000; // Bestemmer hvor langt tid skal der gå før lyset slukker igen.
+    static timestamp motion_delay = LIGHT_STAY_ON_SECONDS * 1000;
 
     if (pir_motion()) {
         motion_timestamp = g_timestamp;

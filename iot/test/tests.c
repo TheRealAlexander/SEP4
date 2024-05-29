@@ -1,13 +1,4 @@
 ////////////////////////////////////////////////////////////////
-// Fake configuration
-
-#define SERVER_IP       "N/A"
-#define SERVER_PORT     0
-#define WIFI_SSID       "N/A"
-#define WIFI_PASSWORD   "N/A"
-#define HALL_ID         -1
-
-////////////////////////////////////////////////////////////////
 // Include dependencies
 
 #include "../lib/includes.h"
@@ -166,7 +157,7 @@ void test_resetScores(void) {
     assert_int(0, teamscore_b);
 }
 
-// TODO(rune,fatema): Det kunne være fedt at køre tcp-client.c automatisk,
+// TODO: Det kunne være fedt at køre tcp-client.c automatisk,
 // men det kræver at der kører en rigtig backend.
 #if 0
 //tilføj mock funktioner
@@ -226,7 +217,7 @@ void set_mock_recv(int result, const char *data) {
 }
 #endif
 
-// TODO(rune,fatema): Det kunne være fedt at køre tcp-client.c automatisk,
+// TODO: Det kunne være fedt at køre tcp-client.c automatisk,
 // men det kræver at der kører en rigtig backend.
 #if 0
 

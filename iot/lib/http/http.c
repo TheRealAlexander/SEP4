@@ -1,31 +1,23 @@
 static int http_build_request(char *http_buf, int http_cap) {
 
     // NOTE(rune): Danner først json med separat snprintf, da vi skal bruge længden af json i Content-Length headeren.
-    // TODO(rune): Burde kun tage de målinger med, som vi rent faktisk har resultater på. F.eks. skal co2 ikke skrives
-    // i json, hvis checksum ikke passede, og temperatur skal ikke skrives på, hvis dht11_get() fejler.
     char json_buf[512];
-    char temp_ts_str[21], humid_ts_str[21], co2_ts_str[21];
-
-    // Convert timestamps to strings (assuming simple conversion here, adjust as necessary)
-    sprintf(temp_ts_str, "%lu", g_measurements.temperature_timestamp);
-    sprintf(humid_ts_str, "%lu", g_measurements.humidity_timestamp);
-    sprintf(co2_ts_str, "%lu", g_measurements.co2_timestamp);
-
-    // JSON string with timestamps as strings
     int json_len = snprintf(
         json_buf, sizeof(json_buf),
         "{"
         "\"temperature\": %d.%d, "
         "\"humidity\": %d.%d, "
         "\"co2\": %d, "
-        "\"temperature_ts\": \"%s\", "
-        "\"humidity_ts\": \"%s\", "
-        "\"co2_ts\": \"%s\""
+        "\"temperature_ts\": \"%lu\", "
+        "\"humidity_ts\": \"%lu\", "
+        "\"co2_ts\": \"%lu\""
         "}",
         g_measurements.temperature_integral, g_measurements.temperature_decimal,
         g_measurements.humidity_integral, g_measurements.humidity_decimal,
         g_measurements.co2,
-        temp_ts_str, humid_ts_str, co2_ts_str
+        g_measurements.temperature_timestamp, 
+        g_measurements.humidity_timestamp, 
+        g_measurements.co2_timestamp
     );
 
     // Include the JSON string in the HTTP POST request
@@ -108,25 +100,14 @@ static bool http_read_int_from_response(char *response, char *property, int *val
     return false;
 }
 
-static void http_process_response(char *http_buf, int http_len) {
-
-    send_to_pc(ANSI_FG_GREEN);
-    uart_send_array_blocking(USART_0, (uint8_t *)http_buf, http_len);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-    send_to_pc("========================\n");
-
+static void http_process_response(char *http_buf, int http_len) { 
     http_len = http_trim_inplace(http_buf, http_len);
-
-    send_to_pc(ANSI_FG_GREEN);
-    send_to_pc(http_buf);
-    send_to_pc("\n");
-    send_to_pc(ANSI_RESET);
-
+ 
     http_read_bool_from_response(http_buf, "openWindow", &g_measurements.open_window);
     http_read_int_from_response(http_buf, "wantNextMeasurementDelay", &g_measurements.want_next_measurement_delay);
 
     send_to_pc(ANSI_FG_BRIGHT_MAGENTA);
     send_to_pc_fmt("window: %d\n", g_measurements.open_window);
+    send_to_pc_fmt("wantNextMeasurementDelay: %d\n", g_measurements.want_next_measurement_delay);
     send_to_pc(ANSI_RESET);
 }

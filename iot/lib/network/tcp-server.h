@@ -5,12 +5,6 @@
 #include <stdbool.h>
 #include <winsock2.h>
 
-// Configuration
-#define SERVER_IP       "N/A"
-#define SERVER_PORT     8080
-#define WIFI_SSID       "N/A"
-#define WIFI_PASSWORD   "N/A"
-#define HALL_ID         -1
 #define MOCK 1
 
 // Function declarations
