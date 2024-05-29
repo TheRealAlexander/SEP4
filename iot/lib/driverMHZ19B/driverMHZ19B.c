@@ -20,7 +20,6 @@ void WHZ19B_init(void) {
 void reset_rx_buffer() {
     memset(rx_buffer, 0, sizeof(rx_buffer));
     rx_count = 0;
-    //send_to_pc("\nBuffer reset.\n");
 }
 
 void byte_process(uint8_t byte) {
@@ -33,9 +32,7 @@ void byte_process(uint8_t byte) {
                 uint8_t calculated_checksum = checksum(rx_buffer, sizeof(rx_buffer));
                 if (calculated_checksum == rx_buffer[8]) {
                     process_co2_data();
-                } else {
-                    //send_to_pc("Checksum failed. Packet discarded.\n");
-                }
+                } 
                 reset_rx_buffer();
             }
         } else {
@@ -52,10 +49,6 @@ void process_co2_data() {
     uint16_t co2_concentration = calculatePartsPerMil(rx_buffer);
     latest_co2_concentration = co2_concentration;
     new_co2_data_available = true;
-
-    char debug_msg[128];
-    snprintf(debug_msg, sizeof(debug_msg), "CO2 Concentration: %u ppm\n", co2_concentration);
-    //send_to_pc(debug_msg);
 }
 
 uint8_t checksum(uint8_t* packet, size_t length) {
@@ -89,7 +82,6 @@ uint8_t checksum2(uint8_t* packet, size_t length) {
 
 uint16_t calculatePartsPerMil(uint8_t *packet) {
     if (!packet) {
-        //send_to_pc("Invalid Packet.\n");
         return 0;
     }
 
@@ -98,15 +90,10 @@ uint16_t calculatePartsPerMil(uint8_t *packet) {
 
     uint16_t co2_concentration = highByte * 256 + lowByte;
 
-    char debug_msg[100];
-    snprintf(debug_msg, sizeof(debug_msg), "High byte: %02X, Low byte: %02X, CO2 Concentration: %u ppm\n", highByte, lowByte, co2_concentration);
-    //send_to_pc(debug_msg);
-
     return co2_concentration;
 }
 
 void send_co2_command(uint8_t command_type) {
-    //send_to_pc("Sending CO2 command...\n");
     uint8_t buf[9] = {0};
 
     buf[0] = 0xFF;
@@ -134,7 +121,6 @@ void sendSpanPointCalibration(uint8_t high_byte, uint8_t low_byte) {
 
 void process_packet(uint8_t *packet) {
     if (!packet) {
-        //send_to_pc("Invalid packet received.\n");
         return;
     }
 
@@ -150,6 +136,8 @@ void process_packet(uint8_t *packet) {
                 //send_to_pc(debug_msg);
             }
             break;
+
+            // TODO: Add zero span and span point calibrations
 
         case ZERO_POINT_CALIBRATION:
             // Handle zero point calibration response

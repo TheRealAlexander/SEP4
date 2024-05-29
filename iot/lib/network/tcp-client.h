@@ -6,13 +6,6 @@
 #include <winsock2.h>
 #include <ws2tcpip.h>
 
-// Configuration
-#define SERVER_IP   "127.0.0.1"
-#define SERVER_PORT 5200
-#define WIFI_SSID   "N/A"
-#define WIFI_PASSWORD   "N/A"
-#define HALL_ID         37
-
 #define MOCK 1
 
 // Function declarations
