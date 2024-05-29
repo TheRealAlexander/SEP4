@@ -6,7 +6,9 @@ services:
     ports:
       - 27017:27017
     volumes:
-      - mongodbdata:/data/mongodbdata
+      - mongodbdata:/data/db
+      - authmongodbdata:/data/db
+      - tournamentmongodbdata:/data/db
     networks:
       - backend
 
@@ -36,6 +38,19 @@ services:
     depends_on:
       - mongo
 
+  turnering_webapi:
+    image: turnering_webapi
+    build:
+      context: .
+      dockerfile: backend/microservices/turnering/WebApi/Dockerfile
+    ports:
+      - 5002:5002 #Http
+      - 7295:7295 #Https
+    networks:
+      - backend
+    depends_on:
+      - mongo
+
   broker:
     image: broker
     build:
@@ -49,6 +64,7 @@ services:
     depends_on:
       - indeklima_webapi
       - auth_webapi
+      - turnering_webapi
 
   frontend:
     image: frontend
@@ -63,6 +79,7 @@ services:
 volumes:
   mongodbdata:
   authmongodbdata:
+  tournamentmongodbdata:
 
 networks:
   backend:
