@@ -14,19 +14,7 @@ function HomePage() {
         'Hal 3': { temperature: 22, humidity: 50, lights: Array(7).fill(50) }, 
     });
 
-    const [tempControlStates, setTempControlStates] = useState({ ...controlStates });
-
-    const cardStyles = (isActive) => ({
-        width: 300,
-        height: 150,
-        margin: 6,
-        backgroundColor: isActive ? 'lightblue' : 'white',
-        transition: '0.3s',
-        '&:hover': {
-            backgroundColor: 'lightblue',
-            boxShadow: '0 8px 16px 0 rgba(0,0,0,0.2)'
-        }
-    });
+  const [tempControlStates, setTempControlStates] = useState({ ...controlStates });
 
   const handleSave = async () => {
         await setPreferredValue(selectedHal, tempControlStates[selectedHal].temperature, tempControlStates[selectedHal].humidity);
@@ -62,62 +50,64 @@ function HomePage() {
     };
 
     return (
-      <Container sx={{ paddingTop: '75px', minHeight: '100vh', overflowY: 'auto', paddingLeft: '64px',  marginLeft: '200px' }}>
-          <Box sx={{ marginLeft: '32px' }}> 
-              <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', marginBottom: 4 }}>
-                  {['Hal 1', 'Hal 2', 'Hal 3'].map((hal, index) => (
-                      <Card sx={{ width: 300, height: 150, margin: 6, backgroundColor: selectedHal === hal ? 'lightblue' : 'white', transition: '0.3s', '&:hover': { backgroundColor: 'lightblue', boxShadow: '0 8px 16px 0 rgba(0,0,0,0.2)' } }} key={index}>
-                          <CardActionArea 
-                              onClick={() => setSelectedHal(hal)}
-                              sx={{
-                                  height: '100%',
-                                  width: '100%',
-                                  display: 'flex',
-                                  flexDirection: 'column',
-                                  justifyContent: 'center'
-                              }}
-                          >
-                              <CardContent>
-                                  <Typography variant="h5" sx={{ textAlign: 'center' }}>{hal}</Typography>
-                              </CardContent>
-                          </CardActionArea>
-                      </Card>
-                  ))}
-              </Box>
-              {selectedHal && (
-                  <Grid container spacing={2} justifyContent="flex-end">
-                      <Grid item xs={4} sx={{ overflowY: 'auto', maxHeight: 500 }}>
-                          <Box>
-                              {tempControlStates[selectedHal].lights.map((intensity, index) => (
-                                  <LightControlComp
-                                      key={index}
-                                      laneId={index + 1}
-                                      initialIntensity={intensity}
-                                      onIntensityChange={(newIntensity) => updateLightIntensity(selectedHal, index + 1, newIntensity)}
-                                  />
-                              ))}
-                          </Box>
-                      </Grid>
-                      <Grid item xs={4}>
-                          <TempHumiComp 
-                              initialTemperature={tempControlStates[selectedHal].temperature}
-                              initialHumidity={tempControlStates[selectedHal].humidity}
-                              onTemperatureChange={(newValue) => updateTemperature(selectedHal, newValue)}
-                              onHumidityChange={(newValue) => updateHumidity(selectedHal, newValue)}
-                          />
-                      </Grid>
-                      <Grid item xs={4}>
-                          <CurrentConditionsComp 
-                              temperature={tempControlStates[selectedHal].temperature}
-                              humidity={tempControlStates[selectedHal].humidity}
-                          />
-                          <Button onClick={handleSave} variant="contained" color="primary" sx={{ margin: 1 }}>Save Changes</Button>
-                          <Button onClick={handleCancel} variant="outlined" color="secondary" sx={{ margin: 1 }}>Cancel</Button>
-                      </Grid>
-                  </Grid>
-              )}
+        <Container sx={{ minHeight: '100vh' }}>
+          <Box>
+          <Grid container spacing={2}>
+        {['Hal 1', 'Hal 2', 'Hal 3'].map((hal, index) => (
+          <Grid item xs={4} key={index}>
+            <Card sx={{ width: '100%', height: 200, backgroundColor: selectedHal === hal ? 'lightblue' : 'white', transition: '0.3s', '&:hover': { backgroundColor: 'lightblue', boxShadow: '0 8px 16px 0 rgba(0,0,0,0.2)' } }}>
+              <CardActionArea 
+                onClick={() => setSelectedHal(hal)}
+                sx={{
+                  height: '100%',
+                  width: '100%',
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center'
+                }}
+              >
+                <CardContent sx={{ padding: 0 }}>
+                  <Typography variant="h5" sx={{ textAlign: 'center' }}>{hal}</Typography>
+                </CardContent>
+              </CardActionArea>
+            </Card>
+          </Grid>
+        ))}
+      </Grid>
+            {selectedHal && (
+              <Grid container spacing={0}>
+                <Grid item xs={12} sm={6} md={4} sx={{ overflowY: 'auto', maxHeight: 500 }}>
+                  <Box sx={{ padding: 0 }}>
+                    {tempControlStates[selectedHal].lights.map((intensity, index) => (
+                      <LightControlComp
+                        key={index}
+                        laneId={index + 1}
+                        initialIntensity={intensity}
+                        onIntensityChange={(newIntensity) => updateLightIntensity(selectedHal, index + 1, newIntensity)}
+                      />
+                    ))}
+                  </Box>
+                </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <TempHumiComp 
+                    initialTemperature={tempControlStates[selectedHal].temperature}
+                    initialHumidity={tempControlStates[selectedHal].humidity}
+                    onTemperatureChange={(newValue) => updateTemperature(selectedHal, newValue)}
+                    onHumidityChange={(newValue) => updateHumidity(selectedHal, newValue)}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12} md={4}>
+                  <CurrentConditionsComp 
+                    temperature={tempControlStates[selectedHal].temperature}
+                    humidity={tempControlStates[selectedHal].humidity}
+                  />
+                  <Button onClick={handleSave} variant="contained" color="primary">Save Changes</Button>
+                  <Button onClick={handleCancel} variant="outlined" color="secondary">Cancel</Button>
+                </Grid>
+              </Grid>
+            )}
           </Box>
-      </Container>
-    );
+        </Container>
+      );
 }
 export default HomePage;

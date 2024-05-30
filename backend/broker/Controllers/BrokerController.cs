@@ -3,6 +3,7 @@ using SharedObjects.Models;
 using Broker.Services;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
 namespace Broker.Controllers
 {
@@ -17,10 +18,22 @@ namespace Broker.Controllers
             _brokerService = brokerService;
         }
 
-        [HttpGet("GetSensorData")]
+        [HttpGet("GetSensorData/{hallId}")]
         public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId)
         {
             var result = await _brokerService.GetSensorData(hallId);
+            if (result == null)
+            {
+                return NoContent();
+            }
+            return Ok(result);
+        }
+
+        [HttpGet("GetSensorData/{hallId}/{limit}")]
+        public async Task<ActionResult<List<SensorData>>> GetSensorData(int hallId, int limit, [FromHeader(Name = "Authorization")] string bearerToken)
+        {
+            string token = bearerToken.Substring("Bearer ".Length);
+            var result = await _brokerService.GetLimitedSensorData(hallId, limit, token);
             if (result == null)
             {
                 return NoContent();
@@ -75,7 +88,7 @@ namespace Broker.Controllers
         }
 
         [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] string user)
+        public async Task<IActionResult> Login([FromBody] JObject user)
         {
             var result = await _brokerService.Login(user);
             return Content(result, "application/json");
@@ -102,11 +115,21 @@ namespace Broker.Controllers
             return Content(result, "application/json");
         }
 
-        [HttpGet("register")]
-        public async Task<IActionResult> RegisterUser([FromBody] string user)
+        [HttpPost("register")]
+        public async Task<IActionResult> RegisterUser([FromBody] JObject user)
         {
             var result = await _brokerService.RegisterUser(user);
-            return Content(result, "application/json");
+            return new StatusCodeResult((int)result);
         }
+
+        [HttpGet("getallusers")]
+        public async Task<IActionResult> GetAllUsers([FromHeader(Name = "Authorization")] string bearerToken)
+        {
+            string token = bearerToken.Substring("Bearer ".Length);
+            var result = await _brokerService.GetAllUsers(token);
+            return Content(result.ToString(), "application/json");
+        }
+
+
     }
 }

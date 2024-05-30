@@ -2,7 +2,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using SharedObjects.Models;
 using System.Collections.Generic;
-
+using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace Broker.Services
 {
@@ -28,7 +29,7 @@ namespace Broker.Services
         // Corresponds to RemoveParticipant
         public Task<ActionResult> RemoveParticipant(string tournamentID, string participant);
 
-        public Task<string> Login(string user);
+        public Task<string> Login(JObject user);
 
         public Task<string> FetchSuperUsers();
 
@@ -36,6 +37,10 @@ namespace Broker.Services
 
         public Task<string> AdjustUserPermissions(string usersToChange);
 
-        public Task<string> RegisterUser(string user);
+        public Task<HttpStatusCode> RegisterUser(JObject user);
+
+        public Task<ActionResult<List<SensorData>>> GetLimitedSensorData(int hallId, int limit, string token);
+
+        public Task<JArray> GetAllUsers(string token);
     }
 }

@@ -3,8 +3,7 @@ import React, { useState } from "react";
 import TournamentItem from "./TournamentItemComp";
 import TournamentDialog from "./TournamentDialogComp";
 import TournamentFormDialog from "./TournamentFormDialog";
-import { isAdmin } from "../RouteProtection/PrivateAdminRoute";
-import { isAuthenticated } from "../RouteProtection/PrivateSuperUserRoute";
+import { isAuthenticated } from "../RouteProtection/PrivateRoute";
 
 import { Button } from "../MUI_imports";
 import { GetAllTournaments } from "../Services/TournamentService";
@@ -31,7 +30,7 @@ export default function TournamentPage() {
         variant="contained"
         color="primary"
         onClick={() => setFormOpen(true)}
-        disabled={!isAuthenticated() && !isAdmin()}
+        disabled={!isAuthenticated()}
       >
         Create New Tournament
       </Button>
