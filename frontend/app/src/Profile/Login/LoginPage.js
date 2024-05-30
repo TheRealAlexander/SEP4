@@ -4,7 +4,7 @@ import { Button, Paper, TextField } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link, useNavigate } from 'react-router-dom';
 
-import AuthService from '../../Services/AuthService';
+import {login} from '../../Services/AuthService';
 
 const LoginPage = () => {
     const [username, setUsername] = React.useState('');
@@ -20,7 +20,7 @@ const LoginPage = () => {
     const handleLogin = async (event) => {
         event.preventDefault();
         try {
-            const data = await AuthService.login(username, password);
+            const data = await login(username, password);
             if (data.error) {
                 setError(data.error);
             } else {

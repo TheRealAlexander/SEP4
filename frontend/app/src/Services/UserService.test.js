@@ -20,7 +20,7 @@ describe('UserService', () => {
     const result = await UserService.fetchSuperUsers();
 
     expect(result).toEqual(data.data);
-    expect(axios.get).toHaveBeenCalledWith('http://broker:5202/broker/superUsers');
+    expect(axios.get).toHaveBeenCalledWith('/Broker/superUsers');
   });
 
   it('fetches non-admin users', async () => {
@@ -30,7 +30,7 @@ describe('UserService', () => {
     const result = await UserService.fetchNonAdminUsers();
 
     expect(result).toEqual(data.data);
-    expect(axios.get).toHaveBeenCalledWith('http://broker:5202/broker/nonSuperUsers');
+    expect(axios.get).toHaveBeenCalledWith('Broker/nonSuperUsers');
   });
 
   it('adjusts user permissions', async () => {
@@ -44,7 +44,7 @@ describe('UserService', () => {
 
     expect(result).toEqual(data.data);
     expect(axios.put).toHaveBeenCalledWith(
-      `http://broker:5202/broker/users/adjustUserPermissions/${usersToChange}`,
+      `Broker/users/adjustUserPermissions/${usersToChange}`,
       { ...usersToChange },
       { headers: { Authorization: `Bearer ${token}` } }
     );

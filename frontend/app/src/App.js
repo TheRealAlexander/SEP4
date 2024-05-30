@@ -4,7 +4,7 @@ import "./App.css";
 
 // React Imports
 import {
-  BrowserRouter as Router,
+  HashRouter as Router,
   Route,
   Routes,
   useNavigate,
@@ -38,8 +38,7 @@ import {
   MenuItem,
 } from "./MUI_imports";
 
-
-const pages = ["Home", "Controls", "Data", "Tournaments", "Live Scores"];
+const pages = ["Home", "Controls", "Data", "Tournaments"];
 
 function App() {
   return (
@@ -69,10 +68,9 @@ function AppContent() {
           alignItems: "center",
           justifyContent: "center",
           height: 1,
-          mt: "-5vh",
+          mt: "8",
         }}
       >
-
         <Toolbar />
 
         <div className="App">
@@ -98,7 +96,7 @@ function AppContent() {
 function ResponsiveAppBar() {
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-  const [isLoggedIn, setIsLoggedIn] = React.useState(!!localStorage.getItem('user'));
+  const [isLoggedIn] = React.useState(!!localStorage.getItem('user'));
   const navigate = useNavigate();
 
   const pathMapping = {
@@ -141,7 +139,7 @@ function ResponsiveAppBar() {
   };
 
   return (
-    <AppBar position="static" style={{ zIndex: 1100 }}>
+    <AppBar position="sticky" style={{ zIndex: 1100 }}>
       {" "}
       <Container maxWidth="xl">
         <Toolbar disableGutters>

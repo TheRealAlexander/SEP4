@@ -1,11 +1,19 @@
-import React from 'react';
+import React from "react";
 import {
-  Typography, TableContainer, Paper, Table, TableHead, TableRow, TableCell,
-  TableBody, Checkbox, FormControlLabel
-} from '@mui/material';
+  Typography,
+  TableContainer,
+  Paper,
+  Table,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Checkbox,
+  FormControlLabel,
+} from "@mui/material";
 
 const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
-  <div style={{ marginBottom: '20px' }}>
+  <div style={{ marginBottom: "20px" }}>
     <Typography variant="h5">Users</Typography>
     <TableContainer component={Paper}>
       <Table>
@@ -18,9 +26,14 @@ const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
         </TableHead>
         <TableBody>
           {users.map((user) => (
-            <TableRow key={user.id} style={{ backgroundColor: user.id % 2 === 0 ? '#f5f5f5' : 'inherit' }}>
+            <TableRow
+              key={user.id}
+              style={{
+                backgroundColor: user.id % 2 === 0 ? "#f5f5f5" : "inherit",
+              }}
+            >
               <TableCell>{user.id}</TableCell>
-              <TableCell>{user.name}</TableCell>
+              <TableCell>{user.username}</TableCell>
               <TableCell>
                 <FormControlLabel
                   control={
@@ -29,7 +42,7 @@ const Users = ({ users, superUserIds, handleSuperUserToggle }) => (
                       onChange={() => handleSuperUserToggle(user.id)}
                     />
                   }
-                  label={user.name}  // Label is not needed here since we have a separate TableCell for user name
+                  label={user.username} // Label is not needed here since we have a separate TableCell for user name
                 />
               </TableCell>
             </TableRow>
