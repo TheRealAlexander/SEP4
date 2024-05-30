@@ -1,10 +1,10 @@
 import axios from "axios";
 
-const API_URL = "http://localhost:5202/broker/auth/";
+const API_URL = "/Broker";
 
-const register = (username, password, email, age) => {
+export const register = (username, password, email, age) => {
   return axios
-    .post(API_URL + "register", {
+    .post(API_URL + "/register", {
       username,
       password,
       email,
@@ -16,15 +16,15 @@ const register = (username, password, email, age) => {
     });
 };
 
-const login = (username, password) => {
+export const login = (username, password) => {
   return axios
-    .post(API_URL + "login", {
+    .post(API_URL + "/login", {
       username,
       password,
     })
     .then((response) => {
       const data = response.data;
-      if (data.accessToken) {
+      if (data) {
         localStorage.setItem("user", JSON.stringify(data));
       }
       return data;
@@ -34,17 +34,10 @@ const login = (username, password) => {
     });
 };
 
-const logout = () => {
+export const logout = () => {
   localStorage.removeItem("user");
 };
 
-const getCurrentUser = () => {
+export const getCurrentUser = () => {
   return JSON.parse(localStorage.getItem("user"));
-};
-
-export default {
-  register,
-  login,
-  logout,
-  getCurrentUser,
 };

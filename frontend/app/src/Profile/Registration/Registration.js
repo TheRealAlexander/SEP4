@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Grid, Avatar, Typography, Paper, TextField, Button } from '@mui/material';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { Link, useNavigate } from 'react-router-dom';
-import AuthService from '../../Services/AuthService';
+import { register } from '../../Services/AuthService';
 
 const RegistrationPage = () => {
     const paperStyle = { padding: 20, height: 'auto', width: 280, margin: '20px auto' };
@@ -30,7 +30,7 @@ const RegistrationPage = () => {
             return;
         }
 
-        AuthService.register(username, password, email, age)
+        register(username, password, email, age)
         .then(data => {
             console.log(data);
             navigate('/login');

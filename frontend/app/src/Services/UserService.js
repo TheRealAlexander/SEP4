@@ -1,21 +1,17 @@
 import axios from "axios";
 
-const API_BASE_URL = "http://broker:5202/broker";
+const API_BASE_URL = "/Broker";
 
 class UserService {
   // Fetch all users
-  static async fetchSuperUsers() {
+  static async fetchAllUsers() {
     try {
-      const response = await axios.get(`${API_BASE_URL}/superUsers`);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-    }
-  }
-
-  static async fetchNonAdminUsers() {
-    try {
-      const response = await axios.get(`${API_BASE_URL}/nonSuperUsers`);
+      const token = localStorage.getItem("user");
+      const response = await axios.get(`${API_BASE_URL}/GetAllUsers`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
       return response.data;
     } catch (error) {
       console.error(error);
@@ -24,7 +20,7 @@ class UserService {
 
   static async adjustUserPermissions(usersToChange) {
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("user");
       const response = await axios.put(
         `${API_BASE_URL}/users/adjustUserPermissions/${usersToChange}`,
         {

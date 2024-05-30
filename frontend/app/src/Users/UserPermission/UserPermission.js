@@ -1,87 +1,71 @@
-import React, { useState } from 'react';
-import AdminUsers from './AdminUsers';
-import Users from './Users';
-import UserChangeDialog from './ConfirmationDialogWindow';
-import { Button, Box } from '@mui/material';
+import React, { useState, useEffect } from "react";
+import AdminUsers from "./AdminUsers";
+import Users from "./Users";
+import UserChangeDialog from "./ConfirmationDialogWindow";
+import { Button, Box } from "@mui/material";
+import UserService from "../../Services/UserService";
 
 const UserPermissionPage = () => {
-  let AdminUsers=[
-    {
-      id: 1,
-      name: "Admin1",
-    },
-    {
-      id: 2,
-      name: "Admin2",
-    },
-    {
-      id: 3,
-      name: "Admin3",
-    },
-  ];
-  
-  let SuperUsers= [
-    {
-      id: 4,
-      name: "Super1",
-    },
-    {
-      id: 5,
-      name: "Super2",
-    },
-    {
-      id: 6,
-      name: "Super3",
-    },
-  ];
-  
-  
-  let StandardUsers= [
-    {
-      id: 7,
-      name: "Standard1",
-    },
-    {
-      id: 8,
-      name: "Standard2",
-    },
-    {
-      id: 9,
-      name: "Standard3",
-    },
-  ];
+  const [AdminUsers, setAdminUsers] = useState([]);
+  const [SuperUsers, setSuperUsers] = useState([]);
+  const [StandardUsers, setStandardUsers] = useState([]);
+
+  const fetchUsers = async () => {
+    const users = await UserService.fetchAllUsers();
+    setStandardUsers(users[2]);
+    setSuperUsers(users[1]);
+    setAdminUsers(users[0]);
+  };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
   return (
-    <UserList adminUsers={AdminUsers} superUsers={SuperUsers} standardUsers={StandardUsers} />
+    <UserList
+      adminUsers={AdminUsers}
+      superUsers={SuperUsers}
+      standardUsers={StandardUsers}
+    />
   );
-}
+};
 
 const UserList = ({ adminUsers, superUsers, standardUsers }) => {
-  const [superUserIds, setSuperUserIds] = useState(superUsers.map(user => user.id));
-  const [originalSuperUserIds, setOriginalSuperUserIds] = useState(superUsers.map(user => user.id));
+  const [superUserIds, setSuperUserIds] = useState(
+    superUsers.map((user) => user.id)
+  );
+  const [originalSuperUserIds, setOriginalSuperUserIds] = useState(
+    superUsers.map((user) => user.id)
+  );
   const [updatedSuperUserIds, setUpdatedSuperUserIds] = useState([]);
   const [isDialogOpen, setDialogOpen] = useState(false);
 
   const handleSuperUserToggle = (userId) => {
     const isCurrentlySuper = superUserIds.includes(userId);
     if (isCurrentlySuper) {
-      setSuperUserIds(current => current.filter(id => id !== userId));
+      setSuperUserIds((current) => current.filter((id) => id !== userId));
     } else {
-      setSuperUserIds(current => [...current, userId]);
+      setSuperUserIds((current) => [...current, userId]);
     }
-    setUpdatedSuperUserIds(current =>
-      current.includes(userId) ? current.filter(id => id !== userId) : [...current, userId]
+    setUpdatedSuperUserIds((current) =>
+      current.includes(userId)
+        ? current.filter((id) => id !== userId)
+        : [...current, userId]
     );
   };
 
   const handleRemoveUser = (userId) => {
-    setUpdatedSuperUserIds(current => current.filter(id => id !== userId));
+    setUpdatedSuperUserIds((current) => current.filter((id) => id !== userId));
     // Determine if the user was originally a super user and being downgraded.
     // If so, and they are removed from the change list, restore their super user status.
-    if (originalSuperUserIds.includes(userId) && !superUserIds.includes(userId)) {
-      setSuperUserIds(current => [...current, userId]);
+    if (
+      originalSuperUserIds.includes(userId) &&
+      !superUserIds.includes(userId)
+    ) {
+      setSuperUserIds((current) => [...current, userId]);
     } else {
       // If they are not originally super users and are being removed, ensure they are not in the list.
-      setSuperUserIds(current => current.filter(id => id !== userId));
+      setSuperUserIds((current) => current.filter((id) => id !== userId));
     }
   };
 
@@ -97,15 +81,21 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
     setDialogOpen(false);
   };
 
-  const upgradedUsers = updatedSuperUserIds.filter(id => originalSuperUserIds.includes(id)).map(id => ({
-    id,
-    name: superUsers.concat(standardUsers).find(user => user.id === id)?.name
-  }));
+  const upgradedUsers = updatedSuperUserIds
+    .filter((id) => originalSuperUserIds.includes(id))
+    .map((id) => ({
+      id,
+      name: superUsers.concat(standardUsers).find((user) => user.id === id)
+        ?.name,
+    }));
 
-  const downgradedUsers = updatedSuperUserIds.filter(id => !originalSuperUserIds.includes(id)).map(id => ({
-    id,
-    name: superUsers.concat(standardUsers).find(user => user.id === id)?.name
-  }));
+  const downgradedUsers = updatedSuperUserIds
+    .filter((id) => !originalSuperUserIds.includes(id))
+    .map((id) => ({
+      id,
+      name: superUsers.concat(standardUsers).find((user) => user.id === id)
+        ?.name,
+    }));
 
   return (
     <div>
@@ -116,7 +106,11 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
         handleSuperUserToggle={handleSuperUserToggle}
       />
       <Box display="flex" justifyContent="flex-end" mt={2}>
-        <Button variant="contained" onClick={() => setDialogOpen(true)} disabled={updatedSuperUserIds.length === 0}>
+        <Button
+          variant="contained"
+          onClick={() => setDialogOpen(true)}
+          disabled={updatedSuperUserIds.length === 0}
+        >
           Save Changes
         </Button>
       </Box>
@@ -132,7 +126,4 @@ const UserList = ({ adminUsers, superUsers, standardUsers }) => {
   );
 };
 
-export {
-  UserPermissionPage,
-  UserList
-}
+export { UserPermissionPage, UserList };

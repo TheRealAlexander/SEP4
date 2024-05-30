@@ -7,6 +7,8 @@ using System.Threading.Tasks;
 using Xunit;
 using Broker.Controllers;
 using System;
+using Newtonsoft.Json.Linq;
+using System.Net;
 
 namespace BrokerTest
 {
@@ -47,15 +49,17 @@ namespace BrokerTest
         {
             // Arrange
             var tournamentId = "1";
-            var tournamentData = new Tournament { 
+            var tournamentData = new Tournament
+            {
                 State = 1,
                 TimeAndDate = DateTime.Now,
                 Description = "description",
                 FieldCount = 1,
                 Format = "format",
-                Participants = new List<string?> { "participant1", "participant2" } 
-                };
-            var updatedTournament = new Tournament { 
+                Participants = new List<string?> { "participant1", "participant2" }
+            };
+            var updatedTournament = new Tournament
+            {
                 TournamentID = tournamentId,
                 State = 2,
                 TimeAndDate = tournamentData.TimeAndDate,
@@ -123,12 +127,16 @@ namespace BrokerTest
         public async Task Login_ReturnsExpectedResult()
         {
             // Arrange
-            var user = "testUser";
+            var user = new JObject
+            {
+                ["username"] = "testUser",
+                ["password"] = "testPassword" // replace with actual test password
+            };
             var expected = "loginResult";
             _mockBrokerService.Setup(x => x.Login(user)).ReturnsAsync(expected);
 
             // Act
-            var result = await _controller.Login(user);
+            var result = await _controller.Login(user); // pass user directly
 
             // Assert
             var contentResult = Assert.IsType<ContentResult>(result);
@@ -185,16 +193,17 @@ namespace BrokerTest
         public async Task RegisterUser_ReturnsExpectedResult()
         {
             // Arrange
-            var user = "testUser";
-            var expected = "registerUserResult";
-            _mockBrokerService.Setup(x => x.RegisterUser(user)).ReturnsAsync(expected);
+            var user = JObject.Parse("{\"username\":\"testUser\"}");
+            var expected = JObject.Parse("{\"result\":\"registerUserResult\"}");
+            _mockBrokerService.Setup(service => service.RegisterUser(It.IsAny<JObject>()))
+                .ReturnsAsync(HttpStatusCode.OK);
 
             // Act
             var result = await _controller.RegisterUser(user);
 
             // Assert
             var contentResult = Assert.IsType<ContentResult>(result);
-            Assert.Equal(expected, contentResult.Content);
+            Assert.Equal(expected.ToString(), contentResult.Content);
         }
     }
 }
